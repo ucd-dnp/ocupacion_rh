@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<head>    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script>L_PREFER_CANVAS=false; L_NO_TOUCH=false; L_DISABLE_3D=false;</script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.4.0/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.4.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://rawcdn.githack.com/python-visualization/folium/master/folium/templates/leaflet.awesome.rotate.css"/>
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    
+    <meta name="viewport" content="width=device-width,
+        initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <style>#map_13f1a0c61b0449c49876d516c1ab2221 {
+        position: relative;
+        width: 100.0%;
+        height: 100.0%;
+        left: 0.0%;
+        top: 0.0%;
+        }
+    </style>
+    
+                <style>
+                    #float_image_b636112d90c64deb8cc54786449a96f3 {
+                        position:absolute;
+                        bottom:81%;
+                        left:2%;
+                        }
+                </style>
+            
+</head>
+<body>    
+    
+    <div class="folium-map" id="map_13f1a0c61b0449c49876d516c1ab2221" ></div>
+    
+            <img id="float_image_b636112d90c64deb8cc54786449a96f3" alt="float_image"
+                 src="https://raw.githubusercontent.com/davidinsuasty/git_tutorial/master/icons/compass_icon.png"
+                 style="z-index: 999999">
+            </img>
+            
+</body>
+<script>    
+    
+    
+        var bounds = null;
+    
+
+    var map_13f1a0c61b0449c49876d516c1ab2221 = L.map(
+        'map_13f1a0c61b0449c49876d516c1ab2221', {
+        center: [4.5975, -74.0765],
+        zoom: 13,
+        maxBounds: bounds,
+        layers: [],
+        worldCopyJump: false,
+        crs: L.CRS.EPSG3857,
+        zoomControl: true,
+        });
+
+
+    
+    var tile_layer_744e847b52d1400bb560204b9ec57b6a = L.tileLayer(
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {
+        "attribution": "An\u00e1lisis susceptibilidad de inundaci\u00f3n",
+        "detectRetina": false,
+        "maxNativeZoom": 18,
+        "maxZoom": 18,
+        "minZoom": 11,
+        "noWrap": false,
+        "opacity": 1,
+        "subdomains": "abc",
+        "tms": false
+}).addTo(map_13f1a0c61b0449c49876d516c1ab2221);
+    var tile_layer_76000623c8794c33bf17022b107512a9 = L.tileLayer(
+        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        {
+        "attribution": "An\u00e1lisis susceptibilidad de inundaci\u00f3n",
+        "detectRetina": false,
+        "maxNativeZoom": 17,
+        "maxZoom": 17,
+        "minZoom": 12,
+        "noWrap": false,
+        "opacity": 1,
+        "subdomains": "abc",
+        "tms": false
+}).addTo(map_13f1a0c61b0449c49876d516c1ab2221);
+    
+                var lat_lng_popup_d734b1f0868e49e59ba39715fac18c1b = L.popup();
+                function latLngPop(e) {
+                    lat_lng_popup_d734b1f0868e49e59ba39715fac18c1b
+                        .setLatLng(e.latlng)
+                        .setContent("Latitude: " + e.latlng.lat.toFixed(4) +
+                                    "<br>Longitude: " + e.latlng.lng.toFixed(4))
+                        .openOn(map_13f1a0c61b0449c49876d516c1ab2221);
+                    }
+                map_13f1a0c61b0449c49876d516c1ab2221.on('click', latLngPop);
+            
+    
+            var layer_control_65e25c8a9bc44d8e8b568162eab2e601 = {
+                base_layers : { "openstreetmap" : tile_layer_744e847b52d1400bb560204b9ec57b6a,"Satelital" : tile_layer_76000623c8794c33bf17022b107512a9, },
+                overlays : {  }
+                };
+            L.control.layers(
+                layer_control_65e25c8a9bc44d8e8b568162eab2e601.base_layers,
+                layer_control_65e25c8a9bc44d8e8b568162eab2e601.overlays,
+                {position: 'topright',
+                 collapsed: true,
+                 autoZIndex: true
+                }).addTo(map_13f1a0c61b0449c49876d516c1ab2221);
+            
+                tile_layer_76000623c8794c33bf17022b107512a9.remove();
+        
+</script>
