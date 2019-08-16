@@ -20,8 +20,7 @@ class GoogleMapDownloader:
         a longitude, latitude and zoom level
     """
 
-    def __init__(self, coords= None, zoom=17, tile_size=256, tile_width = 8,
-                 tile_height= 8, proj=None):
+    def __init__(self, coords= None, zoom=17, tile_size=256, proj=None):
         """
             GoogleMapDownloader Constructor
 
@@ -38,8 +37,8 @@ class GoogleMapDownloader:
         self.map_img = None
         self.proj = proj
         self._tile_size = tile_size
-        self._tile_width = tile_width
-        self._tile_height = tile_height
+        self._tile_width = None
+        self._tile_height = None
         self._ntiles = self.computeNtiles()
     
 

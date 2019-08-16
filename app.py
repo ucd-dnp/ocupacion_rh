@@ -308,12 +308,7 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer):
                         '','','',figure1, figure2]
 
     else:
-#        if (lat1 is None) or (lat2 is None) or (lng1 is None) or (lng2 is None):
-#            #####################################  RESULT  ######################################
-#            figure1 = {'data':[go.Pie(visible=False)]}
-#            figure2 = {'data':[go.Pie(visible=False)]}
-#            return ['', True, '¡Campos Vacios!', html.Div(' '), {'visibility':'hidden'},
-#                    '','','',figure1,figure2]
+
         try:
             location = ((float(lat1)+float(lat2))*.5, (float(lng1)+float(lng2))*.5)
         except:
