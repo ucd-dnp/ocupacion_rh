@@ -20,15 +20,19 @@ class GoogleMapDownloader:
         a longitude, latitude and zoom level
     """
 
-    def __init__(self, coords= None, zoom=17, tile_size=256, proj=None):
+    def __init__(self, coords= None, zoom=17, tile_size=256, proj=None,
+                 PIXEL_SIZE_X = 1.1937, PIXEL_SIZE_Y= 1.1860):
         """
             GoogleMapDownloader Constructor
 
             Args:
-                lat:    The latitude of the location required
-                lng:    The longitude of the location required
-                zoom:   The zoom level of the location required, ranges from 0 - 23
-                        defaults to 12
+                coords:     coordinate Box, (left, top, right, bottom)
+                zoom:       The zoom level of the location required, 
+                            ranges from 0 - 23.  defaults to 12
+                tile_size:  Size for tile of google maps
+                proj:       image crs.
+                PIXEL_SIZE_X: pixel size on image (meters) x direction
+                PIXEL_SIZE_Y: pixel size on image (meters) y direction
         """
         self._coords = coords
         self._xtile = None
@@ -39,10 +43,40 @@ class GoogleMapDownloader:
         self._tile_size = tile_size
         self._tile_width = None
         self._tile_height = None
+        self._psx = PIXEL_SIZE_X
+        self._psy = PIXEL_SIZE_Y
         self._ntiles = self.computeNtiles()
+        self.generateGTmatrix()
     
+    
+    def computeNtiles(self):
+        """
+            Computes the number of necessary tiles to generate the satellital
+            image given the box coords
+            
+            Returns: number of tiles
+        """
+        x_start, y_start = self.getXY()
+        x_end, y_end = self.getXY(lat=self._coords[2], lon = self._coords[3])
+        xtiles = (x_end - x_start) + 1
+        ytiles = (y_end - y_start) + 1
+        self._tile_width = xtiles
+        self._tile_height= ytiles
+        return  xtiles*ytiles
+    
+    def getLonLat(self):
+        """
+            Generates an Lat, Lng tile coordinate based on x and y coordinate
+            reference system projection and zoom level
+            
+            Retuns:  An Lat, Lng tile coordinate
+        """
+        n = 2.0 ** self._zoom
+        lon_deg = self._xtile / n * 360.0 - 180.0
+        lat_rad = math.atan(math.sinh(math.pi * (1 - 2 * self._ytile / n)))
+        lat_deg = math.degrees(lat_rad)
+        return (lat_deg, lon_deg)
 
-    
     def getXY(self, **kwargs):
         """
             Generates an X,Y tile coordinate based on the latitude, longitude 
@@ -58,23 +92,6 @@ class GoogleMapDownloader:
         self._ytile = int((1.0 - math.log(math.tan(lat_rad) + (1 / math.cos(lat_rad))) / math.pi) / 2.0 * n)
         return (self._xtile, self._ytile)
     
-    def computeNtiles(self):
-        x_start, y_start = self.getXY()
-        x_end, y_end = self.getXY(lat=self._coords[2], lon = self._coords[3])
-        xtiles = (x_end - x_start) + 1
-        ytiles = (y_end - y_start) + 1
-        self._tile_width = xtiles
-        self._tile_height= ytiles
-        return  xtiles*ytiles
-    
-    def getLonLat(self):
-        n = 2.0 ** self._zoom
-        lon_deg = self._xtile / n * 360.0 - 180.0
-        lat_rad = math.atan(math.sinh(math.pi * (1 - 2 * self._ytile / n)))
-        lat_deg = math.degrees(lat_rad)
-        return (lat_deg, lon_deg)
-    
-        
     def getXYproj(self, **kwars):
         """
             Generates an X,Y tile coordinate based on the latitude, longitude 
@@ -91,6 +108,16 @@ class GoogleMapDownloader:
         point_x, point_y = pyproj.transform(srcProj, dstProj, lon, lat)
 
         return int(point_x), int(point_y)
+    
+    def generateGTmatrix(self):
+        """
+            Generates the Geo Transform matrix to map a pixel coordinate to a 
+            georeferenced lat, lnt coordinates.
+            
+            Returns:  A geoTransform matrix. Shape (2,3)
+        """
+        x_min, y_max = self.getXYproj()
+        self.GT =  np.array([[x_min,self._psx, 0],[y_max, 0, -self._psy]])
 
     def generateImage(self, **kwargs):
         """
@@ -148,7 +175,6 @@ class GoogleMapDownloader:
         lat, lon = self.getLonLat()
         x_min, y_max = self.getXYproj(lon=lon, lat=lat)
         wkt_projection = pyproj.Proj(init=self.proj).definition_string()
-        #wkt_projection = '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs'
         
         driver = gdal.GetDriverByName('GTiff')
         
