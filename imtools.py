@@ -16,8 +16,11 @@ from skimage.exposure import equalize_adapthist, equalize_hist
 import matplotlib.pyplot as plt
 from multiprocessing.dummy import Pool
 import time
+import geopandas as gpd
+from functools import reduce
+import operator
+import math
 
-from google_maps_downloader import GoogleMapDownloader 
 
 class imtools():
 
@@ -164,7 +167,36 @@ class imtools():
         return temp.astype('float32')
 
     
-
+    def sp2latlon(coords, GT):
+        temp = np.dot(GT[:,1:],coords.transpose()[::-1,:]) + np.reshape(GT[:,0],(2,1))
+        temp = temp.transpose()
+        center = tuple(map(operator.truediv, reduce(lambda x, y: map(operator.add, x, y), temp), [len(temp)] * 2))
+        pnt_xy = sorted(temp, key=lambda coord: (-135 - math.degrees(math.atan2(*tuple(map(operator.sub, coord, center))[::-1]))) % 360)
+        pnt_xy = list(map(lambda x: tuple(x),pnt_xy))
+        return Polygon(pnt_xy)
+    
+    def mapSuperPixels(coords = None, GT =None, proj ={'init':'epsg:32618'} , verbose= False,):
+        start = time.time()
+        if verbose: print('---  Mapping superpixels to lat/lng coordinates  ---')
+        Polygons = list()
+        for c in coords:
+            if len(c)>2:
+                Polygons.append(imtools.sp2latlon(c,GT))
+        if len(Polygons)==1:
+            geometries = gpd.GeoDataFrame({'geometry':Polygons},
+                                          geometry='geometry',
+                                          crs = proj,
+                                          index = [0])
+        else:
+            geometries = gpd.GeoDataFrame({'geometry':Polygons},
+                                          geometry='geometry',
+                                          crs = proj)
+            
+        if verbose: print('Done!, exceution time:  ', time.time()-start)
+        geometries.to_crs({'init':'epsg:4326'})
+        return geometries
+    
         
+            
     
         
