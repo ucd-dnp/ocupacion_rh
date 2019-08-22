@@ -43,6 +43,8 @@ class GoogleMapDownloader:
         self._tile_size = tile_size
         self._tile_width = None
         self._tile_height = None
+        self._lat_start = None
+        self._lng_start = None
         self._psx = PIXEL_SIZE_X
         self._psy = PIXEL_SIZE_Y
         self._ntiles = self.computeNtiles()
@@ -72,10 +74,10 @@ class GoogleMapDownloader:
             Retuns:  An Lat, Lng tile coordinate
         """
         n = 2.0 ** self._zoom
-        lon_deg = self._xtile / n * 360.0 - 180.0
+        self._lng_start = self._xtile / n * 360.0 - 180.0
         lat_rad = math.atan(math.sinh(math.pi * (1 - 2 * self._ytile / n)))
-        lat_deg = math.degrees(lat_rad)
-        return (lat_deg, lon_deg)
+        self._lat_start = math.degrees(lat_rad)
+        return (self._lat_start, self._lng_start)
 
     def getXY(self, **kwargs):
         """
@@ -99,8 +101,8 @@ class GoogleMapDownloader:
 
             Returns:    An X,Y tile coordinate
         """
-        lon = kwars.get('lon', self._coords[1])
-        lat = kwars.get('lat', self._coords[0])
+        lon = self._lng_start
+        lat = self._lat_start
         
         srcProj = pyproj.Proj(init='epsg:4326', preserve_units=True)
         dstProj = pyproj.Proj(init=self.proj, preserve_units=True)
@@ -116,6 +118,8 @@ class GoogleMapDownloader:
             
             Returns:  A geoTransform matrix. Shape (2,3)
         """
+        self.getXY()
+        self.getLonLat()
         x_min, y_max = self.getXYproj()
         self.GT =  np.array([[x_min,self._psx, 0],[y_max, 0, -self._psy]])
 
@@ -172,8 +176,8 @@ class GoogleMapDownloader:
         x_pixels = self._tile_width*self._tile_size
         y_pixels = self._tile_height*self._tile_size
         
-        lat, lon = self.getLonLat()
-        x_min, y_max = self.getXYproj(lon=lon, lat=lat)
+        self.getLonLat()
+        x_min, y_max = self.getXYproj()
         wkt_projection = pyproj.Proj(init=self.proj).definition_string()
         
         driver = gdal.GetDriverByName('GTiff')
@@ -189,15 +193,17 @@ class GoogleMapDownloader:
         dataset.GetRasterBand(2).WriteArray(src[:,:,1])
         dataset.GetRasterBand(3).WriteArray(src[:,:,2])
         dataset.FlushCache()
+
+
         
 
 def main():
     # Create a new instance of GoogleMap Downloader
     proj = 'epsg:32618'
-    name = 'prueba_sp.tif'
+    name = 'prueba_sp11.tif'
     #lat , lon  =1.1673, -76.6629 # mocoax
-    box = (-0.180455, -74.795327, -0.201998, -74.770565)
-    gmd = GoogleMapDownloader(coords=box, zoom=17, proj=proj, tile_height=11, tile_width= 8)
+    box = (1.1619,  -76.6503, 1.1528, -76.6450)
+    gmd = GoogleMapDownloader(coords=box, proj=proj)
 
     print("The tile coorindates are {}".format(gmd.getXY()))
     print(gmd._ntiles)
