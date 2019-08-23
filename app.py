@@ -71,6 +71,23 @@ srcData = html.Div([html.Label(html.B('Fuente:', style={'color':colors[1]})),
                              'top':'175px',
                              'left':'6px'})
 
+#upload shapefile button
+up_button = html.Div([
+   dcc.Markdown('''
+    Por favor seleccione un archivo
+    '''),
+     dcc.Upload(
+        id = 'upload-data',
+        children = html.Button('Cargar', id = 's_button'),
+        accept = '.shp'
+    )
+    ],
+    style ={'position':'absolute',
+            'width': '48%',
+            'top': '930px'
+            }
+            )
+
 #geovisor object to show the results
 geovisor= html.Div([html.Div([html.B('Geovisor')]),
                     html.Iframe(id='map', 
@@ -240,7 +257,7 @@ app.layout = html.Div(children = [title, intro,
                                   search_bar,
                                   srcData,
                                   geovisor,
-                                  coords, slider,
+                                  coords, up_button, slider,
                                   hiddenvar, errorMsj, loading_state,
                                   dashboard])
 

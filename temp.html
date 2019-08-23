@@ -17,7 +17,7 @@
     
     <meta name="viewport" content="width=device-width,
         initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <style>#map_77eab4505c324c16ae8de38282e7752c {
+    <style>#map_a0bfb799a7354c888f9bcfc310bbfee1 {
         position: relative;
         width: 100.0%;
         height: 100.0%;
@@ -27,7 +27,7 @@
     </style>
     
                 <style>
-                    #float_image_a7ba4530f3874f42b5d6fc120149f730 {
+                    #float_image_1be9efa64b0e47d19c202c8f372108d0 {
                         position:absolute;
                         bottom:81%;
                         left:2%;
@@ -37,9 +37,9 @@
 </head>
 <body>    
     
-    <div class="folium-map" id="map_77eab4505c324c16ae8de38282e7752c" ></div>
+    <div class="folium-map" id="map_a0bfb799a7354c888f9bcfc310bbfee1" ></div>
     
-            <img id="float_image_a7ba4530f3874f42b5d6fc120149f730" alt="float_image"
+            <img id="float_image_1be9efa64b0e47d19c202c8f372108d0" alt="float_image"
                  src="https://raw.githubusercontent.com/davidinsuasty/git_tutorial/master/icons/compass_icon.png"
                  style="z-index: 999999">
             </img>
@@ -51,8 +51,8 @@
         var bounds = null;
     
 
-    var map_77eab4505c324c16ae8de38282e7752c = L.map(
-        'map_77eab4505c324c16ae8de38282e7752c', {
+    var map_a0bfb799a7354c888f9bcfc310bbfee1 = L.map(
+        'map_a0bfb799a7354c888f9bcfc310bbfee1', {
         center: [4.5975, -74.0765],
         zoom: 13,
         maxBounds: bounds,
@@ -64,7 +64,7 @@
 
 
     
-    var tile_layer_abefb4f5172c416aaccb95b0abd88e86 = L.tileLayer(
+    var tile_layer_9c68d56115ec4237bb85c36a5f5f49d0 = L.tileLayer(
         'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         {
         "attribution": "An\u00e1lisis susceptibilidad de inundaci\u00f3n",
@@ -76,8 +76,8 @@
         "opacity": 1,
         "subdomains": "abc",
         "tms": false
-}).addTo(map_77eab4505c324c16ae8de38282e7752c);
-    var tile_layer_7f3867d946b145f6b836160669662f06 = L.tileLayer(
+}).addTo(map_a0bfb799a7354c888f9bcfc310bbfee1);
+    var tile_layer_4ed824a8a0ad455f8e33d227648ac9e3 = L.tileLayer(
         'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
         {
         "attribution": "An\u00e1lisis susceptibilidad de inundaci\u00f3n",
@@ -89,31 +89,31 @@
         "opacity": 1,
         "subdomains": "abc",
         "tms": false
-}).addTo(map_77eab4505c324c16ae8de38282e7752c);
+}).addTo(map_a0bfb799a7354c888f9bcfc310bbfee1);
     
-                var lat_lng_popup_32ffce4c2fd24125ab23606d24b6be73 = L.popup();
+                var lat_lng_popup_e08b9268713244c888bb30fc8e8cce7c = L.popup();
                 function latLngPop(e) {
-                    lat_lng_popup_32ffce4c2fd24125ab23606d24b6be73
+                    lat_lng_popup_e08b9268713244c888bb30fc8e8cce7c
                         .setLatLng(e.latlng)
                         .setContent("Latitude: " + e.latlng.lat.toFixed(4) +
                                     "<br>Longitude: " + e.latlng.lng.toFixed(4))
-                        .openOn(map_77eab4505c324c16ae8de38282e7752c);
+                        .openOn(map_a0bfb799a7354c888f9bcfc310bbfee1);
                     }
-                map_77eab4505c324c16ae8de38282e7752c.on('click', latLngPop);
+                map_a0bfb799a7354c888f9bcfc310bbfee1.on('click', latLngPop);
             
     
-            var layer_control_040ed34c25de4bc99c20243b21ee6645 = {
-                base_layers : { "openstreetmap" : tile_layer_abefb4f5172c416aaccb95b0abd88e86,"Satelital" : tile_layer_7f3867d946b145f6b836160669662f06, },
+            var layer_control_a3ae29ea55524ae3a52b2e9c19dd50fd = {
+                base_layers : { "openstreetmap" : tile_layer_9c68d56115ec4237bb85c36a5f5f49d0,"Satelital" : tile_layer_4ed824a8a0ad455f8e33d227648ac9e3, },
                 overlays : {  }
                 };
             L.control.layers(
-                layer_control_040ed34c25de4bc99c20243b21ee6645.base_layers,
-                layer_control_040ed34c25de4bc99c20243b21ee6645.overlays,
+                layer_control_a3ae29ea55524ae3a52b2e9c19dd50fd.base_layers,
+                layer_control_a3ae29ea55524ae3a52b2e9c19dd50fd.overlays,
                 {position: 'topright',
                  collapsed: true,
                  autoZIndex: true
-                }).addTo(map_77eab4505c324c16ae8de38282e7752c);
+                }).addTo(map_a0bfb799a7354c888f9bcfc310bbfee1);
             
-                tile_layer_7f3867d946b145f6b836160669662f06.remove();
+                tile_layer_4ed824a8a0ad455f8e33d227648ac9e3.remove();
         
 </script>
