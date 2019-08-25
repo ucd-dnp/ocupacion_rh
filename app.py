@@ -16,6 +16,11 @@ import numpy as np
 import plotly.graph_objs as go
 #import matplotlib.pyplot as plt
 
+#needed to decode uploaded files
+import base64
+import io
+import fiona
+
 colors = ['#011f4b','#03396c', '#005b96','#6497b1','#b3cde0']
 
 #Crear objeto georreferenciador
@@ -27,6 +32,7 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets,
                 meta_tags=[{"name": "viewport", 
                             "content": "width=device-width, initial-scale=1"} ])
+app.title = 'Inundaciones'
 
 title = html.H1('Zonas susceptibles de inundación',
                 style={'textAlign': 'center',
@@ -87,6 +93,15 @@ up_button = html.Div([
             'top': '930px'
             }
             )
+
+#hidden div for storing the geojson
+hidden_geojson = html.Div(
+    id='hidden_geojson',
+    style={'visibility':'none',
+    'position':'absolute ',
+    'top':'990px'}
+)
+
 
 #geovisor object to show the results
 geovisor= html.Div([html.Div([html.B('Geovisor')]),
@@ -259,7 +274,7 @@ app.layout = html.Div(children = [title, intro,
                                   geovisor,
                                   coords, up_button, slider,
                                   hiddenvar, errorMsj, loading_state,
-                                  dashboard])
+                                  dashboard, hidden_geojson])
 
 
 @app.callback(
@@ -593,5 +608,50 @@ def update_slider(value):
         v = 30
     return v
 
+
+#callback for upload a shapefile
+@app.callback(
+    Output('hidden_geojson', 'children'),
+    [Input('upload-data', 'contents')],
+    [State('upload-data', 'filename')]
+)
+def set_shapefile(contents, filename):
+    print("entered: {}".format(contents))
+    if contents is not None:
+        content_type, content_string = contents.split(',')
+        # print("content_type: {}".format(content_type))
+        decoded = base64.b64decode(content_string)
+        #print("decoded: {}".format(decoded))
+        try:
+            if 'shp' in filename:
+                # print("decoded: {}".format(decoded.decode('ISO-8859-1')))
+                print("here")
+                data_dec = decoded.decode('utf-8')
+                print("here_is_Good")
+                io.StringIO(data_dec)
+                shape = fiona.open(io.StringIO(data_dec))
+                # geo_dataframe = gpd.read_file(
+                #     io.BytesIO(data_dec)   
+                # )
+                # print(type(geo_dataframe))
+                print(shape.schema)
+                return html.H5(
+                    id = 'success',
+                    children = 'its loaded' 
+                )
+            else:
+                raise Exception("wrong input file")
+        except Exception as e:
+            print("Error: {}".format(e))
+
+            return  html.H5(
+            id = 'error_message',
+            children='Formato incorrecto, solo se acepta shp',
+            style = {
+                'color' : 'red'
+            }
+            )
+
+#start aplication 
 if __name__ == '__main__':
     app.run_server(debug=True)
