@@ -21,6 +21,9 @@ import base64
 import io
 import fiona
 
+#temporarly libraries
+import pandas as pd
+
 colors = ['#011f4b','#03396c', '#005b96','#6497b1','#b3cde0']
 
 #Crear objeto georreferenciador
@@ -85,7 +88,7 @@ up_button = html.Div([
      dcc.Upload(
         id = 'upload-data',
         children = html.Button('Cargar', id = 's_button'),
-        accept = '.shp'
+        accept = '.geojson'
     )
     ],
     style ={'position':'absolute',
@@ -616,25 +619,14 @@ def update_slider(value):
     [State('upload-data', 'filename')]
 )
 def set_shapefile(contents, filename):
-    print("entered: {}".format(contents))
     if contents is not None:
         content_type, content_string = contents.split(',')
-        # print("content_type: {}".format(content_type))
         decoded = base64.b64decode(content_string)
-        #print("decoded: {}".format(decoded))
         try:
-            if 'shp' in filename:
-                # print("decoded: {}".format(decoded.decode('ISO-8859-1')))
-                print("here")
-                data_dec = decoded.decode('utf-8')
-                print("here_is_Good")
-                io.StringIO(data_dec)
-                shape = fiona.open(io.StringIO(data_dec))
-                # geo_dataframe = gpd.read_file(
-                #     io.BytesIO(data_dec)   
-                # )
-                # print(type(geo_dataframe))
-                print(shape.schema)
+            if 'geojson' in filename:
+                data_dec = decoded.decode('ISO-8859-1')
+                s_decoded = io.StringIO(data_dec)
+                gop = gpd.read_file(data_dec)
                 return html.H5(
                     id = 'success',
                     children = 'its loaded' 
@@ -646,7 +638,7 @@ def set_shapefile(contents, filename):
 
             return  html.H5(
             id = 'error_message',
-            children='Formato incorrecto, solo se acepta shp',
+            children='Ha habido un error en la carga del archivo',
             style = {
                 'color' : 'red'
             }
