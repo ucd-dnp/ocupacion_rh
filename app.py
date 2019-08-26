@@ -21,8 +21,7 @@ import base64
 import io
 import fiona
 
-#temporarly libraries
-import pandas as pd
+
 
 colors = ['#011f4b','#03396c', '#005b96','#6497b1','#b3cde0']
 
@@ -93,7 +92,8 @@ up_button = html.Div([
     ],
     style ={'position':'absolute',
             'width': '48%',
-            'top': '930px'
+            'top': '930px',
+            'display': 'none'
             }
             )
 
@@ -144,63 +144,80 @@ slider = html.Div([html.Label('Franja de susceptibilidad (metros)'),
 #Textos
 aux_text = html.Div('Enter a value and press submit',
                     id='text1')
+
+coords_text = html.H5('Ingrese las coordenadas de delimitacion de poligono',
+                        style = {
+                            'width': '80px',
+                            'top': '830',
+                            'size': '15px'
+                        })
+
 t_lat1 = html.Div('Latitud 1',
                 id = 't_lat1',
                 style={'position':'absolute',
                        'left':'10px',
-                       'top':'810px',
+                       'top':'850px',
                        'width':'80px',
                        'textAlign':'center'})
 t_lng1 = html.Div('Longitud 1',
                 id = 't_lng1',
                 style={'position':'absolute',
-                       'left':'110px',
-                       'top':'810px',
+                       'left':'10px',
+                       'top':'910px',
                        'width':'80px',
                        'textAlign':'center'})
 t_lat2 = html.Div('Latitud 2',
                 id = 't_lat2',
                 style={'position':'absolute',
-                       'left':'210px',
-                       'top':'810px',
+                       'left':'220px',
+                       'top':'850px',
                        'width':'80px',
                        'textAlign':'center'})
 t_lng2 = html.Div('Longitud 2',
                 id = 't_lng2',
                 style={'position':'absolute',
-                       'left':'310px',
-                       'top':'810px',
+                       'left':'220px',
+                       'top':'910px',
                        'width':'80px',
                        'textAlign':'center'})
 
 lat1 = dcc.Input(id = 'e_lat1',
                    style={'position':'absolute',
-                       'left':'10px',
-                       'top':'840px',
+                       'left':'100px',
+                       'top':'850px',
                        'width':'80px'})
 lng1 = dcc.Input(id = 'e_lng1',
                    style={'position':'absolute',
-                       'left':'110px',
-                       'top':'840px',
+                       'left':'100px',
+                       'top':'910px',
                        'width':'80px'})
 lat2 = dcc.Input(id = 'e_lat2',
                    style={'position':'absolute',
-                       'left':'210px',
-                       'top':'840px',
+                       'left':'310px',
+                       'top':'850px',
                        'width':'80px'})
 lng2 = dcc.Input(id = 'e_lng2',
                    style={'position':'absolute',
                        'left':'310px',
-                       'top':'840px',
+                       'top':'910px',
                        'width':'80px'})
 
-coords = html.Div([t_lat1, t_lng1, t_lat2, t_lng2,
-                   lat1,lng1,lat2,lng2])
+# coords_1 = html.Div([t_lat1, t_lng1, t_lat2, t_lng2,
+#                    lat1,lng1,lat2,lng2])
+coords_1 = html.Div([t_lat1, lat1, t_lat2, lat2])
+coords_2 = html.Div([t_lng1 , lng1, t_lng2, lng2])
+
+coords_wrapper = html.Div([coords_text, coords_1, coords_2], 
+                        style= {
+                            'border' : "2px solid black",
+                            'height' : '100%',
+                            'display': 'none'    
+                        })
 
 #hidden div 
 hiddenvar = html.Div(children='ff',
                      id='hidden_var',
-                     style={'visibility':'visible',
+                     style={'display':'none',
                             'position':'absolute ',
                             'top':'890px'})
 # contairner de resultados
@@ -284,7 +301,7 @@ app.layout = html.Div(children = [title, intro,
                                   search_bar,
                                   srcData,
                                   geovisor,
-                                  coords, up_button, slider,
+                                  coords_wrapper, up_button, slider,
                                   hiddenvar, errorMsj, loading_state,
                                   dashboard, hidden_geojson, hidden_geodf])
 
@@ -658,6 +675,7 @@ def assign_geodf(geojson):
     geo_df = gpd.read_file(geojson)
     print("dataframe: {}".format(type(geo_df)))
     print(geo_df['geometry'])
+
 
 
 #start aplication 
