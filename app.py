@@ -99,8 +99,17 @@ up_button = html.Div([
 
 #hidden div for storing the geojson
 hidden_geojson = html.Div(
+    children = "{'juan': 12}",
     id='hidden_geojson',
-    style={'visibility':'none',
+    style={'display':'none',
+    'position':'absolute ',
+    'top':'990px'}
+)
+
+hidden_geodf = html.Div(
+    children = "ff",
+    id='hidden_geodf',
+    style={'display':'none',
     'position':'absolute ',
     'top':'990px'}
 )
@@ -277,7 +286,7 @@ app.layout = html.Div(children = [title, intro,
                                   geovisor,
                                   coords, up_button, slider,
                                   hiddenvar, errorMsj, loading_state,
-                                  dashboard, hidden_geojson])
+                                  dashboard, hidden_geojson, hidden_geodf])
 
 
 @app.callback(
@@ -612,7 +621,7 @@ def update_slider(value):
     return v
 
 
-#callback for upload a shapefile
+#callback for upload a geojson and storing it on a hidden div
 @app.callback(
     Output('hidden_geojson', 'children'),
     [Input('upload-data', 'contents')],
@@ -624,13 +633,9 @@ def set_shapefile(contents, filename):
         decoded = base64.b64decode(content_string)
         try:
             if 'geojson' in filename:
-                data_dec = decoded.decode('ISO-8859-1')
-                s_decoded = io.StringIO(data_dec)
-                gop = gpd.read_file(data_dec)
-                return html.H5(
-                    id = 'success',
-                    children = 'its loaded' 
-                )
+                data_decoded = decoded.decode('ISO-8859-1')
+                #return the json object
+                return data_decoded
             else:
                 raise Exception("wrong input file")
         except Exception as e:
@@ -643,6 +648,17 @@ def set_shapefile(contents, filename):
                 'color' : 'red'
             }
             )
+
+#callback for create a geodataframe and put it on map
+@app.callback(
+    Output ('hidden_geodf', 'children'),
+    [Input ('hidden_geojson', 'children')]
+)
+def assign_geodf(geojson):
+    geo_df = gpd.read_file(geojson)
+    print("dataframe: {}".format(type(geo_df)))
+    print(geo_df['geometry'])
+
 
 #start aplication 
 if __name__ == '__main__':
