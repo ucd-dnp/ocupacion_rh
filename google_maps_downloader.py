@@ -122,7 +122,6 @@ class GoogleMapDownloader:
         self.getLonLat()
         x_min, y_max = self.getXYproj()
         self.GT = (0.0, self._psx, -self._psy, 0.0,x_min, y_max)
-        #self.GT =  np.array([[x_min,self._psx, 0],[y_max, 0, -self._psy]])
 
     def generateImage(self, **kwargs):
         """
@@ -172,8 +171,8 @@ class GoogleMapDownloader:
     def save_raster(self, src, filepath):
         
         #https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames  -> section Resoluton and scale
-        PIXEL_SIZE_X = 1.1937
-        PIXEL_SIZE_Y = 1.186
+        PIXEL_SIZE_X = self._psx
+        PIXEL_SIZE_Y = self._psy
         x_pixels = self._tile_width*self._tile_size
         y_pixels = self._tile_height*self._tile_size
         
@@ -194,9 +193,7 @@ class GoogleMapDownloader:
         dataset.GetRasterBand(2).WriteArray(src[:,:,1])
         dataset.GetRasterBand(3).WriteArray(src[:,:,2])
         dataset.FlushCache()
-
-
-        
+  
 
 def main():
     # Create a new instance of GoogleMap Downloader
