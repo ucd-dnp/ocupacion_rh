@@ -21,8 +21,33 @@ import base64
 import io
 import fiona
 
-#temporarly libraries
-import pandas as pd
+#needed for implementing the download of files
+from flask import Flask, send_from_directory
+
+
+#creating the server object for downloading files
+server = Flask(__name__)
+
+#create a file path for storing the files that will be downloaded - implementation mostly for production 
+FILE_PATH = "/resources/files-to-download"
+
+#creating the path if doesn't exists
+if not os.path.exists(FILE_PATH):
+    os.makedirs(FILE_PATH)
+
+
+@server.route("/download/<path:file>")
+def download(file):
+    return send_from_directory(FILE_PATH, file, as_attachment=True)
+
+#for the download button it is needed that file is stored in the "server" directory first
+def save_file(name, content):
+    data = content.encode('ISO-8859-1').split(b";base64,")[1]
+
+    with open(os.path.join((FILE_PATH), name), 'wb') as fp:
+        fp.write(base64.decodebytes(data))
+
+
 
 colors = ['#011f4b','#03396c', '#005b96','#6497b1','#b3cde0']
 
