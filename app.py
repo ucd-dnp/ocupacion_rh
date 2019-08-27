@@ -100,7 +100,15 @@ up_button = html.Div([
 #hidden div for storing the geojson
 hidden_geojson = html.Div(
     id='hidden_geojson',
-    style={'visibility':'none',
+    style={'display':'none',
+    'position':'absolute ',
+    'top':'990px'}
+)
+
+#hidden div for storing the output callback of dataframe
+hidden_geodf = html.Div(
+    id='hidden_geodf',
+    style={'display':'none',
     'position':'absolute ',
     'top':'990px'}
 )
@@ -277,7 +285,7 @@ app.layout = html.Div(children = [title, intro,
                                   geovisor,
                                   coords, up_button, slider,
                                   hiddenvar, errorMsj, loading_state,
-                                  dashboard, hidden_geojson])
+                                  dashboard, hidden_geojson, hidden_geodf])
 
 
 @app.callback(
@@ -624,13 +632,9 @@ def set_shapefile(contents, filename):
         decoded = base64.b64decode(content_string)
         try:
             if 'geojson' in filename:
-                data_dec = decoded.decode('ISO-8859-1')
-                s_decoded = io.StringIO(data_dec)
-                gop = gpd.read_file(data_dec)
-                return html.H5(
-                    id = 'success',
-                    children = 'its loaded' 
-                )
+                data_decoded = decoded.decode('ISO-8859-1')
+                #return the json object
+                return data_decoded
             else:
                 raise Exception("wrong input file")
         except Exception as e:
