@@ -11,8 +11,10 @@ from contextlib import contextmanager
 import numpy as np
 import cv2
 import tifffile as tiff
+from shapely.affinity import affine_transform
 from shapely.geometry import MultiPolygon, Polygon
 from skimage.exposure import equalize_adapthist, equalize_hist
+from skimage.measure import regionprops
 import matplotlib.pyplot as plt
 from multiprocessing.dummy import Pool
 import time
@@ -176,27 +178,20 @@ class imtools():
         pnt_xy = list(map(lambda x: tuple(x),pnt_xy))
         return Polygon(pnt_xy)
     
-    def mapSuperPixels(coords = None, GT =None, proj ={'init':'epsg:32618'} , verbose= False,):
-        start = time.time()
+    def mapSuperPixels(segments = None, GT =None, proj ={'init':'epsg:32618'} , verbose= True):
         if verbose: print('---  Mapping superpixels to lat/lng coordinates  ---')
-        Polygons = list()
-        for c in coords:
-            if len(c)>2:
-                Polygons.append(imtools.sp2latlon(c,GT))
-        if len(Polygons)==1:
-            geometries = gpd.GeoDataFrame({'geometry':Polygons},
-                                          geometry='geometry',
-                                          crs = proj,
-                                          index = [0])
+        seg_properties = regionprops(segments)
+        polygons = [gpd.GeoSeries(Polygon(sp.coords)).convex_hull 
+                    for sp in seg_properties if (sp.area>=12)]
+        polygons = [affine_transform(p[0], GT) for p in polygons if p[0].geom_type == 'Polygon']
+        if len(polygons)== 1:
+            if verbose: print('---  Done!!   ---')
+            return gpd.GeoDataFrame({'geometry': polygons}, geometry='geometry', 
+                                    crs = proj, index = [0])
         else:
-            geometries = gpd.GeoDataFrame({'geometry':Polygons},
-                                          geometry='geometry',
-                                          crs = proj)
-            
-        if verbose: print('Done!, exceution time:  ', time.time()-start)
-        geometries.to_crs({'init':'epsg:4326'})
-        return geometries
-    
+            if verbose: print('---  Done!!   ---')
+            return gpd.GeoDataFrame({'geometry': polygons}, geometry='geometry', 
+                                    crs = proj)
         
     @contextmanager
     def convertraster(image, GT):
