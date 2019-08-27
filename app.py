@@ -1,6 +1,7 @@
 ﻿import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 
 import geopandas as gpd
@@ -50,7 +51,7 @@ colors = ['#011f4b','#03396c', '#005b96','#6497b1','#b3cde0']
 #Crear objeto georreferenciador
 nom = Nominatim(user_agent='my-application')
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', dbc.themes.BOOTSTRAP]
 #external_stylesheets = [
 #    "https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css"]
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets,
