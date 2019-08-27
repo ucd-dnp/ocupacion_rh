@@ -30,7 +30,7 @@ import os
 server = Flask(__name__)
 
 #create a file path for storing the files that will be downloaded - implementation mostly for production 
-FILE_PATH = "/resources/files-to-download"
+FILE_PATH = "/resources/shp_geojson"
 
 #creating the path if doesn't exists
 if not os.path.exists(FILE_PATH):
@@ -41,12 +41,7 @@ if not os.path.exists(FILE_PATH):
 def download(file):
     return send_from_directory(FILE_PATH, file, as_attachment=True)
 
-#for the download button it is needed that file is stored in the "server" directory first
-def save_file(name, content):
-    data = content.encode('ISO-8859-1').split(b";base64,")[1]
 
-    with open(os.path.join((FILE_PATH), name), 'wb') as fp:
-        fp.write(base64.decodebytes(data))
 
 
 
@@ -73,7 +68,8 @@ intro = html.Div('Herramienta para identificar zonas susceptibles de inundación
 
 
 #search bar objects
-search_bar = html.Div([html.Label(html.B('Buscador:', style={'color':colors[1]})),
+search_bar = html.Div([
+                    html.Label(html.B('Buscador:', style={'color':colors[1]})),
                     dcc.Input(id='searchBar', 
                               placeholder='Search..',
                               type='text',
