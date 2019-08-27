@@ -23,6 +23,7 @@ import fiona
 
 #needed for implementing the download of files
 from flask import Flask, send_from_directory
+import os
 
 
 #creating the server object for downloading files
@@ -121,6 +122,16 @@ up_button = html.Div([
             'top': '930px'
             }
             )
+
+download_button = html.Div([
+    html.Button(children = html.A(
+        'Descargar archivo',
+    style= {
+        'text-decoration': 'none',
+        # 'display': 'none'
+    }),
+    id = 'd_button')
+])
 
 #hidden div for storing the geojson
 hidden_geojson = html.Div(
@@ -310,7 +321,7 @@ app.layout = html.Div(children = [title, intro,
                                   geovisor,
                                   coords, up_button, slider,
                                   hiddenvar, errorMsj, loading_state,
-                                  dashboard, hidden_geojson, hidden_geodf])
+                                  dashboard, hidden_geojson, hidden_geodf, download_button])
 
 
 @app.callback(
