@@ -7,7 +7,7 @@ Created on Fri Mar 29 08:56:47 2019
 util functions 
 """
 from collections import defaultdict
-
+from contextlib import contextmanager  
 import numpy as np
 import cv2
 import tifffile as tiff
@@ -20,7 +20,8 @@ import geopandas as gpd
 from functools import reduce
 import operator
 import math
-
+from rasterio import Affine, MemoryFile
+import rasterio.mask as mask
 
 class imtools():
 
@@ -197,6 +198,26 @@ class imtools():
         return geometries
     
         
-            
+    @contextmanager
+    def convertraster(image, GT):
+        img = image.transpose([2,0,1]).astype('float32')
+        bands, height, width = img.shape
+        transform = Affine(GT[1], 0.0, GT[4],
+                           0.0, GT[2], GT[5])
+        profile = {'driver': 'GTiff', 'dtype': 'float32', 'nodata': None, 
+                   'width': width, 'height': height, 'count': bands, 'crs': None, 
+                   'transform': transform, 
+                   'tiled': False, 'interleave': 'pixel'}
     
-        
+        with MemoryFile() as memfile:
+            with memfile.open(**profile) as dataset:
+                dataset.write(img)
+                del img
+            with memfile.open() as dataset:
+                yield dataset
+    
+    def maskRasterIm(img, GT, roi_analysis):
+        with imtools.convertraster(img, GT) as raster:
+            out, _ = mask.mask(raster,roi_analysis.geometry, invert = False)
+            out = out.transpose([1,2,0]).astype('uint8')
+        return out
