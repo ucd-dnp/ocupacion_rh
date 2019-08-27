@@ -14,14 +14,12 @@ import tifffile as tiff
 from shapely.affinity import affine_transform
 from shapely.geometry import MultiPolygon, Polygon
 from skimage.exposure import equalize_adapthist, equalize_hist
-from skimage.measure import regionprops
+from skimage.measure import regionprops, label
+from skimage.segmentation import quickshift, felzenszwalb,slic
 import matplotlib.pyplot as plt
 from multiprocessing.dummy import Pool
 import time
 import geopandas as gpd
-from functools import reduce
-import operator
-import math
 from rasterio import Affine, MemoryFile
 import rasterio.mask as mask
 
@@ -168,31 +166,46 @@ class imtools():
         temp = cv2.GaussianBlur(temp,(alpha,alpha),0)
         temp = imtools.rescale_intensity(temp)
         return temp.astype('float32')
-
-    
-    def sp2latlon(coords, GT):
-        temp = np.dot(GT[:,1:],coords.transpose()[::-1,:]) + np.reshape(GT[:,0],(2,1))
-        temp = temp.transpose()
-        center = tuple(map(operator.truediv, reduce(lambda x, y: map(operator.add, x, y), temp), [len(temp)] * 2))
-        pnt_xy = sorted(temp, key=lambda coord: (-135 - math.degrees(math.atan2(*tuple(map(operator.sub, coord, center))[::-1]))) % 360)
-        pnt_xy = list(map(lambda x: tuple(x),pnt_xy))
-        return Polygon(pnt_xy)
-    
+      
     def mapSuperPixels(segments = None, GT =None, proj ={'init':'epsg:32618'} , verbose= True):
+        start = time.time()
         if verbose: print('---  Mapping superpixels to lat/lng coordinates  ---')
         seg_properties = regionprops(segments)
         polygons = [gpd.GeoSeries(Polygon(sp.coords)).convex_hull 
                     for sp in seg_properties if (sp.area>=12)]
         polygons = [affine_transform(p[0], GT) for p in polygons if p[0].geom_type == 'Polygon']
         if len(polygons)== 1:
-            if verbose: print('---  Done!!   ---')
+            if verbose: print('---   Done - execution time: {} seconds'.format(time.time()-start))
             return gpd.GeoDataFrame({'geometry': polygons}, geometry='geometry', 
                                     crs = proj, index = [0])
         else:
-            if verbose: print('---  Done!!   ---')
+            if verbose: print('---   Done - execution time: {} seconds'.format(time.time()-start))
             return gpd.GeoDataFrame({'geometry': polygons}, geometry='geometry', 
                                     crs = proj)
+            
+    def computeSegments(img, n_seg=20000, compactness = 1.1, method='slic',
+                        convert2lab = True, kernel_size = 5,
+                        scale = 50, mask = None, verbose=True):
+        start = time.time()
+        if verbose: print('---  Computing SuperPixels  ---')
+        if method == 'slic':
+            segments = slic(img, n_segments=n_seg,compactness= compactness,
+                            convert2lab = convert2lab)
+        elif method == 'quickshift':
+            segments = quickshift(img, kernel_size = kernel_size)
+            
+        elif method == 'felzenszwalb':
+            segments = felzenszwalb(img, scale = scale)
+        else:
+            segments = None
+            print(method, 'Not supported')
+            
+        segments[mask] = -1
+        segments = label(segments, connectivity=2, background=-1)
         
+        if verbose: print('---   Done - execution time: {} seconds'.format(time.time()-start))
+        return segments
+    
     @contextmanager
     def convertraster(image, GT):
         img = image.transpose([2,0,1]).astype('float32')
@@ -214,5 +227,6 @@ class imtools():
     def maskRasterIm(img, GT, roi_analysis):
         with imtools.convertraster(img, GT) as raster:
             out, _ = mask.mask(raster,roi_analysis.geometry, invert = False)
+            m, _, _ = mask.raster_geometry_mask(raster, roi_analysis.geometry, invert=False)
             out = out.transpose([1,2,0]).astype('uint8')
-        return out
+        return out, m
