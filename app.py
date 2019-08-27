@@ -661,7 +661,6 @@ def set_shapefile(contents, filename):
             }
             )
 
-<<<<<<< HEAD
 #callback for create a geodataframe and put it on map
 @app.callback(
     Output ('hidden_geodf', 'children'),
@@ -674,8 +673,6 @@ def assign_geodf(geojson):
 
 
 
-=======
->>>>>>> parent of a7a61f0... GeoJSON loaded on another callback - initial error w/ callback
 #start aplication 
 if __name__ == '__main__':
     app.run_server(debug=True)
