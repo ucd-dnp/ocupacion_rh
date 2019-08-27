@@ -17,7 +17,11 @@
     
     <meta name="viewport" content="width=device-width,
         initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<<<<<<< HEAD
     <style>#map_a9ebd466e55648b48fc866ac9b32a4e3 {
+=======
+    <style>#map_12f158ae3d79439c912f22119492e8ba {
+>>>>>>> parent of a7a61f0... GeoJSON loaded on another callback - initial error w/ callback
         position: relative;
         width: 100.0%;
         height: 100.0%;
@@ -27,7 +31,11 @@
     </style>
     
                 <style>
+<<<<<<< HEAD
                     #float_image_6541bd266eb84fe6a3b1c6d600dee5f5 {
+=======
+                    #float_image_a39dc8d834384d15aae43d1793b0482c {
+>>>>>>> parent of a7a61f0... GeoJSON loaded on another callback - initial error w/ callback
                         position:absolute;
                         bottom:81%;
                         left:2%;
@@ -37,9 +45,15 @@
 </head>
 <body>    
     
+<<<<<<< HEAD
     <div class="folium-map" id="map_a9ebd466e55648b48fc866ac9b32a4e3" ></div>
     
             <img id="float_image_6541bd266eb84fe6a3b1c6d600dee5f5" alt="float_image"
+=======
+    <div class="folium-map" id="map_12f158ae3d79439c912f22119492e8ba" ></div>
+    
+            <img id="float_image_a39dc8d834384d15aae43d1793b0482c" alt="float_image"
+>>>>>>> parent of a7a61f0... GeoJSON loaded on another callback - initial error w/ callback
                  src="https://raw.githubusercontent.com/davidinsuasty/git_tutorial/master/icons/compass_icon.png"
                  style="z-index: 999999">
             </img>
@@ -51,8 +65,13 @@
         var bounds = null;
     
 
+<<<<<<< HEAD
     var map_a9ebd466e55648b48fc866ac9b32a4e3 = L.map(
         'map_a9ebd466e55648b48fc866ac9b32a4e3', {
+=======
+    var map_12f158ae3d79439c912f22119492e8ba = L.map(
+        'map_12f158ae3d79439c912f22119492e8ba', {
+>>>>>>> parent of a7a61f0... GeoJSON loaded on another callback - initial error w/ callback
         center: [4.5975, -74.0765],
         zoom: 13,
         maxBounds: bounds,
@@ -64,7 +83,11 @@
 
 
     
+<<<<<<< HEAD
     var tile_layer_90dadef1914949439035f0caa146d054 = L.tileLayer(
+=======
+    var tile_layer_242c49d624594ceb91a60eb82b612a6f = L.tileLayer(
+>>>>>>> parent of a7a61f0... GeoJSON loaded on another callback - initial error w/ callback
         'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         {
         "attribution": "An\u00e1lisis susceptibilidad de inundaci\u00f3n",
@@ -76,8 +99,13 @@
         "opacity": 1,
         "subdomains": "abc",
         "tms": false
+<<<<<<< HEAD
 }).addTo(map_a9ebd466e55648b48fc866ac9b32a4e3);
     var tile_layer_c1101fa16a9c45eea5d68759a2297242 = L.tileLayer(
+=======
+}).addTo(map_12f158ae3d79439c912f22119492e8ba);
+    var tile_layer_74842e56870f40eab574b2f62bd91a65 = L.tileLayer(
+>>>>>>> parent of a7a61f0... GeoJSON loaded on another callback - initial error w/ callback
         'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
         {
         "attribution": "An\u00e1lisis susceptibilidad de inundaci\u00f3n",
@@ -89,6 +117,7 @@
         "opacity": 1,
         "subdomains": "abc",
         "tms": false
+<<<<<<< HEAD
 }).addTo(map_a9ebd466e55648b48fc866ac9b32a4e3);
     
                 var lat_lng_popup_4e7a8293cc2544dfae392f07e7ed9b71 = L.popup();
@@ -115,5 +144,33 @@
                 }).addTo(map_a9ebd466e55648b48fc866ac9b32a4e3);
             
                 tile_layer_c1101fa16a9c45eea5d68759a2297242.remove();
+=======
+}).addTo(map_12f158ae3d79439c912f22119492e8ba);
+    
+                var lat_lng_popup_72792d39c94a4f628198b8407cf5da9d = L.popup();
+                function latLngPop(e) {
+                    lat_lng_popup_72792d39c94a4f628198b8407cf5da9d
+                        .setLatLng(e.latlng)
+                        .setContent("Latitude: " + e.latlng.lat.toFixed(4) +
+                                    "<br>Longitude: " + e.latlng.lng.toFixed(4))
+                        .openOn(map_12f158ae3d79439c912f22119492e8ba);
+                    }
+                map_12f158ae3d79439c912f22119492e8ba.on('click', latLngPop);
+            
+    
+            var layer_control_96621ed1319b4cf399e817515ba00ec9 = {
+                base_layers : { "openstreetmap" : tile_layer_242c49d624594ceb91a60eb82b612a6f,"Satelital" : tile_layer_74842e56870f40eab574b2f62bd91a65, },
+                overlays : {  }
+                };
+            L.control.layers(
+                layer_control_96621ed1319b4cf399e817515ba00ec9.base_layers,
+                layer_control_96621ed1319b4cf399e817515ba00ec9.overlays,
+                {position: 'topright',
+                 collapsed: true,
+                 autoZIndex: true
+                }).addTo(map_12f158ae3d79439c912f22119492e8ba);
+            
+                tile_layer_74842e56870f40eab574b2f62bd91a65.remove();
+>>>>>>> parent of a7a61f0... GeoJSON loaded on another callback - initial error w/ callback
         
 </script>
