@@ -121,7 +121,8 @@ class GoogleMapDownloader:
         self.getXY()
         self.getLonLat()
         x_min, y_max = self.getXYproj()
-        self.GT =  np.array([[x_min,self._psx, 0],[y_max, 0, -self._psy]])
+        self.GT = (0.0, self._psx, -self._psy, 0.0,x_min, y_max)
+        #self.GT =  np.array([[x_min,self._psx, 0],[y_max, 0, -self._psy]])
 
     def generateImage(self, **kwargs):
         """
