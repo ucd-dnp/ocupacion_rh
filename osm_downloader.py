@@ -37,6 +37,7 @@ class OSMDownloader:
             rivers = gpd.GeoDataFrame(rivers['elements'])
             if len(rivers) == 0:
                 self._rivers = -1
+                return
             
             rivers.geometry = [LineString([Point(dcc['lon'],dcc['lat']) for dcc in geo]) for geo in rivers.geometry]
             records = pd.DataFrame.from_records(rivers['tags'])
@@ -47,15 +48,16 @@ class OSMDownloader:
             if 'tunnel' in records.columns:
                 rivers = rivers.join(records['tunnel'])
             
-            if 'intermittent' in rivers.columns:
-                rivers = rivers[rivers['intermittent'] != 'yes']
-            if 'tunnel' in rivers.columns:
-                rivers = rivers[rivers['tunnel'] != 'culvert']
-                rivers = rivers[rivers['tunnel'] != 'yes']
+#            if 'intermittent' in rivers.columns:
+#                rivers = rivers[rivers['intermittent'] != 'yes']
+#            if 'tunnel' in rivers.columns:
+#                rivers = rivers[rivers['tunnel'] != 'culvert']
+#                rivers = rivers[rivers['tunnel'] != 'yes']
                 
             if len(rivers) == 0:
                 self._rivers = -1
                 return 
+            rivers.drop(labels='nodes',axis=1,inplace=True)
             #original coords reference system
             rivers.crs = {'init' :'epsg:4326'}
             #Colombia coords reference system
@@ -128,7 +130,7 @@ if __name__ == '__main__':
     osm  = OSMDownloader(box=coords)
     
     #descargando información de rios (solo lineas)
-#    osm.getRiversLayer()
+    osm.getRiversLayer()
 #    rivers = osm._rivers.to_crs({'init':'epsg:32618'})
 #    rivers.geometry = [r.buffer(buffer) if w=='river' else r.buffer(15) 
 #                    for r, w in zip(rivers.geometry,rivers['waterway'])]
