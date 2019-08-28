@@ -82,20 +82,39 @@ geovisor= html.Div([html.Div([html.B('Geovisor')]),
                             'width':'700px'})
 
 #Franja de susceptibilidad
-slider = html.Div([html.Label('Franja de susceptibilidad (metros)'),
-                   dcc.Slider(min=30, max = 300,value=30,
-                              marks={30:'min:30',300:'max:300',70:'70',
-                                     100:'100',150:'150',200:'200',250:'250'},
-                              id='s_slider'),
-                   dcc.Input(id = 'i_buffer', value= '30',
-                             style = {'width':'51px',
-                                      'position':'relative',
-                                      'top':'-32px',
-                                      'left': '240px',
+slider = html.Div([html.Label(html.B('Franja de susceptibilidad (metros)',
+                                    style={'color':colors[1]})),
+                   html.Div('Afluentes principales:',
+                            style={'color':colors[2],
+                                   'position':'inherit',
+                                   'left':'10px',
+                                   'top': '33px',
+                                   'width':'250px',
+                                   'height':'38px'}),
+                   dcc.Input(id = 'i_buffer1', value= '5',
+                             style = {'position':'inherit',
+                                      'width':'51px',
+                                      'top':'30px',
+                                      'left': '235px',
+                                      'textAlign':'center'}),
+                   html.Div('Afluentes secundarios:',
+                            style={'color':colors[2],
+                                   'position':'inherit',
+                                   'left':'10px',
+                                   'top': '83px',
+                                   'width':'250px',
+                                   'height':'38px'}),                   
+                   dcc.Input(id = 'i_buffer2', value= '3',
+                             style = {'position':'inherit',
+                                      'width':'51px',
+                                      'top':'80px',
+                                      'left': '235px',
                                       'textAlign':'center'})],
                 style={'position':'absolute',
-                       'left':'400px',
-                       'top': 150},
+                       'left':'360px',
+                       'top': '113px',
+                       'width':'290px',
+                       'height':'130px'},
                 id = 'buffer')
 #Textos
 aux_text = html.Div('Enter a value and press submit',
@@ -226,8 +245,6 @@ dashboard =  html.Div([html.H3('Resultados del Análisis',
                                 'visibility':'hidden'}
                      )
 
-
-
 errorMsj = dcc.ConfirmDialog(id = 'error_msj',
                              message = 'Datos no disponibles para esta región',
                              displayed = False)
@@ -235,7 +252,6 @@ errorMsj = dcc.ConfirmDialog(id = 'error_msj',
 loading_state = dcc.Loading(id='loading', type = 'graph',
                             fullscreen=True)
                 
-
 app.layout = html.Div(children = [title, intro,
                                   search_bar,
                                   srcData,
@@ -264,10 +280,12 @@ app.layout = html.Div(children = [title, intro,
      State(component_id='e_lat2',component_property='value'),
      State(component_id='e_lng1',component_property='value'),
      State(component_id='e_lng2',component_property='value'),
-     State(component_id='s_slider', component_property='value')]
+     State(component_id='i_buffer1', component_property='value'),
+     State(component_id='i_buffer2', component_property='value')]
 )
-def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer):
-     
+def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buffer2):
+    buffer1 = int(buffer1)
+    buffer2 = int(buffer2)
     if bnt1 is None and bnt2 is None:
         location = (4.5975, -74.0765)
         Map(location= location, zoom= 13).generateMap()
@@ -346,7 +364,7 @@ Intente con otra región o cambie la fuente de análisis por
                 builds = osm._builds.to_crs({'init':'epsg:32618'})
                 if type(osm._rivers) is not int:
                     rivers = osm._rivers.to_crs({'init':'epsg:32618'})
-                    rivers.geometry = [r.buffer(2*buffer) if w=='river' else r.buffer(2*buffer*0.4) 
+                    rivers.geometry = [r.buffer(2*buffer1) if w=='river' else r.buffer(2*buffer2) 
                                     for r, w in zip(rivers.geometry,rivers['waterway'])]
                     try:
                         rivers = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.geometry)},
@@ -365,7 +383,7 @@ Intente con otra región o cambie la fuente de análisis por
                             poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.geometry)},
                                                             geometry='geometry', 
                                                             crs = poly_rivers.crs, index = [0])
-                        poly_rivers.geometry = poly_rivers.buffer(2*buffer)
+                        poly_rivers.geometry = poly_rivers.buffer(2*buffer1)
                           
                         roi = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.union(poly_rivers))},
                                                 geometry = 'geometry', 
@@ -471,7 +489,7 @@ la región de análisis"""
             poly_rivers = None	
             if type(osm._rivers) is not int:
                 rivers= osm._rivers.to_crs({'init':'epsg:32618'})
-                rivers.geometry = [r.buffer(2*buffer) if w=='river' else r.buffer(2*buffer*0.4) 
+                rivers.geometry = [r.buffer(2*buffer1) if w=='river' else r.buffer(2*buffer2) 
                                    for r, w in zip(rivers.geometry,rivers['waterway'])]
                 try:
                     rivers = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.geometry)},
@@ -490,7 +508,7 @@ la región de análisis"""
                         poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.geometry)},
                                                         geometry='geometry', 
                                                         crs = poly_rivers.crs, index = [0])
-                    poly_rivers.geometry = poly_rivers.buffer(2*buffer)
+                    poly_rivers.geometry = poly_rivers.buffer(2*buffer1)
                     try:      
                         roi = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.union(poly_rivers))},
                                                 geometry = 'geometry', 
@@ -562,19 +580,6 @@ la región de análisis"""
 def update_map(value):
     return open('temp.html','r').read()
 
-@app.callback(
-        Output(component_id='s_slider',component_property='value'),
-        [Input(component_id='i_buffer', component_property = 'value')])
-def update_slider(value):
-    try:
-        v = int(value)
-        if v<30:
-            v = 30
-        elif v>300:
-            v = 300
-    except:
-        v = 30
-    return v
 
 if __name__ == '__main__':
     app.run_server(debug=True)
