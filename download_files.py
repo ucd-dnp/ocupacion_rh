@@ -11,6 +11,9 @@ import geopandas as gpd
 import os
 import zipfile
 
+#libraries needed for deleting files
+import shutil
+
 # code taken from: https://www.tutorialspoint.com/How-to-create-a-zip-file-using-Python
 def zipdir(path, ziph):
     # ziph is zipfile handle
@@ -39,8 +42,8 @@ class Download:
             os.mkdir(rivers_path)
 
             #fixing the rivers geopandas
-            rivers_f = rivers.drop(labels = "nodes", axis= 1)
-            rivers_f.to_file("{}/{}.shp".format(rivers_path, name))
+           
+            rivers.to_file("{}/{}.shp".format(rivers_path, name))
             #creating the zipfile
             zip_rivers = zipfile.ZipFile('{}/{}.zip'.format(self.path, name), 'w', zipfile.ZIP_DEFLATED)
 
@@ -48,7 +51,8 @@ class Download:
             zipdir(rivers_path, zip_rivers)
             #closing the zip
             zip_rivers.close()
-            rivers_f.to_file("{}/{}.geojson".format(self.path, name), driver = 'GeoJSON')
+            shutil.rmtree(rivers_path)
+            rivers.to_file("{}/{}.geojson".format(self.path, name), driver = 'GeoJSON')
             
 
             list_file.append((label, name))
@@ -66,10 +70,11 @@ class Download:
             zipdir(builds_path, zip_builds)
             #closing the zip 
             zip_builds.close()
+            shutil.rmtree(builds_path)
             builds.to_file("{}/{}.geojson".format(self.path, name), driver = 'GeoJSON')
             
 
-            print("here is closed")
+       
             list_file.append((label, name))
         if roi is not None:
             label = "Capa de regiones"
@@ -86,6 +91,7 @@ class Download:
             zipdir(rois_path, zip_rois)
             #closing the zip
             zip_rois.close()
+            shutil.rmtree(rois_path)
             roi.to_file("{}/{}.geojson".format(self.path, name), driver = 'GeoJSON')
 
 
