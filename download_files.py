@@ -11,8 +11,12 @@ import geopandas as gpd
 import os
 import zipfile
 
-
-
+# code taken from: https://www.tutorialspoint.com/How-to-create-a-zip-file-using-Python
+def zipdir(path, ziph):
+    # ziph is zipfile handle
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            ziph.write(os.path.join(root, file))
 
 class Download:
 
@@ -30,23 +34,60 @@ class Download:
         if rivers is not None:
             label = "Capa de rios"
             name = "rivers_layer"
+            rivers_path = "{}/{}".format(self.path, name)
+            #create the directory for then zipping on a .zip
+            os.mkdir(rivers_path)
+
+            #fixing the rivers geopandas
             rivers_f = rivers.drop(labels = "nodes", axis= 1)
-            rivers_f.to_file("{}/{}.shp".format(self.path, name))
+            rivers_f.to_file("{}/{}.shp".format(rivers_path, name))
+            #creating the zipfile
+            zip_rivers = zipfile.ZipFile('{}/{}.zip'.format(self.path, name), 'w', zipfile.ZIP_DEFLATED)
+
+            #zipping all files on specified folder
+            zipdir(rivers_path, zip_rivers)
+            #closing the zip
+            zip_rivers.close()
             rivers_f.to_file("{}/{}.geojson".format(self.path, name), driver = 'GeoJSON')
             
+
             list_file.append((label, name))
         if builds is not None:
             label = "Capa de construcciones"
             name = "builds_layer"
-            builds.to_file("{}/{}.shp".format(self.path, name))
+            builds_path = "{}/{}".format(self.path, name)
+            #create the directory for then zipping on a .zip
+            os.mkdir(builds_path)
+
+            builds.to_file("{}/{}.shp".format(builds_path, name))
+            zip_builds = zipfile.ZipFile('{}/{}.zip'.format(self.path, name), 'w', zipfile.ZIP_DEFLATED)
+
+            #zipping all files on specified folder
+            zipdir(builds_path, zip_builds)
+            #closing the zip 
+            zip_builds.close()
             builds.to_file("{}/{}.geojson".format(self.path, name), driver = 'GeoJSON')
             
+
+            print("here is closed")
             list_file.append((label, name))
         if roi is not None:
             label = "Capa de regiones"
             name = "roi_layer"
-            roi.to_file("{}/{}.shp".format(self.path, name))
+
+            rois_path = "{}/{}".format(self.path, name)
+            #create the directory for then zipping on a .zip
+            os.mkdir(rois_path)
+
+            roi.to_file("{}/{}.shp".format(rois_path, name))
+            zip_rois = zipfile.ZipFile('{}/{}.zip'.format(self.path, name), 'w', zipfile.ZIP_DEFLATED)
+
+            #zipping all files on specified folder
+            zipdir(rois_path, zip_rois)
+            #closing the zip
+            zip_rois.close()
             roi.to_file("{}/{}.geojson".format(self.path, name), driver = 'GeoJSON')
+
 
             list_file.append((label, name))
         
@@ -59,7 +100,7 @@ class Download:
         else:
             #creating download links with existing layers
             for i in range(len(list_file)):
-                file_1 = self.file_download_link("{}{}".format(list_file[i][1], ".shp"))
+                file_1 = self.file_download_link("{}{}".format(list_file[i][1], ".zip"))
                 file_2 = self.file_download_link("{}{}".format(list_file[i][1], ".geojson"))
                 content.append(dbc.Col([
                     dbc.Row(  

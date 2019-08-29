@@ -34,7 +34,7 @@ from download_files import Download
 server = Flask(__name__)
 
 #create a file path for storing the files that will be downloaded - implementation mostly for production 
-FILE_PATH = "/resources/shp_geojson"
+FILE_PATH = '/resources/shp_geojson'
 
 #creating the path if doesn't exists
 if not os.path.exists(FILE_PATH):
@@ -57,7 +57,7 @@ nom = Nominatim(user_agent= 'my-application')
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', dbc.themes.BOOTSTRAP]
 #external_stylesheets = [
 #    "https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css"]
-app = dash.Dash(server=server, external_stylesheets=external_stylesheets,
+app = dash.Dash(server=server   , external_stylesheets=external_stylesheets,
                 meta_tags=[{"name": "viewport", 
                             "content": "width=device-width, initial-scale=1"} ])
 app.title = 'Inundaciones'
