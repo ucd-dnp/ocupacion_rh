@@ -1,4 +1,7 @@
 #ignore all compiled files of python 
 *.pyc
+
+#ignore temp file html
 temp.html
+
 __pycache__/
