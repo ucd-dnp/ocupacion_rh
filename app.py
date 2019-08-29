@@ -8,6 +8,7 @@ from geopy.geocoders import Nominatim
 from shapely.ops import cascaded_union   
 from threading import Thread
 
+from imtools import imtools
 from generateMap import Map
 from osm_downloader import OSMDownloader
 from google_maps_downloader import GoogleMapDownloader
@@ -298,6 +299,7 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
         bnt1 = 1
     if bnt2 is None:
         bnt2 = 0
+    #El boton buscar es presionado
     if bnt1>bnt2:
         if str_loc == None:
             location = (4.5975, -74.0765)
@@ -324,8 +326,8 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
                 figure2 = {'data':[go.Pie(visible=False)]}
                 return ['reintentar', True, 'Error de conexión', html.Div(' '),{'visibility':'hidden'},
                         '','','',figure1, figure2]
-
-    else:
+    #el boton Analizar es presionado
+    else: 
 
         try:
             location = ((float(lat1)+float(lat2))*.5, (float(lng1)+float(lng2))*.5)
@@ -337,9 +339,9 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
                     '','','',figure1,figure2]
             
         box_coords = (float(lat2),float(lng1),float(lat1),float(lng2))
-        if src_sel == 'None' or src_sel=='osm':
-            osm = OSMDownloader(box = box_coords)
-            
+        osm = OSMDownloader(box = box_coords)
+        ######################     análisis por OpenStreetMap     ###########################
+        if src_sel == 'None' or src_sel=='osm': 
             t1 = Thread(target=osm.getBuildings)
             t1.start()
             t2 = Thread(target=osm.getRiversLayer)
@@ -475,16 +477,16 @@ la región de análisis"""
                     figure1 = {'data':[go.Pie(visible=False)]}
                     figure2 = {'data':[go.Pie(visible=False)]}
                     return ['builds', True, msj, html.Div(' '),{'visibility':'hidden'},'','', '',figure1, figure2]
-						
+		
+        ######################          Solo calcular ROI              ######################
         elif src_sel == 'rios':
-            osm = OSMDownloader(box = box_coords)
             #obtencion capa de rios
-            t2 = Thread(target=osm.getRiversLayer)
+            t1 = Thread(target=osm.getRiversLayer)
+            t1.start()
+            t2 = Thread(target=osm.getRiversPolygons)   
             t2.start()
-            t3 = Thread(target=osm.getRiversPolygons)   
-            t3.start()
+            t1.join()
             t2.join()
-            t3.join()
             rivers = None	
             poly_rivers = None	
             if type(osm._rivers) is not int:
@@ -541,36 +543,120 @@ la región de análisis"""
                 figure1 = {'data':[go.Pie(visible=False)]}
                 figure2 = {'data':[go.Pie(visible=False)]}
                 return ['builds', True, msj, html.Div(' '),{'visibility':'hidden'},'','', '',figure1, figure2]
-            
+        #####################    Análisis por Imagenes Satelitales     ######################
         else:
-            box_google = (float(lat1),float(lng1),float(lat2),float(lng2))
             proj = 'epsg:32618'
+            box_google = (float(lat1),float(lng1),float(lat2),float(lng2))
+            # objecto de google maps para descarga de imagen satelital 
             gmd = GoogleMapDownloader(coords = box_google, proj=proj)
             ntiles = gmd.computeNtiles()
-            if ntiles <= 255:
-                try:
-                    im = np.array(gmd.generateImage())
-                    gmd.save_raster(im,'prueba.tif')
-                    ###########################  RESULTS  ####################################
-                    figure1 = {'data':[go.Pie(visible=False)]}
-                    figure2 = {'data':[go.Pie(visible=False)]}
-                    msj = 'La región de análisis es muy grande, por favor intente con una más pequeña!'
-                    return ['imagen generada', False, msj, html.Div(' '), {'visibility':'hidden'},
-                    '','','',figure1,figure2]
-                except IOError:
-                    ###########################  RESULTS  ####################################
-                    figure1 = {'data':[go.Pie(visible=False)]}
-                    figure2 = {'data':[go.Pie(visible=False)]}
-                    msj = 'No se pudo completar análisis, intente de nuevo.'
-                    return ['', True, msj, html.Div(' '), {'visibility':'hidden'},
-                        '','','',figure1,figure2]
-            else:
+            #tamano permitido de región de análisis
+            if ntiles > 256:
                 ###########################  RESULTS  ####################################
                 figure1 = {'data':[go.Pie(visible=False)]}
                 figure2 = {'data':[go.Pie(visible=False)]}
                 msj = 'La región de análisis es muy grande, por favor intente con una más pequeña!'
                 return ['', True, msj, html.Div(' '), {'visibility':'hidden'},
                     '','','',figure1,figure2]
+            
+            #Si la región cumple el tamaño de análisis permitido
+            #descarga de información de OSMDownloader
+            t1 = Thread(target=osm.getRiversLayer)
+            t1.start()
+            t2 = Thread(target=osm.getRiversPolygons)   
+            t2.start()
+            t1.join()
+            t2.join()
+            rivers = None	
+            poly_rivers = None
+            #hay información de capas de rios
+            if type(osm._rivers) is not int:
+                #Generando imagen satelital de la region de analisis 
+                try:
+                    img = np.array(gmd.generateImage(), dtype = np.uint8)
+                except:
+                    ###########################  RESULTS  ####################################
+                    figure1 = {'data':[go.Pie(visible=False)]}
+                    figure2 = {'data':[go.Pie(visible=False)]}
+                    msj = 'No se puede realizar el análisis por imagenes satelitales, revise las coordenadas!'
+                    return ['', True, msj, html.Div(' '), {'visibility':'hidden'},
+                        '','','',figure1,figure2]
+                
+                #generando region de analisis en la imagen
+                analysis_region = osm.computeROIsuperpixels(buffer1)
+                
+                ## mask image and superpixel computing
+                out, m = imtools.maskRasterIm(img, gmd.GT, analysis_region)
+                segments = imtools.computeSegments(out,mask=m) 
+                
+                ### aqui modelo de clasificacicón de la imagen  ###
+                ###################################################
+                ###################################################
+                    
+                ## mapeando los segmentos al mapa de dash  
+                seg_polygons = imtools.mapSuperPixels(segments=segments, GT=gmd.GT, verbose=False)
+                #generando buffer de rios
+                rivers= osm._rivers.to_crs({'init':'epsg:32618'})
+                rivers.geometry = [r.buffer(2*buffer1) if w=='river' else r.buffer(2*buffer2) 
+                                   for r, w in zip(rivers.geometry,rivers['waterway'])]
+                try:
+                    rivers = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.geometry)},
+                                               geometry = 'geometry',
+                                               crs =rivers.crs)
+                except:
+                    rivers = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.geometry)},
+                                               geometry = 'geometry',
+                                               crs =rivers.crs, index = [0])
+                #hay informacion de polygonos de rios                               
+                if type(osm._poly_rivers) is not int:
+                    poly_rivers = osm._poly_rivers.to_crs({'init':'epsg:32618'})
+                    try:
+                        poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.geometry)},
+                                                        geometry='geometry', crs = poly_rivers.crs)
+                    except:
+                        poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.geometry)},
+                                                        geometry='geometry', 
+                                                        crs = poly_rivers.crs, index = [0])
+                    poly_rivers.geometry = poly_rivers.buffer(2*buffer1)
+                    
+                    #### generando ROI (región de análisis)
+                    try:      
+                        roi = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.union(poly_rivers))},
+                                                geometry = 'geometry', 
+                                                crs = rivers.crs)
+                    except:
+                        roi = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.union(poly_rivers))},
+                                                geometry = 'geometry', 
+                                                crs = rivers.crs, index = [0])
+                    
+                    Map(location= location, zoom= 13).generateMap(rivers=osm._rivers,
+                                                                  poly_rivers = osm._poly_rivers,
+                                                                  roi = roi.to_crs({'init':'epsg:4326'}),
+                                                                  superpixels= seg_polygons.to_crs(crs={'init':'epsg:4326'}))
+                    #####################################  RESULT ###################################################
+                    figure1 = {'data':[go.Pie(visible=False)]}
+                    figure2 = {'data':[go.Pie(visible=False)]}
+                    return ['rivers, poly, superpixels', False, '', html.Div(' '), {'visibility':'hidden'},
+                            '','','',figure1,figure2]
+                            
+                else:
+                    Map(location= location, zoom= 13).generateMap(rivers=osm._rivers,
+                                                                  roi = rivers.to_crs({'init':'epsg:4326'}),
+                                                                  superpixels= seg_polygons.to_crs({'init':'epsg:4326'}))
+                    #####################################  RESULT ###################################################
+                    figure1 = {'data':[go.Pie(visible=False)]}
+                    figure2 = {'data':[go.Pie(visible=False)]}
+                    return ['rivers, superpixels', False, '', html.Div(' '), {'visibility':'hidden'},
+                            '','','',figure1,figure2]
+            #No hay informacion de capas de rios, por ende no se genera imagen satelital
+            else:
+                Map(location= location, zoom= 13).generateMap()
+                msj = """No hay información disponible de capa de rios
+para esta región. Intente de nuevo o cambie
+la región de análisis"""
+                figure1 = {'data':[go.Pie(visible=False)]}
+                figure2 = {'data':[go.Pie(visible=False)]}
+                return ['builds', True, msj, html.Div(' '),{'visibility':'hidden'},'','', '',figure1, figure2]   
 
 @app.callback(
         Output(component_id='map', component_property='srcDoc'),
