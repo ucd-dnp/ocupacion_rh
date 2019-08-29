@@ -7,6 +7,10 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 
 import geopandas as gpd
+#libraries for creating a zipfile
+import os
+import zipfile
+
 
 
 
@@ -16,9 +20,9 @@ class Download:
         self.path = path
     
 
-    def file_download_link(filename):
-    """Create a Plotly Dash 'A' element that downloads a file from the app."""
-        location = "/download/{}".format(urlquote(filename))
+    def file_download_link(self, filename):
+   
+        location = "/download/{}".format(filename)
         return html.A(filename, href=location)
 
     def download_file (self, rivers = None, builds = None, roi = None ):
@@ -26,41 +30,55 @@ class Download:
         if rivers is not None:
             label = "Capa de rios"
             name = "rivers_layer"
-            gpd.to_file("{}/{}.shp".format(path, name))
-            gpd.to_file("{}/{}.geojson".format(path, name), driver = "geojson")
+            rivers_f = rivers.drop(labels = "nodes", axis= 1)
+            rivers_f.to_file("{}/{}.shp".format(self.path, name))
+            rivers_f.to_file("{}/{}.geojson".format(self.path, name), driver = 'GeoJSON')
             
             list_file.append((label, name))
         if builds is not None:
             label = "Capa de construcciones"
             name = "builds_layer"
-            gpd.to_file("{}/{}.shp".format(path, name))
-            gpd.to_file("{}/{}.geojson".format(path, name), driver = "geojson")
+            builds.to_file("{}/{}.shp".format(self.path, name))
+            builds.to_file("{}/{}.geojson".format(self.path, name), driver = 'GeoJSON')
             
             list_file.append((label, name))
         if roi is not None:
             label = "Capa de regiones"
             name = "roi_layer"
-            gpd.to_file("{}/{}.shp".format(path, name))
-            gpd.to_file("{}/{}.geojson".format(path, name), driver = "geojson")
+            roi.to_file("{}/{}.shp".format(self.path, name))
+            roi.to_file("{}/{}.geojson".format(self.path, name), driver = 'GeoJSON')
 
             list_file.append((label, name))
+        
+        content = []
+        if not list_file:
+            content.append(html.Label("No se encuentran capas para descargar",
+                                style = {
+                                    "font-size" : '14px'
+                                }))
+        else:
+            #creating download links with existing layers
+            for i in range(len(list_file)):
+                file_1 = self.file_download_link("{}{}".format(list_file[i][1], ".shp"))
+                file_2 = self.file_download_link("{}{}".format(list_file[i][1], ".geojson"))
+                content.append(dbc.Col([
+                    dbc.Row(  
+                    html.H3(list_file[i][0])
+                    ),
+                    dbc.Row(
+                    file_1
+                    ),
+                    dbc.Row(
+                    file_2
+                    )
+                ]))
 
         #create the component to be returned    
         download_component = dbc.Container([
-            html.Label("Seleccione cual de los siguientes archivos quiere descargar"),
-            dbc.Row([
-                    if !list_file:
-                        html.Label("No se encuentran capas para descargar")
-                    else:
-                        #creating download links with existing layers
-                        for i in range(len(list_file)):
-                            dbc.Col([
-                                html.H3(list_file[i][0])
-                                link_name = list_file[i][1]
-                                file_download_link(link_name.join(".shp"))
-                                file_download_link(link_name.join(".geojson"))
-                            ])
-            ])
+            html.H3("Seleccione cual de los siguientes archivos quiere descargar"),
+            dbc.Row(
+                content
+            )
 
 
         ])

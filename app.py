@@ -26,6 +26,9 @@ import fiona
 from flask import Flask, send_from_directory
 import os
 
+#import functionality of download
+from download_files import Download
+
 
 #creating the server object for downloading files
 server = Flask(__name__)
@@ -49,12 +52,12 @@ def download(file):
 colors = ['#011f4b','#03396c', '#005b96','#6497b1','#b3cde0']
 
 #Crear objeto georreferenciador
-nom = Nominatim(user_agent='my-application')
+nom = Nominatim(user_agent= 'my-application')
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', dbc.themes.BOOTSTRAP]
 #external_stylesheets = [
 #    "https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css"]
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets,
+app = dash.Dash(server=server, external_stylesheets=external_stylesheets,
                 meta_tags=[{"name": "viewport", 
                             "content": "width=device-width, initial-scale=1"} ])
 app.title = 'Inundaciones'
@@ -71,9 +74,9 @@ intro = html.Div('Herramienta para identificar zonas susceptibles de inundación
 #search bar objects
 search_bar = html.Div([
                     html.Label(html.B('Buscador:', style={'color':colors[1]})),
-                    dcc.Input(id='searchBar', 
-                              placeholder='Search..',
-                              type='text',
+                    dcc.Input(id= 'searchBar', 
+                              placeholder= 'Search..',
+                              type= 'text',
                               style={'position':'relative',
                                      'width':'198px'}),
                     html.Button('Buscar', id= 'b_search', type = 'submit',
@@ -85,12 +88,12 @@ search_bar = html.Div([
                                'left':'6px'})
 #seleccion de fuente de datos
 srcData = html.Div([html.Label(html.B('Fuente:', style={'color':colors[1]})),
-                    dcc.Dropdown(id='sel_src',
+                    dcc.Dropdown(id= 'sel_src',
                             options=[{'label':'OpenSteetMap','value':'osm'},
                                      {'label':'Análisis de Imagen','value':'image'},
                                      {'label': 'Capa de ríos','value':'rios'}],
-                            value='osm',
-                            placeholder='OpenStreetMap',
+                            value= 'osm',
+                            placeholder= 'OpenStreetMap',
                             style={'position':'relative',
                                    'width':'198px',
                                    'height':'38px'}),
@@ -116,23 +119,32 @@ up_button = html.Div([
     ],
     style ={'position':'absolute',
             'width': '48%',
-            'top': '930px'
+            'top': '930px',
+            'display': 'none'
             }
             )
 
-download_button = html.Div([
-    html.Button(children = html.A(
-        'Descargar archivo',
-    style= {
-        'text-decoration': 'none',
-        # 'display': 'none'
-    }),
-    id = 'd_button')
-])
+download_div = html.Div(
+    children="",
+    id = 'download_div',
+    style = {
+        'position': 'absolute',
+        "top": '1000px'
+    })
+
+# download_div = html.Div([
+#     html.Button(children = html.A(
+#         'Descargar archivo',
+#     style= {
+#         'text-decoration': 'none',
+#         # 'display': 'none'
+#     }),
+#     id = 'd_button')
+# ])
 
 #hidden div for storing the geojson
 hidden_geojson = html.Div(
-    id='hidden_geojson',
+    id= 'hidden_geojson',
     style={'display':'none',
     'position':'absolute ',
     'top':'990px'}
@@ -140,7 +152,7 @@ hidden_geojson = html.Div(
 
 #hidden div for storing the output callback of dataframe
 hidden_geodf = html.Div(
-    id='hidden_geodf',
+    id= 'hidden_geodf',
     style={'display':'none',
     'position':'absolute ',
     'top':'990px'}
@@ -149,10 +161,10 @@ hidden_geodf = html.Div(
 
 #geovisor object to show the results
 geovisor= html.Div([html.Div([html.B('Geovisor')]),
-                    html.Iframe(id='map', 
+                    html.Iframe(id= 'map', 
                       srcDoc = open('temp.html','r').read(),
-                      width='100%', 
-                      height='540')],
+                      width= '100%', 
+                      height= '540')],
                     style= {'position':'absolute',
                             'top':'240px',
                             'width':'700px'})
@@ -162,7 +174,7 @@ slider = html.Div([html.Label('Franja de susceptibilidad (metros)'),
                    dcc.Slider(min=30, max = 300,value=30,
                               marks={30:'min:30',300:'max:300',70:'70',
                                      100:'100',150:'150',200:'200',250:'250'},
-                              id='s_slider'),
+                              id= 's_slider'),
                    dcc.Input(id = 'i_buffer', value= '30',
                              style = {'width':'51px',
                                       'position':'relative',
@@ -175,7 +187,7 @@ slider = html.Div([html.Label('Franja de susceptibilidad (metros)'),
                 id = 'buffer')
 #Textos
 aux_text = html.Div('Enter a value and press submit',
-                    id='text1')
+                    id= 'text1')
 t_lat1 = html.Div('Latitud 1',
                 id = 't_lat1',
                 style={'position':'absolute',
@@ -209,29 +221,39 @@ lat1 = dcc.Input(id = 'e_lat1',
                    style={'position':'absolute',
                        'left':'10px',
                        'top':'840px',
-                       'width':'80px'})
+                       'width':'80px',},
+                  value = 1.1559
+                       
+                       
+                       )
 lng1 = dcc.Input(id = 'e_lng1',
                    style={'position':'absolute',
                        'left':'110px',
                        'top':'840px',
-                       'width':'80px'})
+                       'width':'80px',},
+                    value = -76.6556
+                       )
 lat2 = dcc.Input(id = 'e_lat2',
                    style={'position':'absolute',
                        'left':'210px',
                        'top':'840px',
-                       'width':'80px'})
+                       'width':'80px',},
+                     value = 1.1382
+                     )
 lng2 = dcc.Input(id = 'e_lng2',
                    style={'position':'absolute',
                        'left':'310px',
                        'top':'840px',
-                       'width':'80px'})
+                       'width':'80px'},
+                       value = -76.6349
+                       )
 
 coords = html.Div([t_lat1, t_lng1, t_lat2, t_lng2,
                    lat1,lng1,lat2,lng2])
 
 #hidden div 
-hiddenvar = html.Div(children='ff',
-                     id='hidden_var',
+hiddenvar = html.Div(children= 'ff',
+                     id= 'hidden_var',
                      style={'visibility':'visible',
                             'position':'absolute ',
                             'top':'890px'})
@@ -239,7 +261,7 @@ hiddenvar = html.Div(children='ff',
 dashboard =  html.Div([html.H3('Resultados del Análisis',
                                style = {'textAlign':'center',
                                         'color':colors[1]}),
-                       dcc.Graph(id='graph_1', style = {'width':'385px',
+                       dcc.Graph(id= 'graph_1', style = {'width':'385px',
                                                         'height': '385px'}),
                     html.Div([
                        html.H1(html.B('1.012'), id = 'result1_0',
@@ -308,7 +330,7 @@ errorMsj = dcc.ConfirmDialog(id = 'error_msj',
                              message = 'Datos no disponibles para esta región',
                              displayed = False)
 
-loading_state = dcc.Loading(id='loading', type = 'graph',
+loading_state = dcc.Loading(id= 'loading', type = 'graph',
                             fullscreen=True)
                 
 
@@ -318,32 +340,37 @@ app.layout = html.Div(children = [title, intro,
                                   geovisor,
                                   coords, up_button, slider,
                                   hiddenvar, errorMsj, loading_state,
-                                  dashboard, hidden_geojson, hidden_geodf, download_button])
+                                  dashboard, hidden_geojson, hidden_geodf, download_div])
 
 
 @app.callback(
-    [Output(component_id='hidden_var',component_property='children'),
-     Output(component_id='error_msj', component_property='displayed'),
-     Output(component_id='error_msj',component_property='message'),
-     Output(component_id= 'loading', component_property = 'children'),
-     Output(component_id='dash_board',component_property='style'),
-	 Output(component_id='result1_0',component_property='children'),
-     Output(component_id='result1_1',component_property='children'),
-     Output(component_id='result2_0',component_property='children'),
-     Output(component_id='graph_1', component_property='figure'),
-     Output(component_id='graph_2', component_property='figure')],
-    [Input(component_id='b_search',component_property='n_clicks_timestamp'),
-     Input(component_id='b_analizar',component_property='n_clicks_timestamp')],
-    [State(component_id='searchBar',component_property='value'),
-     State(component_id='sel_src',component_property='value'),
-     State(component_id='e_lat1',component_property='value'),
-     State(component_id='e_lat2',component_property='value'),
-     State(component_id='e_lng1',component_property='value'),
-     State(component_id='e_lng2',component_property='value'),
-     State(component_id='s_slider', component_property='value')]
+    [Output(component_id = 'hidden_var',component_property = 'children'),
+     Output(component_id = 'error_msj', component_property = 'displayed'),
+     Output(component_id = 'error_msj',component_property = 'message'),
+     Output(component_id =  'loading', component_property = 'children'),
+     Output(component_id = 'dash_board',component_property = 'style'),
+	 Output(component_id = 'result1_0',component_property = 'children'),
+     Output(component_id = 'result1_1',component_property = 'children'),
+     Output(component_id = 'result2_0',component_property = 'children'),
+     Output(component_id = 'graph_1', component_property = 'figure'),
+     Output(component_id = 'graph_2', component_property = 'figure'),
+     Output(component_id = 'download_div', component_property = 'children')],
+    [Input(component_id = 'b_search',component_property = 'n_clicks_timestamp'),
+     Input(component_id = 'b_analizar',component_property = 'n_clicks_timestamp')],
+    [State(component_id = 'searchBar',component_property = 'value'),
+     State(component_id = 'sel_src',component_property = 'value'),
+     State(component_id = 'e_lat1',component_property = 'value'),
+     State(component_id = 'e_lat2',component_property = 'value'),
+     State(component_id = 'e_lng1',component_property = 'value'),
+     State(component_id = 'e_lng2',component_property = 'value'),
+     State(component_id = 's_slider', component_property = 'value')]
 )
 def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer):
      
+    #a default response when there's no links to download
+    d_object = Download(FILE_PATH)
+    default = d_object.download_file()
+    
     if bnt1 is None and bnt2 is None:
         location = (4.5975, -74.0765)
         Map(location= location, zoom= 13).generateMap()
@@ -351,7 +378,7 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer):
         figure1 = {'data':[go.Pie(visible=False)]}
         figure2 = {'data':[go.Pie(visible=False)]}
         return ['Inicia ', False, ' ', html.Div(' '),{'visibility':'hidden'},
-                '', '','', figure1,figure2]
+                '', '','', figure1,figure2, default]
     if bnt1 is None:
         bnt1 = 1
     if bnt2 is None:
@@ -363,8 +390,9 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer):
             #############################  RESULT  #####################################
             figure1 = {'data':[go.Pie(visible=False)]}
             figure2 = {'data':[go.Pie(visible=False)]}
+            
             return ['buscar', False, ' ', html.Div(' '), {'visibility':'hidden'},
-                    '', '','', figure1, figure2]
+                    '', '','', figure1, figure2, default]
         else:
             try:
                 response = nom.geocode(str_loc +', Colombia')
@@ -375,13 +403,13 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer):
                 figure1 = {'data':[go.Pie(visible=False)]}
                 figure2 = {'data':[go.Pie(visible=False)]}
                 return ['buscar', False, ' ', html.Div(' '), {'visibility':'hidden'},
-                        '', '','', figure1, figure2]
+                        '', '','', figure1, figure2, default]
             except:
                 #####################################  RESULT  ##################################################
                 figure1 = {'data':[go.Pie(visible=False)]}
                 figure2 = {'data':[go.Pie(visible=False)]}
                 return ['reintentar', True, 'Error de conexión', html.Div(' '),{'visibility':'hidden'},
-                        '','','',figure1, figure2]
+                        '','','',figure1, figure2, default]
 
     else:
 
@@ -392,10 +420,10 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer):
             figure1 = {'data':[go.Pie(visible=False)]}
             figure2 = {'data':[go.Pie(visible=False)]}
             return ['', True, 'Existen campos vacíos o erróneos en los campos de entrada.', html.Div(' '), {'visibility':'hidden'},
-                    '','','',figure1,figure2]
+                    '','','',figure1,figure2, default]
             
         box_coords = (float(lat2),float(lng1),float(lat1),float(lng2))
-        if src_sel == 'None' or src_sel=='osm':
+        if src_sel == 'None' or src_sel== 'osm':
             osm = OSMDownloader(box = box_coords)
             
             t1 = Thread(target=osm.getBuildings)
@@ -417,12 +445,12 @@ Intente con otra región o cambie la fuente de análisis por
                 figure1 = {'data':[go.Pie(visible=False)]}
                 figure2 = {'data':[go.Pie(visible=False)]}
                 return ['No hay información disponible', True, msj, html.Div(' '),
-                        {'visibility':'hidden'},'','','', figure1, figure2]
+                        {'visibility':'hidden'},'','','', figure1, figure2, default]
             else:
                 builds = osm._builds.to_crs({'init':'epsg:32618'})
                 if type(osm._rivers) is not int:
                     rivers = osm._rivers.to_crs({'init':'epsg:32618'})
-                    rivers.geometry = [r.buffer(2*buffer) if w=='river' else r.buffer(2*buffer*0.4) 
+                    rivers.geometry = [r.buffer(2*buffer) if w== 'river' else r.buffer(2*buffer*0.4) 
                                     for r, w in zip(rivers.geometry,rivers['waterway'])]
                     try:
                         rivers = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.geometry)},
@@ -436,10 +464,10 @@ Intente con otra región o cambie la fuente de análisis por
                         poly_rivers = osm._poly_rivers.to_crs({'init':'epsg:32618'})
                         try:
                             poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.geometry)},
-                                                            geometry='geometry', crs = poly_rivers.crs)
+                                                            geometry = 'geometry', crs = poly_rivers.crs)
                         except:
                             poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.geometry)},
-                                                            geometry='geometry', 
+                                                            geometry = 'geometry', 
                                                             crs = poly_rivers.crs, index = [0])
                         poly_rivers.geometry = poly_rivers.buffer(2*buffer)
                           
@@ -455,12 +483,19 @@ Intente con otra región o cambie la fuente de análisis por
                             builds_sus = builds[builds.geometry.intersects(roi.geometry[0])]
                         
                         if builds_sus.shape[0] == 0:
+                            roi_param = roi.to_crs({'init':'epsg:4326'})
                             Map(location= location, zoom= 13).generateMap(rivers=osm._rivers, 
-                                                                          roi = roi.to_crs({'init':'epsg:4326'}))
+                                                                          roi = roi_param)
+                            download_component = d_object.download_file(rivers = osm._rivers, roi = roi.to_crs({'init':'epsg:4326'} ))
+
                         else:
-                            Map(location= location, zoom= 13).generateMap(builds = builds_sus.to_crs({'init':'epsg:4326'}),
+                            roi_param = roi.to_crs({'init':'epsg:4326'})
+                            build_sus_param = builds_sus.to_crs({'init':'epsg:4326'})
+                            Map(location= location, zoom= 13).generateMap(builds = build_sus_param,
                                                                           rivers=osm._rivers, 
-                                                                          roi = roi.to_crs({'init':'epsg:4326'}))
+                                                                          roi = roi_param)
+                            download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param, builds = build_sus_param)
+
                         
                         ########################################## RESULTS #######################################
                         n_builds = np.shape(osm._builds)[0]
@@ -474,19 +509,20 @@ Intente con otra región o cambie la fuente de análisis por
                         figure2 = {'data': [go.Bar(visible = True, x = ['AREA'], y = [total_area_sus], 
                                                     name= 'area dentro de z. susceptible'),
                                              go.Bar(visible = True, x= ['AREA'], y = [total_area- total_area_sus], 
-                                                    name='area fuera de z. susceptible')],
+                                                    name= 'area fuera de z. susceptible')],
                                    'layout':go.Layout(barmode= 'stack', 
                                                       margin = go.layout.Margin(l= 80,r = 1, t=10, b=25,autoexpand = False),
-                                                      yaxis = go.layout.YAxis(title='HECTAREAS'),
+                                                      yaxis = go.layout.YAxis(title= 'HECTAREAS'),
                                                       xaxis = go.layout.XAxis(domain=[0,0.5]))
                                 }
                         style = {'position':'absolute','top':'110px','left':'720px',
                             'width':'770px','height':'790px' ,'visibility':'visible'}
                         
+
                         return ['builds,rivers,poly', False, ' ', html.Div(' '), style,
                                 html.B(n_builds_sus), html.B(str(porc_builds)+ ' %'), 
                                 html.B(str(round(total_area_sus,1))+ ' Hectareas'),
-                                figure1,figure2]
+                                figure1,figure2, download_component ]
                     
                     else:
                         if rivers.shape[0]>1:
@@ -496,12 +532,19 @@ Intente con otra región o cambie la fuente de análisis por
                             builds_sus = builds[builds.geometry.intersects(rivers.geometry[0])]
                         
                         if builds_sus.shape[0] == 0:
+                            roi_param = rivers.to_crs({'init':'epsg:4326'})
                             Map(location= location, zoom= 13).generateMap(rivers=osm._rivers, 
-                                                                          roi = rivers.to_crs({'init':'epsg:4326'}))
+                                                                          roi = roi_param)
+                            download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param)
+
                         else:
-                            Map(location= location, zoom= 13).generateMap(builds = builds_sus.to_crs({'init':'epsg:4326'}),
+                            build_sus_param = builds_sus.to_crs({'init':'epsg:4326'})
+                            roi_param = rivers.to_crs({'init':'epsg:4326'})
+                            Map(location= location, zoom= 13).generateMap(builds = build_sus_param,
                                                                           rivers=osm._rivers, 
-                                                                          roi = rivers.to_crs({'init':'epsg:4326'}))   
+                                                                          roi = roi_param)   
+                            download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param, builds = build_sus_param)
+
                         #####################################  RESULTS  ##########################################
                         n_builds = np.shape(osm._builds)[0]
                         n_builds_sus = np.shape(builds_sus)[0]
@@ -514,17 +557,17 @@ Intente con otra región o cambie la fuente de análisis por
                         figure2 = {'data': [go.Bar(visible = True, x = ['AREA'], y = [total_area_sus], 
                                                     name= 'area dentro de z. susceptible'),
                                              go.Bar(visible = True, x= ['AREA'], y = [total_area- total_area_sus], 
-                                                    name='area fuera de z. susceptible')],
+                                                    name= 'area fuera de z. susceptible')],
                                    'layout':go.Layout(barmode= 'stack', 
                                                       margin = go.layout.Margin(l= 80,r = 1, t=10, b=25,autoexpand = False),
-                                                      yaxis = go.layout.YAxis(title='HECTAREAS'),
+                                                      yaxis = go.layout.YAxis(title= 'HECTAREAS'),
                                                       xaxis = go.layout.XAxis(domain=[0,0.5]))}
                         style = {'position':'absolute','top':'110px','left':'720px',
                             'width':'770px','height':'790px' ,'visibility':'visible'}
                         return ['builds,rivers', False, ' ', html.Div(' '), style,
                                 html.B(n_builds_sus), html.B(str(porc_builds)+ ' %'), 
                                 html.B(str(round(total_area_sus,1))+ ' Hectareas'),
-                                figure1,figure2]
+                                figure1,figure2, download_component]
                 else:
                     Map(location= location, zoom= 13).generateMap()
                     msj = """No hay información disponible de capa de rios
@@ -532,7 +575,7 @@ para esta región. Intente de nuevo o cambie
 la región de análisis"""
                     figure1 = {'data':[go.Pie(visible=False)]}
                     figure2 = {'data':[go.Pie(visible=False)]}
-                    return ['builds', True, msj, html.Div(' '),{'visibility':'hidden'},'','', '',figure1, figure2]
+                    return ['builds', True, msj, html.Div(' '),{'visibility':'hidden'},'','', '',figure1, figure2, default]
 						
         elif src_sel == 'rios':
             osm = OSMDownloader(box = box_coords)
@@ -547,7 +590,7 @@ la región de análisis"""
             poly_rivers = None	
             if type(osm._rivers) is not int:
                 rivers= osm._rivers.to_crs({'init':'epsg:32618'})
-                rivers.geometry = [r.buffer(2*buffer) if w=='river' else r.buffer(2*buffer*0.4) 
+                rivers.geometry = [r.buffer(2*buffer) if w== 'river' else r.buffer(2*buffer*0.4) 
                                    for r, w in zip(rivers.geometry,rivers['waterway'])]
                 try:
                     rivers = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.geometry)},
@@ -561,10 +604,10 @@ la región de análisis"""
                     poly_rivers = osm._poly_rivers.to_crs({'init':'epsg:32618'})
                     try:
                         poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.geometry)},
-                                                        geometry='geometry', crs = poly_rivers.crs)
+                                                        geometry = 'geometry', crs = poly_rivers.crs)
                     except:
                         poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.geometry)},
-                                                        geometry='geometry', 
+                                                        geometry = 'geometry', 
                                                         crs = poly_rivers.crs, index = [0])
                     poly_rivers.geometry = poly_rivers.buffer(2*buffer)
                     try:      
@@ -575,22 +618,30 @@ la región de análisis"""
                         roi = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.union(poly_rivers))},
                                                 geometry = 'geometry', 
                                                 crs = rivers.crs, index = [0])
+                    roi_param = roi.to_crs({'init':'epsg:4326'})
                     Map(location= location, zoom= 13).generateMap(rivers=osm._rivers,
                                                                   poly_rivers = osm._poly_rivers,
-                                                                  roi = roi.to_crs({'init':'epsg:4326'}))
+                                                                  roi = roi_param )
+                    #TODO: unir poly_rivers y rivers
+                    #FIXME: revisar si builds en verdad va ahi
+                    download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param, builds = builds_sus.to_crs({'init':'epsg:4326'} ))
+
                     #####################################  RESULT ###################################################
                     figure1 = {'data':[go.Pie(visible=False)]}
                     figure2 = {'data':[go.Pie(visible=False)]}
                     return ['rivers, poly', False, '', html.Div(' '), {'visibility':'hidden'},
-                            '','','',figure1,figure2]
+                            '','','',figure1,figure2, download_component]
                 else:
+                    roi_param  = roi.to_crs({'init':'epsg:4326'} )
+                    download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param )
+
                     Map(location= location, zoom= 13).generateMap(rivers=osm._rivers,
-                                                                  roi = rivers.to_crs({'init':'epsg:4326'}))
+                                                                  roi = roi_param)
                     #####################################  RESULT ###################################################
                     figure1 = {'data':[go.Pie(visible=False)]}
                     figure2 = {'data':[go.Pie(visible=False)]}
                     return ['rivers', False, '', html.Div(' '), {'visibility':'hidden'},
-                            '','','',figure1,figure2]
+                            '','','',figure1,figure2, download_component]
             else:
                 Map(location= location, zoom= 13).generateMap()
                 msj = """No hay información disponible de capa de rios
@@ -598,7 +649,7 @@ para esta región. Intente de nuevo o cambie
 la región de análisis"""
                 figure1 = {'data':[go.Pie(visible=False)]}
                 figure2 = {'data':[go.Pie(visible=False)]}
-                return ['builds', True, msj, html.Div(' '),{'visibility':'hidden'},'','', '',figure1, figure2]
+                return ['builds', True, msj, html.Div(' '),{'visibility':'hidden'},'','', '',figure1, figure2, default]
             
         else:
             box_google = (float(lat1),float(lng1),float(lat2),float(lng2))
@@ -614,7 +665,7 @@ la región de análisis"""
                     figure2 = {'data':[go.Pie(visible=False)]}
                     msj = 'La región de análisis es muy grande, por favor intente con una más pequeña!'
                     return ['imagen generada', False, msj, html.Div(' '), {'visibility':'hidden'},
-                    '','','',figure1,figure2]
+                    '','','',figure1,figure2, default_download]
                 except IOError:
                     ###########################  RESULTS  ####################################
                     figure1 = {'data':[go.Pie(visible=False)]}
@@ -631,16 +682,16 @@ la región de análisis"""
                     '','','',figure1,figure2]
 
 @app.callback(
-        Output(component_id='map', component_property='srcDoc'),
-         #Output(component_id='error_msj',component_property='message')],
-        [Input(component_id='hidden_var',component_property='children')]
+        Output(component_id= 'map', component_property = 'srcDoc'),
+         #Output(component_id= 'error_msj',component_property = 'message')],
+        [Input(component_id= 'hidden_var',component_property = 'children')]
 )
 def update_map(value):
     return open('temp.html','r').read()
 
 @app.callback(
-        Output(component_id='s_slider',component_property='value'),
-        [Input(component_id='i_buffer', component_property = 'value')])
+        Output(component_id= 's_slider',component_property = 'value'),
+        [Input(component_id= 'i_buffer', component_property = 'value')])
 def update_slider(value):
     try:
         v = int(value)
@@ -675,11 +726,13 @@ def set_shapefile(contents, filename):
 
             return  html.H5(
             id = 'error_message',
-            children='Ha habido un error en la carga del archivo',
+            children= 'Ha habido un error en la carga del archivo',
             style = {
                 'color' : 'red'
             }
             )
+    else:
+        return None
 
 #callback for create a geodataframe and put it on map
 @app.callback(
@@ -687,9 +740,11 @@ def set_shapefile(contents, filename):
     [Input ('hidden_geojson', 'children')]
 )
 def assign_geodf(geojson):
-    geo_df = gpd.read_file(geojson)
-    print("dataframe: {}".format(type(geo_df)))
-    print(geo_df['geometry'])
+    if geojson is not None:
+
+        geo_df = gpd.read_file(geojson)
+        print("dataframe: {}".format(type(geo_df)))
+        print(geo_df['geometry'])
 
 
 #start aplication 
