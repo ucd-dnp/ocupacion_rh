@@ -9,6 +9,7 @@ Libreria para decargar información de OSM
 #%%  Load necessary libraries
 import requests
 from shapely.geometry import Point, LineString, Polygon
+from shapely.ops import cascaded_union
 import geopandas as gpd
 import pandas as pd
 
@@ -122,21 +123,51 @@ class OSMDownloader:
         else:
             self._builds = -1  
             
+    
+    def computeROIsuperpixels(self,buffer=None):
+        if type(self._rivers) is not int:
+            rivers = self._rivers.to_crs({'init':'epsg:32618'})
+            rivers.geometry = [r.buffer(6) if w=='river' else r.buffer(2) 
+                                for r, w in zip(rivers.geometry,rivers['waterway'])]
+            if type(self._poly_rivers) is not int:
+                poly_rivers = self._poly_rivers.to_crs({'init':'epsg:32618'})
+                poly_rivers.geometry = poly_rivers.buffer(10)
+                
+                try:
+                    all_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.union(poly_rivers))},
+                                                   geometry='geometry', crs= rivers.crs)
+                except:
+                    all_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.union(poly_rivers))},
+                                                   geometry='geometry', crs= rivers.crs,
+                                                   index = [0])
+                    all_rivers.geometry = all_rivers.buffer(20).buffer(-20)
+            else:
+                try: 
+                    all_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.geometry)},
+                                                   geometry='geometry', crs= rivers.crs)
+                except:
+                    all_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.geometry)},
+                                                   geometry='geometry', crs= rivers.crs,
+                                                   index = [0])
+                    
+            expand_region = all_rivers.buffer(buffer + 20)
+            analysis_region = expand_region.difference(all_rivers)
+            return analysis_region    
+
+                
 if __name__ == '__main__':
-    coords = (1.1279, -76.6753, 1.1737, -76.6334)
+    coords = (1.0788, -76.635, 1.0912, -76.6233)
     #buffer de los rios 
     buffer = 35
     #creando objeto osm para descargar información
     osm  = OSMDownloader(box=coords)
-    
+   
     #descargando información de rios (solo lineas)
     osm.getRiversLayer()
-#    rivers = osm._rivers.to_crs({'init':'epsg:32618'})
-#    rivers.geometry = [r.buffer(buffer) if w=='river' else r.buffer(15) 
-#                    for r, w in zip(rivers.geometry,rivers['waterway'])]
-    
-    #descargando información de rios (Poligonos)
+
     osm.getRiversPolygons()
+    
+    analysis_reg = osm.computeROIsuperpixels(30)
 #    poly_rivers.geometry = poly_rivers.geometry.buffer(buffer)
 #    
 #    #descargando información de construcciones
