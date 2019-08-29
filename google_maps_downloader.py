@@ -60,8 +60,8 @@ class GoogleMapDownloader:
         """
         x_start, y_start = self.getXY()
         x_end, y_end = self.getXY(lat=self._coords[2], lon = self._coords[3])
-        xtiles = (x_end - x_start) + 1
-        ytiles = (y_end - y_start) + 1
+        xtiles = abs(x_end - x_start) + 1
+        ytiles = abs(y_end - y_start) + 1
         self._tile_width = xtiles
         self._tile_height= ytiles
         return  xtiles*ytiles
@@ -200,7 +200,7 @@ def main():
     proj = 'epsg:32618'
     name = 'prueba_sp11.tif'
     #lat , lon  =1.1673, -76.6629 # mocoax
-    box = (1.1619,  -76.6503, 1.1528, -76.6450)
+    box = (1.092, -76.635, 1.0822, -76.6228)
     gmd = GoogleMapDownloader(coords=box, proj=proj)
 
     print("The tile coorindates are {}".format(gmd.getXY()))
@@ -213,7 +213,7 @@ def main():
         img = np.array(img)
         plt.imshow(img)
         plt.axis('off')
-        gmd.save_raster(img,name)
+        #gmd.save_raster(img,name)
     except IOError:
         print("Could not generate the image - try adjusting the zoom level and checking your coordinates")
     else:
