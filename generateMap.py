@@ -24,14 +24,16 @@ class Map:
         self._location = location
         self._url = satellital_url
     
-    def generateMap(self, builds = None, rivers = None, roi = None, poly_rivers = None):
+    def generateMap(self, builds = None, rivers = None, roi = None, 
+                    poly_rivers = None, superpixels = None):
+        
         _map = folium.Map(self._location, zoom_start=self._zoom,
                           attr='Análisis susceptibilidad de inundación',
-                          max_zoom=18, min_zoom= 11)
+                          max_zoom=18, min_zoom= 10)
         FloatImage(IMAGE,bottom= 81 ,left=2).add_to(_map)
         _map.add_tile_layer(self._url, name='Satelital',
                             attr='Análisis susceptibilidad de inundación',
-                            max_zoom=17, min_zoom=12)
+                            max_zoom=17, min_zoom=10)
         _map.add_child(folium.LatLngPopup())
         
         if builds is not None:
@@ -44,6 +46,17 @@ class Map:
                                                      'fillColor':'#F08615',
                                                      'fillOpacity': 1.0}))
             _map.add_child(lay_builds)
+            
+        if superpixels is not None:
+            gjson = superpixels.to_json()
+            lay_sp = folium.FeatureGroup(name='Zonas susceptibles')
+            lay_sp.add_child(folium.GeoJson(data=gjson,
+                                            style_function= lambda x:
+                                                {'color':'#3DCF58',
+                                                 'weight':0.15,
+                                                 'fillColor':'#3DCF58',
+                                                 'fillOpacity':0.4}))
+            _map.add_child(lay_sp)
         
         if rivers is not None:
             gjson = rivers.to_json()
