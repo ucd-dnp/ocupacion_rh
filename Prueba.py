@@ -7,45 +7,48 @@ Created on Tue Aug 13 13:34:27 2019
 
 from google_maps_downloader import GoogleMapDownloader as GMD
 from imtools import imtools
-import numpy as np
-from skimage.segmentation import quickshift
 from skimage.segmentation import mark_boundaries
-from skimage.measure import label
-from skimage.measure import regionprops, approximate_polygon
-from shapely.geometry import Polygon
-
 import matplotlib.pyplot as plt
+import numpy as np
+import geopandas as gpd
+from shapely.ops import cascaded_union
 
-def mapSuperPixel(coords, GT):
-    return np.dot(GT[:,1:],coords.transpose()[::-1,:]) + np.reshape(GT[::-1,0],(2,1))
-    
 
 if __name__ == '__main__':
     
-    # input parameters 
+    #### input parameters ###################### 
     proj = 'epsg:32618'
     box = (1.1619,  -76.6503, 1.1528, -76.6450)
-    PIXEL_SIZE_X = 1.1937
-    PIXEL_SIZE_Y = 1.186
-    #object google maps
+    ############################################
+    
+    ### lo que debo hacer con las capas de los rios de OSM   ###
+    rivers.geometry = [r.buffer(6) if w=='river' else r.buffer(2) 
+                    for r, w in zip(rivers.geometry,rivers['waterway'])]
+    poly_rivers.geometry = poly_rivers.buffer(10)
+    
+    #union de todos los rios y poligonos
+    all_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.union(poly_rivers))},
+                      geometry='geometry', crs= rivers.crs)
+    all_rivers.geometry = all_rivers.buffer(20).buffer(-20)
+    
+    expand_rivers_region = all_rivers.buffer(80)
+    
+    analysis_region = expand_rivers_region.difference(all_rivers)
+    #############################################################
+    
+    ####   generate satellital image  ###########################
     gmd = GMD(coords=box,proj=proj)
-   
-    # Number of tiles for image generation
-    print(gmd._ntiles)
-   
-    #generate satellital image
     img = np.array(gmd.generateImage(), dtype = np.uint8)
     
-    segments = quickshift(img,kernel_size=5, convert2lab=True,ratio=1.0,sigma=0.5)
-    segments = label(segments,connectivity=2, background=-1)
-    for s in np.unique(segments):
-        if np.sum(segments==s)< 12:
-            segments[segments== s] = -1
-   
-    props = regionprops(segments)
+    ### mask image and superpixels  ###################
+    out, m = imtools.maskRasterIm(img, gmd.GT, analysis_region)
+    segments = imtools.computeSegments(out,mask=m)   
     
-    coords = [approximate_polygon(p.coords,tolerance=0.2) for p in props]
+    #####################################################################
+    ##### aqui se deben seleccionar los poligonos que se clasifican como 
+    ##### edificación para luego mapear los que sean necesarios
     
-    x_min, y_max = gmd.getXYproj()
-    GT = np.array([[x_min,PIXEL_SIZE_X, 0],[y_max, 0, -PIXEL_SIZE_Y]])
+    ###  ojo ojo ojo ojo ojo 
+    #####################################################################
+    seg_polygons = imtools.mapSuperPixels(segments=segments, GT=gmd.GT, verbose=True)
     
