@@ -55,7 +55,7 @@ colors = ['#011f4b','#03396c', '#005b96','#6497b1','#b3cde0']
 #Crear objeto georreferenciador
 nom = Nominatim(user_agent= 'my-application')
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css', dbc.themes.BOOTSTRAP]
+external_stylesheets = [dbc.themes.BOOTSTRAP]
 #external_stylesheets = [
 #    "https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css"]
 app = dash.Dash(server=server   , external_stylesheets=external_stylesheets,
@@ -63,49 +63,212 @@ app = dash.Dash(server=server   , external_stylesheets=external_stylesheets,
                             "content": "width=device-width, initial-scale=1"} ])
 app.title = 'Inundaciones'
 
-title = html.H1('Zonas susceptibles de inundación',
-                style={'textAlign': 'center',
-                       'color': colors[1]})
+#create navbar and set it to fixed
+navbar = dbc.Col([
+        dbc.Row([
+        html.H2("Zonas susceptibles de inundación",
+        style = {
+            'textAllign': 'center',
+            'color': 'white ',
+            'margin': 'auto'
+        }),
 
-intro = html.Div('Herramienta para identificar zonas susceptibles de inundación debido a la cercania con las rondas de los ríos',
-                 style={'textAlign': 'center',
-                        'color': colors[2]})
+        ]),
+        dbc.Row([
+
+        html.P('Herramienta para identificar zonas susceptibles de inundación debido a la cercania con las rondas de los ríos',
+        
+        style = {
+            'textAllign': 'center',
+            'color': 'white ',
+            'margin': 'auto'
+
+        })
+        ])
 
 
-#search bar objects
-search_bar = html.Div([
-                    html.Label(html.B('Buscador:', style={'color':colors[1]})),
-                    dcc.Input(id= 'searchBar', 
-                              placeholder= 'Search..',
-                              type= 'text',
-                              style={'position':'relative',
-                                     'width':'198px'}),
-                    html.Button('Buscar', id= 'b_search', type = 'submit',
-                                style = {'position':'relative',
-                                         'left':'10px',
-                                         'width':'127px'})],
-                      style = {'position':'absolute',
-                               'top':'110px',
-                               'left':'6px'})
-#seleccion de fuente de datos
-srcData = html.Div([html.Label(html.B('Fuente:', style={'color':colors[1]})),
-                    dcc.Dropdown(id= 'sel_src',
-                            options=[{'label':'OpenSteetMap','value':'osm'},
-                                     {'label':'Análisis de Imagen','value':'image'},
-                                     {'label': 'Capa de ríos','value':'rios'}],
-                            value= 'osm',
-                            placeholder= 'OpenStreetMap',
-                            style={'position':'relative',
-                                   'width':'198px',
-                                   'height':'38px'}),
-                    html.Button('Analizar', id = 'b_analizar', type = 'submit',
-                                style = {'position': 'relative',
-                                         'width': '127px',
-                                         'top': '-38px',
-                                         'left':'208px'})],
-                    style = {'position':'absolute',
-                             'top':'175px',
-                             'left':'6px'})
+    ],
+    width = 12,
+    style = {
+        'background': '#005b96',
+        'padding': '15px'
+    },
+    
+    )
+
+#creating the search tab component
+
+tab_search = dbc.Card([
+    dbc.CardBody([
+            dbc.Row([
+                dbc.Col([
+                    dbc.Row([
+                        html.B("Buscador", style={'color':colors[1]})
+                    ]),
+                    dbc.Row([
+                        dbc.Input(id="searchBar", placeholder="Ingrese un lugar de Colombia", type="text"),
+                    ]),
+                    dbc.Row([
+                        dbc.Button('Buscar', id= 'b_search', style = {"margin-top": "4px", "background": "#6497b1"})
+                    ]),
+                    dbc.Row([
+                        html.B('Fuente:', style={'color':colors[1]})
+                        ]),
+                    dbc.Row([
+                        dcc.Dropdown(id= 'sel_src',
+                                        options=[{'label':'OpenSteetMap','value':'osm'},
+                                                {'label':'Análisis de Imagen','value':'image'},
+                                                {'label': 'Capa de ríos','value':'rios'}],
+                                        value= 'osm',
+                                        placeholder= 'OpenStreetMap',
+                                        style = {
+                                            "width": "100%"
+                                        }
+                                        ),
+                    ]),
+                ],
+                lg = 7,
+                style = {
+                    "margin-right": "3px   " 
+                }),
+                dbc.Col([
+                    dbc.Row([
+                        html.B('Franja de susceptibilidad (metros)')
+                    ]),
+                    dbc.Row([
+                        html.B("Afluentes principales: ", style={'color': colors[2] })
+                    ]),
+                    dbc.Row([
+                        dbc.Input(id = 'i_buffer1', value= '30')
+                    ],
+                    style = {
+                        "width" : "70px" 
+                    },
+                    justify = "center"
+                    
+                    ),
+                    dbc.Row([
+                        html.B("Afluentes secundarios: ", style={'color': colors[2] })
+                    ]),
+                    dbc.Row([
+                        dbc.Input(id = 'i_buffer2', value= '10')
+                    ],
+                    style = {
+                        "width" : "70px" 
+                    },
+                    ),
+                    dbc.Row([
+                        dbc.Button('Analizar', id= 'b_analizar',  style = {"margin-top": "4px", "background": "#6497b1"})
+
+                    ])
+                ],
+                id = 'buffer',
+                lg = 4 )
+            ],
+            justify="between",)
+    ])
+
+])
+
+
+#creating the download tab component
+
+
+tab_download = dbc.Card([
+
+    dbc.CardBody([
+
+    ],
+    id = 'download_div' 
+    )
+])
+
+
+tabs = dbc.Tabs([
+    dbc.Tab(tab_search, label = "Datos"),
+    dbc.Tab(tab_download, label = "Descarga")
+])
+
+
+geovisor = dbc.Col([
+    dbc.Row([html.B('Geovisor')]),
+    dbc.Row([
+        html.Iframe(id= 'map', 
+                      srcDoc = open('temp.html','r').read(),
+                      width= '100%', 
+                      height= '540')
+    ])
+
+])
+
+
+
+
+
+
+#create a variable to store all the elements before sending it to the dash layout
+avant_layout = dbc.Row([
+    #column of data input, buttons, map and coordinates
+    dbc.Col([
+        tabs,
+        geovisor
+    ],
+    #define the sizes of elements in mobile and web
+    xl = 7,
+    lg = 7,
+    md = 7,
+    sm = 12,
+    xs = 12
+    ),
+
+    #column of results
+    dbc.Col([
+
+    ],
+    xl = 5,
+    lg = 5,
+    md = 5,
+    sm = 12,
+    xs = 12
+    )
+
+
+])
+
+# #search bar objects
+# search_bar = html.Div([
+#                     html.Label(html.B('Buscador:', style={'color':colors[1]})),
+#                     dcc.Input(id= 'searchBar', 
+#                               placeholder= 'Search..',
+#                               type= 'text',
+#                               style={'position':'relative',
+#                                      'width':'198px'}),
+#                     html.Button('Buscar', id= 'b_search', type = 'submit',
+#                                 style = {'position':'relative',
+#                                          'left':'10px',
+#                                          'width':'127px'})],
+#                       style = {'position':'absolute',
+#                                'top':'110px',
+#                                'left':'0px'})
+# #seleccion de fuente de datos
+# srcData = html.Div([html.Label(html.B('Fuente:', style={'color':colors[1]})),
+#                     dcc.Dropdown(id= 'sel_src',
+#                             options=[{'label':'OpenSteetMap','value':'osm'},
+#                                      {'label':'Análisis de Imagen','value':'image'},
+#                                      {'label': 'Capa de ríos','value':'rios'}],
+#                             value= 'osm',
+#                             placeholder= 'OpenStreetMap',
+#                             style={'position':'relative',
+#                                    'width':'198px',
+#                                    'height':'38px'}),
+#                     html.Button('Analizar', id = 'b_analizar', type = 'submit',
+#                                 style = {'position': 'relative',
+#                                          'width': '127px',
+#                                          'top': '-38px',
+#                                          'left':'208px'})],
+#                     style = {'position':'absolute',
+#                              'top':'175px',
+#                              'left':'6px'})
 
 #upload shapefile button
 up_button = html.Div([
@@ -125,23 +288,15 @@ up_button = html.Div([
             }
             )
 
-download_div = html.Div(
-    children="",
-    id = 'download_div',
-    style = {
-        'position': 'absolute',
-        "top": '1000px'
-    })
+# download_div = html.Div(
+#     children="",
+#     id = 'download_div',
+#     style = {
+#         'position': 'absolute',
+#         "top": '1000px'
+#     })
 
-# download_div = html.Div([
-#     html.Button(children = html.A(
-#         'Descargar archivo',
-#     style= {
-#         'text-decoration': 'none',
-#         # 'display': 'none'
-#     }),
-#     id = 'd_button')
-# ])
+
 
 #hidden div for storing the geojson
 hidden_geojson = html.Div(
@@ -161,50 +316,51 @@ hidden_geodf = html.Div(
 
 
 #geovisor object to show the results
-geovisor= html.Div([html.Div([html.B('Geovisor')]),
-                    html.Iframe(id= 'map', 
-                      srcDoc = open('temp.html','r').read(),
-                      width= '100%', 
-                      height= '540')],
-                    style= {'position':'absolute',
-                            'top':'240px',
-                            'width':'700px'})
+# geovisor= html.Div([html.Div([html.B('Geovisor')]),
+#                     html.Iframe(id= 'map', 
+#                       srcDoc = open('temp.html','r').read(),
+#                       width= '100%', 
+#                       height= '540')],
+#                     style= {'position':'absolute',
+#                             'top':'240px',
+#                             'width':'700px',
+#                             'display': 'none'})
 
-#Franja de susceptibilidad
-slider = html.Div([html.Label(html.B('Franja de susceptibilidad (metros)',
-                                    style={'color':colors[1]})),
-                   html.Div('Afluentes principales:',
-                            style={'color':colors[2],
-                                   'position':'inherit',
-                                   'left':'15px',
-                                   'top': '33px',
-                                   'width':'250px',
-                                   'height':'38px'}),
-                   dcc.Input(id = 'i_buffer1', value= '5',
-                             style = {'position':'inherit',
-                                      'width':'51px',
-                                      'top':'30px',
-                                      'left': '200px',
-                                      'textAlign':'center'}),
-                   html.Div('Afluentes secundarios:',
-                            style={'color':colors[2],
-                                   'position':'inherit',
-                                   'left':'15px',
-                                   'top': '83px',
-                                   'width':'250px',
-                                   'height':'38px'}),                   
-                   dcc.Input(id = 'i_buffer2', value= '3',
-                             style = {'position':'inherit',
-                                      'width':'51px',
-                                      'top':'80px',
-                                      'left': '200px',
-                                      'textAlign':'center'})],
-                style={'position':'absolute',
-                       'left':'360px',
-                       'top': '113px',
-                       'width':'290px',
-                       'height':'130px'},
-                id = 'buffer')
+# #Franja de susceptibilidad
+# slider = html.Div([html.Label(html.B('Franja de susceptibilidad (metros)',
+#                                     style={'color':colors[1]})),
+#                    html.Div('Afluentes principales:',
+#                             style={'color':colors[2],
+#                                    'position':'inherit',
+#                                    'left':'15px',
+#                                    'top': '33px',
+#                                    'width':'250px',
+#                                    'height':'38px'}),
+#                    dcc.Input(id = 'i_buffer1', value= '5',
+#                              style = {'position':'inherit',
+#                                       'width':'51px',
+#                                       'top':'30px',
+#                                       'left': '200px',
+#                                       'textAlign':'center'}),
+#                    html.Div('Afluentes secundarios:',
+#                             style={'color':colors[2],
+#                                    'position':'inherit',
+#                                    'left':'15px',
+#                                    'top': '83px',
+#                                    'width':'250px',
+#                                    'height':'38px'}),                   
+#                    dcc.Input(id = 'i_buffer2', value= '3',
+#                              style = {'position':'inherit',
+#                                       'width':'51px',
+#                                       'top':'80px',
+#                                       'left': '200px',
+#                                       'textAlign':'center'})],
+#                 style={'position':'absolute',
+#                        'left':'360px',
+#                        'top': '113px',
+#                        'width':'290px',
+#                        'height':'130px'},
+#                 id = 'buffer')
 #Textos
 aux_text = html.Div('Enter a value and press submit',
                     id= 'text1')
@@ -269,12 +425,15 @@ lng2 = dcc.Input(id = 'e_lng2',
                        )
 
 coords = html.Div([t_lat1, t_lng1, t_lat2, t_lng2,
-                   lat1,lng1,lat2,lng2])
+                   lat1,lng1,lat2,lng2],
+                   style = {
+                       'display': 'none'
+                   })
 
 #hidden div 
 hiddenvar = html.Div(children= 'ff',
                      id= 'hidden_var',
-                     style={'visibility':'visible',
+                     style={'display':'none',
                             'position':'absolute ',
                             'top':'890px'})
 # contairner de resultados
@@ -351,13 +510,11 @@ errorMsj = dcc.ConfirmDialog(id = 'error_msj',
 loading_state = dcc.Loading(id= 'loading', type = 'graph',
                             fullscreen=True)
                 
-app.layout = html.Div(children = [title, intro,
-                                  search_bar,
-                                  srcData,
-                                  geovisor,
-                                  coords, up_button, slider,
-                                  hiddenvar, errorMsj, loading_state,
-                                  dashboard, hidden_geojson, hidden_geodf, download_div])
+app.layout = html.Div(children = [navbar,
+                                  avant_layout,
+                                  coords, up_button, 
+                                  errorMsj, loading_state,
+                                  dashboard, hidden_geojson, hidden_geodf, hiddenvar])
 
 
 @app.callback(
