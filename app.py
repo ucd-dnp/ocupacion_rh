@@ -228,58 +228,101 @@ geovisor = dbc.Col([
 
 ])
 
+results_card = dbc.Card([
 
-# #coordinates container
-# coordinates = dbc.Row([
+    dbc.CardBody([
+        dbc.Col([
+            dbc.Row([
 
-#     dbc.Card([
+            html.H3('Resultados del Análisis',
+                               style = {'textAlign':'center',
+                                        'color':colors[1]}),
+            ]),
+
+            dbc.Row([
+            dcc.Graph(id= 'graph_1', style = {'width':'355px',
+                                                        'height': '385px'}) 
+            ],
+            justify = "center"),
+
+            dbc.Row([
+            html.H1(html.B('1.012'), id = 'result1_0', style={
+                                    'textAlign':'center',
+                                       'color':colors[2],
+                                       }),
+            ],
+            justify = "center"),
+            dbc.Row([
+
+            html.P('Construcciones dentro de la zona de suceptibilidad',
+             style={
+                'textAlign':'center',
+                'color':colors[3],
+                'fontSize':'26px',
+                'height':'31px',
+                'margin-bottom': '20px'}
+            ),      
+            ]),
+            dbc.Row([
+
+            html.H1(html.B('#####'), id = 'result1_1',
+                        style={'textAlign':'center',
+                               'color':colors[2],
+                               'margin-top': '40px'
+                              }), 
+            ],
+            justify = "center"),
+
+            dbc.Row([
+            html.P("Porcentaje", 
+            style = {
+                'textAlign':'center',
+                'color':colors[3],
+                'fontSize':'26px',
+                'height': '31px'
+            }
+            ),
+
+            ],
+            justify = "center"),
+
+            dbc.Row([
+           dcc.Graph(id= 'graph_2', config={'displayModeBar': False},  style = {'width':'330px',
+                                                                                'height':'300px',
+                                                                                }),  
+            ]),
+            dbc.Row([
+
+           html.H1(html.B('### Hectareas'), id = 'result2_0',
+                                   style={'position':'relative',
+                                          'textAlign':'center',
+                                          'color':colors[2],
+                                          }),
+            ],
+            justify = "center"),
+
+            dbc.Row([
+            html.P('dentro de zona susceptible',
+                                     style={'textAlign':'center',
+                                            'color':colors[3],
+                                            'fontSize':'26px',
+                                            })                       
+
+            ],
+            justify = "center")
+        ],
+        id = 'dash_board',)
+    ])
+
+])
 
 
-#         dbc.Col([
 
-#                 dbc.Row([
-#                     html.H4("Coordenadas"),
-#                 ],
-#                 justify = 'center'),
-#             dbc.Col([
-#                 dbc.Row([
-#                     html.B("Latitud 1"),
-#                     dbc.Input(id = 'e_lat1', value = 1.15, style={"width": "30%"})
-#                 ],
-#                 justify = "between"),
-#                 dbc.Row([
-#                     html.B("Longitud 1"),
-#                     dbc.Input(id = 'e_lng1', value = -76.65, style={"width": "30%"})
-#                 ],
-#                 justify = "between"),
-#                 dbc.Row([
-#                     html.B("Latitud 2"),
-#                     dbc.Input(id = 'e_lat2', value = 1.13, style={"width": "30%"})
-#                 ],
-#                 justify = "between"),
-#                 dbc.Row([
-#                     html.B("Longitud 2"),
-#                     dbc.Input(id = 'e_lng2', value = -76.63, style={"width": "30%"})
-#                 ],
-#                 justify = "between"),
+results_tab = dbc.Tabs([
 
-#             ],
-#             width = 12
-#             ),
+    dbc.Tab(results_card, label = "Resultados")
 
-            
-#         ],
-#             style = {
-#                 "margin-left": "4px",
-#                 "margin-top" : "15px",
-#                 "margin-bottom" : "15px"
-#             }
-#         )
-#     ])
-# ],
-# justify = "center")
-
-
+])
 
 
 
@@ -291,7 +334,7 @@ avant_layout = dbc.Row([
     dbc.Col([
         tabs,
         geovisor,
-        
+    
     ],
     #define the sizes of elements in mobile and web
     xl = 7,
@@ -303,7 +346,7 @@ avant_layout = dbc.Row([
 
     #column of results
     dbc.Col([
-
+        results_tab
     ],
     xl = 5,
     lg = 5,
@@ -364,71 +407,71 @@ hiddenvar = html.Div(children= 'ff',
                             'position':'absolute ',
                             'top':'890px'})
 # contairner de resultados
-dashboard =  html.Div([html.H3('Resultados del Análisis',
-                               style = {'textAlign':'center',
-                                        'color':colors[1]}),
-                       dcc.Graph(id= 'graph_1', style = {'width':'385px',
-                                                        'height': '385px'}),
-                    html.Div([
-                       html.H1(html.B('1.012'), id = 'result1_0',
-                               style={'position':'relative',
-                                      'textAlign':'center',
-                                      'color':colors[2],
-                                      'margin-bottom':'5px'}),
-                       html.Div('construcciones dentro',
-                               style={'position':'relative',
-                                      'textAlign':'center',
-                                      'color':colors[3],
-                                      'fontSize':'26px',
-                                      'height': '31px'}),
-                       html.Div('de la zona de susceptibilidad',
-                               style={'textAlign':'center',
-                                      'color':colors[3],
-                                      'fontSize':'26px',
-                                      'height':'31px'}),
-                      html.H1(html.B('#####'), id = 'result1_1',
-                               style={'textAlign':'center',
-                                      'color':colors[2],
-                                      'margin-bottom':'0px',
-                                      'margin-top': '25px'}),
-                      html.Div('porcentaje',
-                               style={'textAlign':'center',
-                                      'color':colors[3],
-                                      'fontSize':'26px',
-                                      'height': '31px'})],
-                                style ={'position':'relative',
-                                        'width': '48%',
-                                        'top':'-320px',
-                                        'left':'396px'}),
-                         dcc.Graph(id= 'graph_2', style = {'width':'300px',
-                                                           'height':'300px',
-                                                           'position':'relative',
-                                                           'top':'-220px'},
-                                    config={'displayModeBar': False}),
-                   html.Div([
-                           html.H1(html.B('### Hectareas'), id = 'result2_0',
-                                   style={'position':'relative',
-                                          'textAlign':'center',
-                                          'color':colors[2],
-                                          'margin-bottom':'5px'}),
-                           html.Div('dentro de zona susceptible',
-                                     style={'textAlign':'center',
-                                            'color':colors[3],
-                                            'fontSize':'26px',
-                                            'height':'31px'})],
-                           style ={'position':'relative',
-                                        'width': '48%',
-                                        'top':'-400px',
-                                        'left':'396px'}
-                           )                                         
-                      ],
-                       id = 'dash_board',
-                       style = {'position':'absolute',
-                                'top':'100px',
-                                'left':'630px',
-                                'width':'770px',
-                                'visibility':'hidden'}
-                     )
+# dashboard =  html.Div([html.H3('Resultados del Análisis',
+#                                style = {'textAlign':'center',
+#                                         'color':colors[1]}),
+#                        dcc.Graph(id= 'graph_1', style = {'width':'385px',
+#                                                         'height': '385px'}),
+#                     html.Div([
+#                        html.H1(html.B('1.012'), id = 'result1_0',
+#                                style={'position':'relative',
+#                                       'textAlign':'center',
+#                                       'color':colors[2],
+#                                       'margin-bottom':'5px'}),
+#                        html.Div('construcciones dentro',
+#                                style={'position':'relative',
+#                                       'textAlign':'center',
+#                                       'color':colors[3],
+#                                       'fontSize':'26px',
+#                                       'height': '31px'}),
+#                        html.Div('de la zona de susceptibilidad',
+#                                style={'textAlign':'center',
+#                                       'color':colors[3],
+#                                       'fontSize':'26px',
+#                                       'height':'31px'}),
+#                       html.H1(html.B('#####'), id = 'result1_1',
+#                                style={'textAlign':'center',
+#                                       'color':colors[2],
+#                                       'margin-bottom':'0px',
+#                                       'margin-top': '25px'}),
+#                       html.Div('porcentaje',
+#                                style={'textAlign':'center',
+#                                       'color':colors[3],
+#                                       'fontSize':'26px',
+#                                       'height': '31px'})],
+#                                 style ={'position':'relative',
+#                                         'width': '48%',
+#                                         'top':'-320px',
+#                                         'left':'396px'}),
+#                          dcc.Graph(id= 'graph_2', style = {'width':'300px',
+#                                                            'height':'300px',
+#                                                            'position':'relative',
+#                                                            'top':'-220px'},
+#                                     config={'displayModeBar': False}),
+#                    html.Div([
+#                            html.H1(html.B('### Hectareas'), id = 'result2_0',
+#                                    style={'position':'relative',
+#                                           'textAlign':'center',
+#                                           'color':colors[2],
+#                                           'margin-bottom':'5px'}),
+#                            html.Div('dentro de zona susceptible',
+#                                      style={'textAlign':'center',
+#                                             'color':colors[3],
+#                                             'fontSize':'26px',
+#                                             'height':'31px'})],
+#                            style ={'position':'relative',
+#                                         'width': '48%',
+#                                         'top':'-400px',
+#                                         'left':'396px'}
+#                            )                                         
+#                       ],
+#                        id = 'dash_board',
+#                        style = {'position':'absolute',
+#                                 'top':'100px',
+#                                 'left':'630px',
+#                                 'width':'770px',
+#                                 'visibility':'hidden'}
+#                      )
 
 errorMsj = dcc.ConfirmDialog(id = 'error_msj',
                              message = 'Datos no disponibles para esta región',
@@ -441,7 +484,7 @@ app.layout = html.Div(children = [navbar,
                                   avant_layout,
                                      up_button, 
                                   errorMsj, loading_state,
-                                  dashboard, hidden_geojson, hidden_geodf, hiddenvar])
+                                hidden_geojson, hidden_geodf, hiddenvar])
 
 
 @app.callback(
@@ -618,8 +661,7 @@ Intente con otra región o cambie la fuente de análisis por
                                                       yaxis = go.layout.YAxis(title= 'HECTAREAS'),
                                                       xaxis = go.layout.XAxis(domain=[0,0.5]))
                                 }
-                        style = {'position':'absolute','top':'110px','left':'720px',
-                            'width':'770px','height':'790px' ,'visibility':'visible'}
+                        style = {'width':'770px','visibility':'visible'}
                         
 
                         return ['builds,rivers,poly', False, ' ', html.Div(' '), style,
@@ -665,8 +707,7 @@ Intente con otra región o cambie la fuente de análisis por
                                                       margin = go.layout.Margin(l= 80,r = 1, t=10, b=25,autoexpand = False),
                                                       yaxis = go.layout.YAxis(title= 'HECTAREAS'),
                                                       xaxis = go.layout.XAxis(domain=[0,0.5]))}
-                        style = {'position':'absolute','top':'110px','left':'720px',
-                            'width':'770px','height':'790px' ,'visibility':'visible'}
+                        style = {'width':'770px' ,'visibility':'visible'}
                         return ['builds,rivers', False, ' ', html.Div(' '), style,
                                 html.B(n_builds_sus), html.B(str(porc_builds)+ ' %'), 
                                 html.B(str(round(total_area_sus,1))+ ' Hectareas'),
