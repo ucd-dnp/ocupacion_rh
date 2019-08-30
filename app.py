@@ -90,7 +90,7 @@ navbar = dbc.Col([
     ],
     width = 12,
     style = {
-        'background': '#005b96',
+        'background': '#6497b1',
         'padding': '15px'
     },
     
@@ -157,15 +157,42 @@ tab_search = dbc.Card([
                         "width" : "70px" 
                     },
                     ),
-                    dbc.Row([
-                        dbc.Button('Analizar', id= 'b_analizar',  style = {"margin-top": "4px", "background": "#6497b1"})
-
-                    ])
+                   
                 ],
                 id = 'buffer',
                 lg = 4 )
             ],
-            justify="between",)
+            justify="between",),
+
+        dbc.Row([
+
+            dbc.Col([
+                    html.B('Coordenadas:', style={'color':colors[1]}),
+                    dbc.Col([
+                        dbc.Row([
+                        html.P("Latitud 1"), 
+                        html.P("Longitud 1"),
+                        html.P("Latitud 2"),
+                        html.P("Longitud 2"),
+                        ],
+                        justify = "between"),
+
+                        dbc.Row([
+                        dbc.Input(id = 'e_lat1', value = 1.15, style={"width": "20%"}), 
+                        dbc.Input(id = 'e_lng1', value = -76.65, style={"width": "20%"}),
+                        dbc.Input(id = 'e_lat2', value = 1.13, style={"width": "20%"}),
+                        dbc.Input(id = 'e_lng2', value = -76.63, style={"width": "20%"})
+                        ],
+                        justify = "between"),
+
+                         dbc.Row([
+                        dbc.Button('Analizar', id= 'b_analizar',  style = {"margin-top": "4px", "background": "#6497b1"})
+                        ])
+                    ])
+                ],
+                ),
+
+        ])
     ])
 
 ])
@@ -202,45 +229,57 @@ geovisor = dbc.Col([
 ])
 
 
-#coordinates container
-coordinates = dbc.Col([
+# #coordinates container
+# coordinates = dbc.Row([
 
-        dbc.Row([
-            html.H4("Coordenadas"),
-        ],
-        justify = 'center'),
-    dbc.Col([
-        dbc.Row([
-            html.B("Latitud 1"),
-            dbc.Input(id = 'e_lat1', value = 1.15, style={"width": "30%"})
-        ],
-        justify = "around"),
-        dbc.Row([
-            html.B("Longitud 1"),
-            dbc.Input(id = 'e_lng1', value = -76.65, style={"width": "30%"})
-        ],
-        justify = "around"),
-        dbc.Row([
-            html.B("Latitud 2"),
-            dbc.Input(id = 'e_lat2', value = 1.13, style={"width": "30%"})
-        ],
-        justify = "around"),
-        dbc.Row([
-            html.B("Longitud 2"),
-            dbc.Input(id = 'e_lng2', value = -76.63, style={"width": "30%"})
-        ],
-        justify = "around"),
+#     dbc.Card([
 
-    ],
-    width = 12
-    ),
 
-    
-],
-    style = {
-        "margin-left": "4px"
-    }
-)
+#         dbc.Col([
+
+#                 dbc.Row([
+#                     html.H4("Coordenadas"),
+#                 ],
+#                 justify = 'center'),
+#             dbc.Col([
+#                 dbc.Row([
+#                     html.B("Latitud 1"),
+#                     dbc.Input(id = 'e_lat1', value = 1.15, style={"width": "30%"})
+#                 ],
+#                 justify = "between"),
+#                 dbc.Row([
+#                     html.B("Longitud 1"),
+#                     dbc.Input(id = 'e_lng1', value = -76.65, style={"width": "30%"})
+#                 ],
+#                 justify = "between"),
+#                 dbc.Row([
+#                     html.B("Latitud 2"),
+#                     dbc.Input(id = 'e_lat2', value = 1.13, style={"width": "30%"})
+#                 ],
+#                 justify = "between"),
+#                 dbc.Row([
+#                     html.B("Longitud 2"),
+#                     dbc.Input(id = 'e_lng2', value = -76.63, style={"width": "30%"})
+#                 ],
+#                 justify = "between"),
+
+#             ],
+#             width = 12
+#             ),
+
+            
+#         ],
+#             style = {
+#                 "margin-left": "4px",
+#                 "margin-top" : "15px",
+#                 "margin-bottom" : "15px"
+#             }
+#         )
+#     ])
+# ],
+# justify = "center")
+
+
 
 
 
@@ -252,7 +291,7 @@ avant_layout = dbc.Row([
     dbc.Col([
         tabs,
         geovisor,
-        coordinates
+        
     ],
     #define the sizes of elements in mobile and web
     xl = 7,
@@ -317,71 +356,6 @@ hidden_geodf = html.Div(
 
 
 
-# t_lat1 = html.Div('Latitud 1',
-#                 id = 't_lat1',
-#                 style={'position':'absolute',
-#                        'left':'10px',
-#                        'top':'810px',
-#                        'width':'80px',
-#                        'textAlign':'center'})
-# t_lng1 = html.Div('Longitud 1',
-#                 id = 't_lng1',
-#                 style={'position':'absolute',
-#                        'left':'110px',
-#                        'top':'810px',
-#                        'width':'80px',
-#                        'textAlign':'center'})
-# t_lat2 = html.Div('Latitud 2',
-#                 id = 't_lat2',
-#                 style={'position':'absolute',
-#                        'left':'210px',
-#                        'top':'810px',
-#                        'width':'80px',
-#                        'textAlign':'center'})
-# t_lng2 = html.Div('Longitud 2',
-#                 id = 't_lng2',
-#                 style={'position':'absolute',
-#                        'left':'310px',
-#                        'top':'810px',
-#                        'width':'80px',
-#                        'textAlign':'center'})
-
-# lat1 = dcc.Input(id = 'e_lat1',
-#                    style={'position':'absolute',
-#                        'left':'10px',
-#                        'top':'840px',
-#                        'width':'80px',},
-#                   value = 1.1559
-                       
-                       
-#                        )
-# lng1 = dcc.Input(id = 'e_lng1',
-#                    style={'position':'absolute',
-#                        'left':'110px',
-#                        'top':'840px',
-#                        'width':'80px',},
-#                     value = -76.6556
-#                        )
-# lat2 = dcc.Input(id = 'e_lat2',
-#                    style={'position':'absolute',
-#                        'left':'210px',
-#                        'top':'840px',
-#                        'width':'80px',},
-#                      value = 1.1382
-#                      )
-# lng2 = dcc.Input(id = 'e_lng2',
-#                    style={'position':'absolute',
-#                        'left':'310px',
-#                        'top':'840px',
-#                        'width':'80px'},
-#                        value = -76.6349
-#                        )
-
-# coords = html.Div([t_lat1, t_lng1, t_lat2, t_lng2,
-#                    lat1,lng1,lat2,lng2],
-#                    style = {
-#                        'display': 'none'
-#                    })
 
 #hidden div 
 hiddenvar = html.Div(children= 'ff',

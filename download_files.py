@@ -99,7 +99,7 @@ class Download:
         
         content = []
         if not list_file:
-            content.append(html.Label("No se encuentran capas para descargar",
+            content.append(html.Label("Aún no se encuentran capas para descargar",
                                 style = {
                                     "font-size" : '14px'
                                 }))
