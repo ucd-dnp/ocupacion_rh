@@ -202,6 +202,46 @@ geovisor = dbc.Col([
 ])
 
 
+#coordinates container
+coordinates = dbc.Col([
+
+        dbc.Row([
+            html.H4("Coordenadas"),
+        ],
+        justify = 'center'),
+    dbc.Col([
+        dbc.Row([
+            html.B("Latitud 1"),
+            dbc.Input(id = 'e_lat1', value = 1.15, style={"width": "30%"})
+        ],
+        justify = "around"),
+        dbc.Row([
+            html.B("Longitud 1"),
+            dbc.Input(id = 'e_lng1', value = -76.65, style={"width": "30%"})
+        ],
+        justify = "around"),
+        dbc.Row([
+            html.B("Latitud 2"),
+            dbc.Input(id = 'e_lat2', value = 1.13, style={"width": "30%"})
+        ],
+        justify = "around"),
+        dbc.Row([
+            html.B("Longitud 2"),
+            dbc.Input(id = 'e_lng2', value = -76.63, style={"width": "30%"})
+        ],
+        justify = "around"),
+
+    ],
+    width = 12
+    ),
+
+    
+],
+    style = {
+        "margin-left": "4px"
+    }
+)
+
 
 
 
@@ -211,7 +251,8 @@ avant_layout = dbc.Row([
     #column of data input, buttons, map and coordinates
     dbc.Col([
         tabs,
-        geovisor
+        geovisor,
+        coordinates
     ],
     #define the sizes of elements in mobile and web
     xl = 7,
@@ -235,41 +276,6 @@ avant_layout = dbc.Row([
 
 ])
 
-# #search bar objects
-# search_bar = html.Div([
-#                     html.Label(html.B('Buscador:', style={'color':colors[1]})),
-#                     dcc.Input(id= 'searchBar', 
-#                               placeholder= 'Search..',
-#                               type= 'text',
-#                               style={'position':'relative',
-#                                      'width':'198px'}),
-#                     html.Button('Buscar', id= 'b_search', type = 'submit',
-#                                 style = {'position':'relative',
-#                                          'left':'10px',
-#                                          'width':'127px'})],
-#                       style = {'position':'absolute',
-#                                'top':'110px',
-#                                'left':'0px'})
-# #seleccion de fuente de datos
-# srcData = html.Div([html.Label(html.B('Fuente:', style={'color':colors[1]})),
-#                     dcc.Dropdown(id= 'sel_src',
-#                             options=[{'label':'OpenSteetMap','value':'osm'},
-#                                      {'label':'Análisis de Imagen','value':'image'},
-#                                      {'label': 'Capa de ríos','value':'rios'}],
-#                             value= 'osm',
-#                             placeholder= 'OpenStreetMap',
-#                             style={'position':'relative',
-#                                    'width':'198px',
-#                                    'height':'38px'}),
-#                     html.Button('Analizar', id = 'b_analizar', type = 'submit',
-#                                 style = {'position': 'relative',
-#                                          'width': '127px',
-#                                          'top': '-38px',
-#                                          'left':'208px'})],
-#                     style = {'position':'absolute',
-#                              'top':'175px',
-#                              'left':'6px'})
-
 #upload shapefile button
 up_button = html.Div([
    dcc.Markdown('''
@@ -288,13 +294,7 @@ up_button = html.Div([
             }
             )
 
-# download_div = html.Div(
-#     children="",
-#     id = 'download_div',
-#     style = {
-#         'position': 'absolute',
-#         "top": '1000px'
-#     })
+
 
 
 
@@ -315,120 +315,73 @@ hidden_geodf = html.Div(
 )
 
 
-#geovisor object to show the results
-# geovisor= html.Div([html.Div([html.B('Geovisor')]),
-#                     html.Iframe(id= 'map', 
-#                       srcDoc = open('temp.html','r').read(),
-#                       width= '100%', 
-#                       height= '540')],
-#                     style= {'position':'absolute',
-#                             'top':'240px',
-#                             'width':'700px',
-#                             'display': 'none'})
 
-# #Franja de susceptibilidad
-# slider = html.Div([html.Label(html.B('Franja de susceptibilidad (metros)',
-#                                     style={'color':colors[1]})),
-#                    html.Div('Afluentes principales:',
-#                             style={'color':colors[2],
-#                                    'position':'inherit',
-#                                    'left':'15px',
-#                                    'top': '33px',
-#                                    'width':'250px',
-#                                    'height':'38px'}),
-#                    dcc.Input(id = 'i_buffer1', value= '5',
-#                              style = {'position':'inherit',
-#                                       'width':'51px',
-#                                       'top':'30px',
-#                                       'left': '200px',
-#                                       'textAlign':'center'}),
-#                    html.Div('Afluentes secundarios:',
-#                             style={'color':colors[2],
-#                                    'position':'inherit',
-#                                    'left':'15px',
-#                                    'top': '83px',
-#                                    'width':'250px',
-#                                    'height':'38px'}),                   
-#                    dcc.Input(id = 'i_buffer2', value= '3',
-#                              style = {'position':'inherit',
-#                                       'width':'51px',
-#                                       'top':'80px',
-#                                       'left': '200px',
-#                                       'textAlign':'center'})],
+
+# t_lat1 = html.Div('Latitud 1',
+#                 id = 't_lat1',
 #                 style={'position':'absolute',
-#                        'left':'360px',
-#                        'top': '113px',
-#                        'width':'290px',
-#                        'height':'130px'},
-#                 id = 'buffer')
-#Textos
-aux_text = html.Div('Enter a value and press submit',
-                    id= 'text1')
-t_lat1 = html.Div('Latitud 1',
-                id = 't_lat1',
-                style={'position':'absolute',
-                       'left':'10px',
-                       'top':'810px',
-                       'width':'80px',
-                       'textAlign':'center'})
-t_lng1 = html.Div('Longitud 1',
-                id = 't_lng1',
-                style={'position':'absolute',
-                       'left':'110px',
-                       'top':'810px',
-                       'width':'80px',
-                       'textAlign':'center'})
-t_lat2 = html.Div('Latitud 2',
-                id = 't_lat2',
-                style={'position':'absolute',
-                       'left':'210px',
-                       'top':'810px',
-                       'width':'80px',
-                       'textAlign':'center'})
-t_lng2 = html.Div('Longitud 2',
-                id = 't_lng2',
-                style={'position':'absolute',
-                       'left':'310px',
-                       'top':'810px',
-                       'width':'80px',
-                       'textAlign':'center'})
+#                        'left':'10px',
+#                        'top':'810px',
+#                        'width':'80px',
+#                        'textAlign':'center'})
+# t_lng1 = html.Div('Longitud 1',
+#                 id = 't_lng1',
+#                 style={'position':'absolute',
+#                        'left':'110px',
+#                        'top':'810px',
+#                        'width':'80px',
+#                        'textAlign':'center'})
+# t_lat2 = html.Div('Latitud 2',
+#                 id = 't_lat2',
+#                 style={'position':'absolute',
+#                        'left':'210px',
+#                        'top':'810px',
+#                        'width':'80px',
+#                        'textAlign':'center'})
+# t_lng2 = html.Div('Longitud 2',
+#                 id = 't_lng2',
+#                 style={'position':'absolute',
+#                        'left':'310px',
+#                        'top':'810px',
+#                        'width':'80px',
+#                        'textAlign':'center'})
 
-lat1 = dcc.Input(id = 'e_lat1',
-                   style={'position':'absolute',
-                       'left':'10px',
-                       'top':'840px',
-                       'width':'80px',},
-                  value = 1.1559
+# lat1 = dcc.Input(id = 'e_lat1',
+#                    style={'position':'absolute',
+#                        'left':'10px',
+#                        'top':'840px',
+#                        'width':'80px',},
+#                   value = 1.1559
                        
                        
-                       )
-lng1 = dcc.Input(id = 'e_lng1',
-                   style={'position':'absolute',
-                       'left':'110px',
-                       'top':'840px',
-                       'width':'80px',},
-                    value = -76.6556
-                       )
-lat2 = dcc.Input(id = 'e_lat2',
-                   style={'position':'absolute',
-                       'left':'210px',
-                       'top':'840px',
-                       'width':'80px',},
-                     value = 1.1382
-                     )
-lng2 = dcc.Input(id = 'e_lng2',
-                   style={'position':'absolute',
-                       'left':'310px',
-                       'top':'840px',
-                       'width':'80px'},
-                       value = -76.6349
-                       )
+#                        )
+# lng1 = dcc.Input(id = 'e_lng1',
+#                    style={'position':'absolute',
+#                        'left':'110px',
+#                        'top':'840px',
+#                        'width':'80px',},
+#                     value = -76.6556
+#                        )
+# lat2 = dcc.Input(id = 'e_lat2',
+#                    style={'position':'absolute',
+#                        'left':'210px',
+#                        'top':'840px',
+#                        'width':'80px',},
+#                      value = 1.1382
+#                      )
+# lng2 = dcc.Input(id = 'e_lng2',
+#                    style={'position':'absolute',
+#                        'left':'310px',
+#                        'top':'840px',
+#                        'width':'80px'},
+#                        value = -76.6349
+#                        )
 
-coords = html.Div([t_lat1, t_lng1, t_lat2, t_lng2,
-                   lat1,lng1,lat2,lng2],
-                   style = {
-                       'display': 'none'
-                   })
+# coords = html.Div([t_lat1, t_lng1, t_lat2, t_lng2,
+#                    lat1,lng1,lat2,lng2],
+#                    style = {
+#                        'display': 'none'
+#                    })
 
 #hidden div 
 hiddenvar = html.Div(children= 'ff',
@@ -512,7 +465,7 @@ loading_state = dcc.Loading(id= 'loading', type = 'graph',
                 
 app.layout = html.Div(children = [navbar,
                                   avant_layout,
-                                  coords, up_button, 
+                                     up_button, 
                                   errorMsj, loading_state,
                                   dashboard, hidden_geojson, hidden_geodf, hiddenvar])
 
