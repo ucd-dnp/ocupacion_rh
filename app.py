@@ -504,7 +504,8 @@ Intente con otra región o cambie la fuente de análisis por
                         if builds_sus.shape[0] == 0:
                             roi_param = roi.to_crs({'init':'epsg:4326'})
                             Map(location= location, zoom= 13).generateMap(rivers=osm._rivers, 
-                                                                          roi = roi_param)
+                                                                          roi = roi_param,
+                                                                          bounding = box_coords)
                             download_component = d_object.download_file(rivers = osm._rivers, roi = roi.to_crs({'init':'epsg:4326'} ))
 
                         else:
@@ -512,7 +513,8 @@ Intente con otra región o cambie la fuente de análisis por
                             build_sus_param = builds_sus.to_crs({'init':'epsg:4326'})
                             Map(location= location, zoom= 13).generateMap(builds = build_sus_param,
                                                                           rivers=osm._rivers, 
-                                                                          roi = roi_param)
+                                                                          roi = roi_param,
+                                                                          bounding=box_coords)
                             download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param, builds = build_sus_param)
 
                         
@@ -553,7 +555,8 @@ Intente con otra región o cambie la fuente de análisis por
                         if builds_sus.shape[0] == 0:
                             roi_param = rivers.to_crs({'init':'epsg:4326'})
                             Map(location= location, zoom= 13).generateMap(rivers=osm._rivers, 
-                                                                          roi = roi_param)
+                                                                          roi = roi_param,
+                                                                          bounding=box_coords)
                             download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param)
 
                         else:
@@ -561,7 +564,8 @@ Intente con otra región o cambie la fuente de análisis por
                             roi_param = rivers.to_crs({'init':'epsg:4326'})
                             Map(location= location, zoom= 13).generateMap(builds = build_sus_param,
                                                                           rivers=osm._rivers, 
-                                                                          roi = roi_param)   
+                                                                          roi = roi_param,
+                                                                          bounding=box_coords)   
                             download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param, builds = build_sus_param)
 
                         #####################################  RESULTS  ##########################################
@@ -639,7 +643,8 @@ la región de análisis"""
                     roi_param = roi.to_crs({'init':'epsg:4326'})
                     Map(location= location, zoom= 13).generateMap(rivers=osm._rivers,
                                                                   poly_rivers = osm._poly_rivers,
-                                                                  roi = roi_param )
+                                                                  roi = roi_param,
+                                                                  bounding=box_coords)
                     #TODO: unir poly_rivers y rivers
                     #FIXME: revisar si builds en verdad va ahi
                     download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param)
@@ -654,7 +659,8 @@ la región de análisis"""
                     download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param )
 
                     Map(location= location, zoom= 13).generateMap(rivers=osm._rivers,
-                                                                  roi = roi_param)
+                                                                  roi = roi_param,
+                                                                  bounding=box_coords)
                     #####################################  RESULT ###################################################
                     figure1 = {'data':[go.Pie(visible=False)]}
                     figure2 = {'data':[go.Pie(visible=False)]}
@@ -760,7 +766,8 @@ la región de análisis"""
                     Map(location= location, zoom= 13).generateMap(rivers=osm._rivers,
                                                                   poly_rivers = osm._poly_rivers,
                                                                   roi = roi_params,
-                                                                  superpixels= superpixels_params)
+                                                                  superpixels= superpixels_params,
+                                                                  bounding=box_coords)
                     #####################################  RESULT ###################################################
                     figure1 = {'data':[go.Pie(visible=False)]}
                     figure2 = {'data':[go.Pie(visible=False)]}
@@ -775,7 +782,8 @@ la región de análisis"""
                     superpixels_params = seg_polygons.to_crs({'init':'epsg:4326'})
                     Map(location= location, zoom= 13).generateMap(rivers=osm._rivers,
                                                                   roi = roi_params,
-                                                                  superpixels= superpixels_params)
+                                                                  superpixels= superpixels_params,
+                                                                  bounding=box_coords)
                     #####################################  RESULT ###################################################
                     figure1 = {'data':[go.Pie(visible=False)]}
                     figure2 = {'data':[go.Pie(visible=False)]}

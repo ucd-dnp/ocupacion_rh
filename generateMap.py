@@ -25,7 +25,7 @@ class Map:
         self._url = satellital_url
     
     def generateMap(self, builds = None, rivers = None, roi = None, 
-                    poly_rivers = None, superpixels = None):
+                    poly_rivers = None, superpixels = None, bounding = None):
         
         _map = folium.Map(self._location, zoom_start=self._zoom,
                           attr='Análisis susceptibilidad de inundación',
@@ -91,6 +91,10 @@ class Map:
                                                               'width':0.1}))
             _map.add_child(lay_susceptibilidad)
         
+        if bounding is not None:
+            lat2,lon1,lat1,lon2 = bounding
+            points = [(lat1,lon1),(lat1,lon2),(lat2,lon2),(lat2,lon1),(lat1,lon1)]
+            folium.PolyLine(points,weight=1.5,opacity = 0.5, dashArray=[20,20],dashOffset= 20).add_to(_map)
             
         _map.add_child(folium.LayerControl())
         
