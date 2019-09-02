@@ -182,10 +182,10 @@ tab_search = dbc.Card([
                         justify = "between"),
 
                         dbc.Row([
-                        dbc.Input(id = 'e_lat1', value = 1.153, style={"width": "20%"}), 
-                        dbc.Input(id = 'e_lng1', value = -76.656, style={"width": "20%"}),
-                        dbc.Input(id = 'e_lat2', value = 1.14, style={"width": "20%"}),
-                        dbc.Input(id = 'e_lng2', value = -76.64, style={"width": "20%"})
+                        dbc.Input(id = 'e_lat1', value =  1.1573, style={"width": "20%"}), 
+                        dbc.Input(id = 'e_lng1', value = -76.6590, style={"width": "20%"}),
+                        dbc.Input(id = 'e_lat2', value = 1.1355, style={"width": "20%"}),
+                        dbc.Input(id = 'e_lng2', value = -76.6312, style={"width": "20%"})
                         ],
                         justify = "between"),
 
@@ -222,13 +222,18 @@ tabs = dbc.Tabs([
 
 
 geovisor = dbc.Col([
-    dbc.Row([html.B('Geovisor')]),
+    dbc.Row([html.H4('Geovisor')],
+    justify = "center"),
     dbc.Row([
         html.Iframe(id= 'map', 
                       srcDoc = open('temp.html','r').read(),
                       width= '100%', 
                       height= '540')
-    ])
+    ],
+    # justify = "center",
+    style = {
+        "margin-left": "15px"
+    })
 
 ])
 
