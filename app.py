@@ -129,7 +129,8 @@ tab_search = dbc.Card([
                 ],
                 lg = 7,
                 style = {
-                    "margin-right": "3px   " 
+                    "margin-right": "3px",
+                    'margin-left': "15px" 
                 }),
                 dbc.Col([
                     dbc.Row([
@@ -159,6 +160,9 @@ tab_search = dbc.Card([
                     ),
                    
                 ],
+                style = {
+                    "margin-left": "15px"
+                },
                 id = 'buffer',
                 lg = 4 )
             ],
@@ -178,10 +182,10 @@ tab_search = dbc.Card([
                         justify = "between"),
 
                         dbc.Row([
-                        dbc.Input(id = 'e_lat1', value = 1.15, style={"width": "20%"}), 
-                        dbc.Input(id = 'e_lng1', value = -76.65, style={"width": "20%"}),
-                        dbc.Input(id = 'e_lat2', value = 1.13, style={"width": "20%"}),
-                        dbc.Input(id = 'e_lng2', value = -76.63, style={"width": "20%"})
+                        dbc.Input(id = 'e_lat1', value = 1.153, style={"width": "20%"}), 
+                        dbc.Input(id = 'e_lng1', value = -76.656, style={"width": "20%"}),
+                        dbc.Input(id = 'e_lat2', value = 1.14, style={"width": "20%"}),
+                        dbc.Input(id = 'e_lng2', value = -76.64, style={"width": "20%"})
                         ],
                         justify = "between"),
 
@@ -228,6 +232,7 @@ geovisor = dbc.Col([
 
 ])
 
+#creating the results card for display the graphics
 results_card = dbc.Card([
 
     dbc.CardBody([
@@ -290,7 +295,8 @@ results_card = dbc.Card([
            dcc.Graph(id= 'graph_2', config={'displayModeBar': False},  style = {'width':'330px',
                                                                                 'height':'300px',
                                                                                 }),  
-            ]),
+            ],
+            justify = "center"),
             dbc.Row([
 
            html.H1(html.B('### Hectareas'), id = 'result2_0',
@@ -446,7 +452,7 @@ hiddenvar = html.Div(children= 'ff',
 #                          dcc.Graph(id= 'graph_2', style = {'width':'300px',
 #                                                            'height':'300px',
 #                                                            'position':'relative',
-#                                                            'top':'-220px'},
+#                                                            'top':'-180px'},
 #                                     config={'displayModeBar': False}),
 #                    html.Div([
 #                            html.H1(html.B('### Hectareas'), id = 'result2_0',
@@ -518,7 +524,7 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
     default = d_object.download_file()
     if bnt1 is None and bnt2 is None:
         location = (4.5975, -74.0765)
-        Map(location= location, zoom= 13).generateMap()
+        Map(location= location, zoom= 15).generateMap()
         #############################  RESULT  ####################################
         figure1 = {'data':[go.Pie(visible=False)]}
         figure2 = {'data':[go.Pie(visible=False)]}
@@ -532,7 +538,7 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
     if bnt1>bnt2:
         if str_loc == None:
             location = (4.5975, -74.0765)
-            Map(location= location, zoom= 13).generateMap()
+            Map(location= location, zoom= 15).generateMap()
             #############################  RESULT  #####################################
             figure1 = {'data':[go.Pie(visible=False)]}
             figure2 = {'data':[go.Pie(visible=False)]}
@@ -544,7 +550,7 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
                 response = nom.geocode(str_loc +', Colombia')
                 lat,lng = response[1]
                 location = (lat,lng)
-                Map(location= location, zoom= 13).generateMap()
+                Map(location= location, zoom= 15).generateMap()
                 #############################  RESULT  #####################################
                 figure1 = {'data':[go.Pie(visible=False)]}
                 figure2 = {'data':[go.Pie(visible=False)]}
@@ -586,7 +592,7 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
                 msj = """No hay información disponible de construcciones para esta región. 
 Intente con otra región o cambie la fuente de análisis por
 'Análisis de imagen'"""
-                Map(location= location, zoom= 13).generateMap()
+                Map(location= location, zoom= 15).generateMap()
                 ################################  RESULTS #########################################
                 figure1 = {'data':[go.Pie(visible=False)]}
                 figure2 = {'data':[go.Pie(visible=False)]}
@@ -630,7 +636,7 @@ Intente con otra región o cambie la fuente de análisis por
                         
                         if builds_sus.shape[0] == 0:
                             roi_param = roi.to_crs({'init':'epsg:4326'})
-                            Map(location= location, zoom= 13).generateMap(rivers=osm._rivers, 
+                            Map(location= location, zoom= 15).generateMap(rivers=osm._rivers, 
                                                                           roi = roi_param,
                                                                           bounding = box_coords)
                             download_component = d_object.download_file(rivers = osm._rivers, roi = roi.to_crs({'init':'epsg:4326'} ))
@@ -638,7 +644,7 @@ Intente con otra región o cambie la fuente de análisis por
                         else:
                             roi_param = roi.to_crs({'init':'epsg:4326'})
                             build_sus_param = builds_sus.to_crs({'init':'epsg:4326'})
-                            Map(location= location, zoom= 13).generateMap(builds = build_sus_param,
+                            Map(location= location, zoom= 15).generateMap(builds = build_sus_param,
                                                                           rivers=osm._rivers, 
                                                                           roi = roi_param,
                                                                           bounding=box_coords)
@@ -680,7 +686,7 @@ Intente con otra región o cambie la fuente de análisis por
                         
                         if builds_sus.shape[0] == 0:
                             roi_param = rivers.to_crs({'init':'epsg:4326'})
-                            Map(location= location, zoom= 13).generateMap(rivers=osm._rivers, 
+                            Map(location= location, zoom= 15).generateMap(rivers=osm._rivers, 
                                                                           roi = roi_param,
                                                                           bounding=box_coords)
                             download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param)
@@ -688,7 +694,7 @@ Intente con otra región o cambie la fuente de análisis por
                         else:
                             build_sus_param = builds_sus.to_crs({'init':'epsg:4326'})
                             roi_param = rivers.to_crs({'init':'epsg:4326'})
-                            Map(location= location, zoom= 13).generateMap(builds = build_sus_param,
+                            Map(location= location, zoom= 15).generateMap(builds = build_sus_param,
                                                                           rivers=osm._rivers, 
                                                                           roi = roi_param,
                                                                           bounding=box_coords)   
@@ -717,7 +723,7 @@ Intente con otra región o cambie la fuente de análisis por
                                 html.B(str(round(total_area_sus,1))+ ' Hectareas'),
                                 figure1,figure2, download_component]
                 else:
-                    Map(location= location, zoom= 13).generateMap()
+                    Map(location= location, zoom= 15).generateMap()
                     msj = """No hay información disponible de capa de rios
 para esta región. Intente de nuevo o cambie
 la región de análisis"""
@@ -766,7 +772,7 @@ la región de análisis"""
                                                 geometry = 'geometry', 
                                                 crs = rivers.crs, index = [0])
                     roi_param = roi.to_crs({'init':'epsg:4326'})
-                    Map(location= location, zoom= 13).generateMap(rivers=osm._rivers,
+                    Map(location= location, zoom= 15).generateMap(rivers=osm._rivers,
                                                                   poly_rivers = osm._poly_rivers,
                                                                   roi = roi_param,
                                                                   bounding=box_coords)
@@ -783,7 +789,7 @@ la región de análisis"""
                     roi_param  = roi.to_crs({'init':'epsg:4326'} )
                     download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param )
 
-                    Map(location= location, zoom= 13).generateMap(rivers=osm._rivers,
+                    Map(location= location, zoom= 15).generateMap(rivers=osm._rivers,
                                                                   roi = roi_param,
                                                                   bounding=box_coords)
                     #####################################  RESULT ###################################################
@@ -792,7 +798,7 @@ la región de análisis"""
                     return ['rivers', False, '', html.Div(' '), {'visibility':'hidden'},
                             '','','',figure1,figure2, download_component]
             else:
-                Map(location= location, zoom= 13).generateMap()
+                Map(location= location, zoom= 15).generateMap()
                 msj = """No hay información disponible de capa de rios
 para esta región. Intente de nuevo o cambie
 la región de análisis"""
@@ -888,7 +894,7 @@ la región de análisis"""
                     roi_params = roi.to_crs({'init':'epsg:4326'})
                     superpixels_params = seg_polygons.to_crs(crs={'init':'epsg:4326'})
 
-                    Map(location= location, zoom= 13).generateMap(rivers=osm._rivers,
+                    Map(location= location, zoom= 15).generateMap(rivers=osm._rivers,
                                                                   poly_rivers = osm._poly_rivers,
                                                                   roi = roi_params,
                                                                   superpixels= superpixels_params,
@@ -905,7 +911,7 @@ la región de análisis"""
 
                     roi_params = rivers.to_crs({'init':'epsg:4326'})
                     superpixels_params = seg_polygons.to_crs({'init':'epsg:4326'})
-                    Map(location= location, zoom= 13).generateMap(rivers=osm._rivers,
+                    Map(location= location, zoom= 15).generateMap(rivers=osm._rivers,
                                                                   roi = roi_params,
                                                                   superpixels= superpixels_params,
                                                                   bounding=box_coords)
@@ -917,7 +923,7 @@ la región de análisis"""
                             '','','',figure1,figure2, download_component]
             #No hay informacion de capas de rios, por ende no se genera imagen satelital
             else:
-                Map(location= location, zoom= 13).generateMap()
+                Map(location= location, zoom= 15).generateMap()
                 msj = """No hay información disponible de capa de rios
 para esta región. Intente de nuevo o cambie
 la región de análisis"""

@@ -29,8 +29,22 @@ class Download:
 
     def file_download_link(self, filename):
    
+        if ".zip" in filename:
+            name = "Shapefile"
+        else: 
+            name = "GeoJSON"
         location = "/download/{}".format(filename)
-        return html.A(filename, href=location)
+        link = html.A(name, href=location, style = {
+            "text-decoration" : "none",
+            "color": "white"
+        })
+        button = dbc.Button(children = [
+            link
+        ], size = "sm",
+        style = {
+            "background" : "#6497b1"
+        })
+        return button
 
     def download_file (self, rivers = None, builds = None, roi = None ):
         list_file = []
@@ -99,10 +113,23 @@ class Download:
         
         content = []
         if not list_file:
-            content.append(html.Label("Aún no se encuentran capas para descargar",
+            content.append(
+                dbc.Col([
+                dbc.Row([html.Label("Aún no se encuentran capas para descargar",
                                 style = {
                                     "font-size" : '14px'
-                                }))
+                                })
+                                
+                ],justify = "center"),
+
+                dbc.Row([
+                    dbc.Spinner(color="primary", type="grow", size = "lg"),
+                ],justify = "center")
+
+
+                ])
+            )
+            
         else:
             #creating download links with existing layers
             for i in range(len(list_file)):
@@ -110,19 +137,25 @@ class Download:
                 file_2 = self.file_download_link("{}{}".format(list_file[i][1], ".geojson"))
                 content.append(dbc.Col([
                     dbc.Row(  
-                    html.H3(list_file[i][0])
+                    html.B(list_file[i][0])
                     ),
-                    dbc.Row(
+                    dbc.Row([
                     file_1
-                    ),
-                    dbc.Row(
+                    ],
+                    style = {
+                        "margin-top" : "10px"
+                    }),
+                    dbc.Row([
                     file_2
-                    )
+                    ],
+                    style = {
+                        "margin-top" : "10px"
+                    })
                 ]))
 
         #create the component to be returned    
         download_component = dbc.Container([
-            html.H3("Seleccione cual de los siguientes archivos quiere descargar"),
+            html.H5("Seleccione cual de los siguientes archivos quiere descargar"),
             dbc.Row(
                 content
             )
