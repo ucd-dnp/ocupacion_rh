@@ -38,21 +38,36 @@ class imtools():
         
         return temp.astype('float32')
 
-    def Feature_im2hist(image, segments, nbins=16, clrSpc= 'hsv',threads = 30):
+    def Feature_im2hist(image, segments, nbins=16, clrSpc= 'hsv',threads = 30, train=False):
         start = time.time()
         print('--- Computing image features ---')
-        n_seg = np.unique(segments)
+        if train:
+            n_seg = np.unique(segments)
+        else:
+            n_seg = np.unique(segments)[1:] # el index 0 es background
+            
         Xfeat = np.zeros((len(n_seg),3*nbins),dtype=np.float32)
         def poolCalcHist(idx):
              mask = np.zeros(image.shape[:2],dtype= np.uint8)
              mask[segments == idx] = 255
              Npixels = len(mask[segments==idx])
              if clrSpc == 'hsv':
-                 Xfeat[idx,:nbins] = (cv2.calcHist([image],[0], mask,[nbins],[0,179]).transpose())/Npixels
+                 if train:
+                     Xfeat[idx,:nbins] = (cv2.calcHist([image],[0], mask,[nbins],[0,179]).transpose())/Npixels
+                 else:
+                     Xfeat[idx-1,:nbins] = (cv2.calcHist([image],[0], mask,[nbins],[0,179]).transpose())/Npixels
              else:
-                 Xfeat[idx,:nbins] = (cv2.calcHist([image],[0], mask,[nbins],[0,255]).transpose())/Npixels
-             Xfeat[idx,nbins:2*nbins] = (cv2.calcHist([image],[1], mask,[nbins],[0,255]).transpose())/Npixels
-             Xfeat[idx,2*nbins:3*nbins] = (cv2.calcHist([image],[2], mask,[nbins],[0,255]).transpose())/Npixels
+                 if train:
+                     Xfeat[idx,:nbins] = (cv2.calcHist([image],[0], mask,[nbins],[0,255]).transpose())/Npixels
+                 else:
+                     Xfeat[idx-1,:nbins] = (cv2.calcHist([image],[0], mask,[nbins],[0,255]).transpose())/Npixels
+             
+             if train:
+                 Xfeat[idx,nbins:2*nbins] = (cv2.calcHist([image],[1], mask,[nbins],[0,255]).transpose())/Npixels
+                 Xfeat[idx,2*nbins:3*nbins] = (cv2.calcHist([image],[2], mask,[nbins],[0,255]).transpose())/Npixels
+             else:
+                 Xfeat[idx-1,nbins:2*nbins] = (cv2.calcHist([image],[1], mask,[nbins],[0,255]).transpose())/Npixels
+                 Xfeat[idx-1,2*nbins:3*nbins] = (cv2.calcHist([image],[2], mask,[nbins],[0,255]).transpose())/Npixels
                  
         pool = Pool(threads)
         pool.map(poolCalcHist,n_seg)
@@ -62,8 +77,11 @@ class imtools():
         print('Done!, Execution time: ',time.time() - start)
         return Xfeat
 
-    def draw_GT(im,labels,segments):
-        idx = np.unique(segments)[labels==1]
+    def draw_GT(im,labels,segments,train = False):
+        if train:
+            idx = np.unique(segments)[labels==1]
+        else:
+            idx = np.unique(segments)[1:][labels==1]
         mask = np.isin(segments,idx).astype('uint8')
         GT = cv2.bitwise_and(im,im,mask=mask)
         plt.figure()
