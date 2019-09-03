@@ -16,6 +16,8 @@ from google_maps_downloader import GoogleMapDownloader
 
 import numpy as np
 import plotly.graph_objs as go
+import cv2
+import pickle
 #import matplotlib.pyplot as plt
 
 #needed to decode uploaded files
@@ -54,6 +56,8 @@ colors = ['#011f4b','#03396c', '#005b96','#6497b1','#b3cde0']
 
 #Crear objeto georreferenciador
 nom = Nominatim(user_agent= 'my-application')
+# crear objeto de clasificación
+pipeline = pickle.load(open('./training/model.p','rb'))
 
 external_stylesheets = [dbc.themes.BOOTSTRAP]
 #external_stylesheets = [
@@ -841,6 +845,7 @@ la región de análisis"""
                 #Generando imagen satelital de la region de analisis 
                 try:
                     img = np.array(gmd.generateImage(), dtype = np.uint8)
+                    img_hsv = cv2.cvtColor(img,cv2.COLOR_RGB2HSV)
                 except:
                     ###########################  RESULTS  ####################################
                     figure1 = {'data':[go.Pie(visible=False)]}
@@ -852,14 +857,19 @@ la región de análisis"""
                 #generando region de analisis en la imagen
                 analysis_region = osm.computeROIsuperpixels(buffer1)
                 
-                ## mask image and superpixel computing
+                # mask image and superpixel computing
                 out, m = imtools.maskRasterIm(img, gmd.GT, analysis_region)
                 segments = imtools.computeSegments(out,mask=m) 
                 
                 ### aqui modelo de clasificacicón de la imagen  ###
                 ###################################################
+                Xtest = imtools.Feature_im2hist(img_hsv,segments, nbins=16,clrSpc='hsv')
+                Ytest_pred = pipeline.predict(Xtest)
+                #Ytest_prob = pipeline.predict_proba(Xtest)[:,1]
+                #Ytest_pred2 = Ytest_prob>0.35
+                mask_est = imtools.draw_GT(labels= Ytest_pred,segments = segments)
+                segments[mask_est == 0] = 0
                 ###################################################
-                    
                 ## mapeando los segmentos al mapa de dash  
                 seg_polygons = imtools.mapSuperPixels(segments=segments, GT=gmd.GT, verbose=False)
                 #generando buffer de rios
