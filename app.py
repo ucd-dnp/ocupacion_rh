@@ -31,8 +31,12 @@ import os
 from download_files import Download
 
 
+
+
 #creating the server object for downloading files
 server = Flask(__name__)
+
+
 
 #create a file path for storing the files that will be downloaded - implementation mostly for production 
 FILE_PATH = '/resources/shp_geojson'
@@ -982,6 +986,11 @@ def assign_geodf(geojson):
         geo_df = gpd.read_file(geojson)
         print("dataframe: {}".format(type(geo_df)))
         print(geo_df['geometry'])
+
+
+
+
+
 
 
 #start aplication 
