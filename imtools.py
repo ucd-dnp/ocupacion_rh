@@ -38,7 +38,7 @@ class imtools():
         
         return temp.astype('float32')
 
-    def Feature_im2hist(image, segments, nbins=16, clrSpc= 'hsv',threads = 30, train=False):
+    def Feature_im2hist(image, segments, nbins=16, clrSpc= 'hsv',threads = 8, train=False):
         start = time.time()
         print('--- Computing image features ---')
         if train:
@@ -77,16 +77,17 @@ class imtools():
         print('Done!, Execution time: ',time.time() - start)
         return Xfeat
 
-    def draw_GT(im,labels,segments,train = False):
+    def draw_GT(im= None,labels= None,segments= None,train = False, plot= False):
         if train:
             idx = np.unique(segments)[labels==1]
         else:
             idx = np.unique(segments)[1:][labels==1]
         mask = np.isin(segments,idx).astype('uint8')
-        GT = cv2.bitwise_and(im,im,mask=mask)
-        plt.figure()
-        plt.imshow(GT)
-        plt.axis('off')
+        if plot:
+            GT = cv2.bitwise_and(im,im,mask=mask)
+            plt.figure()
+            plt.imshow(GT)
+            plt.axis('off')
         return mask
     
     def get_scalers(image, x_max, y_min):
