@@ -14,11 +14,15 @@ import zipfile
 #libraries needed for deleting files
 import shutil
 
+#library for getting the current datetime for naming folders
+from datetime import datetime
 
 class Download:
 
     def __init__(self, path):
         self.path = path
+        self.date = datetime.now().strftime("%b%d%Y%H%M%S")
+        
     
 
     def file_download_link(self, filename):
@@ -53,7 +57,7 @@ class Download:
         list_file = []
         if rivers is not None:
             label = "Capa de rios"
-            name = "rivers_layer"
+            name = "{}rivers_layer".format(self.date)
             rivers_path = "{}/{}".format(self.path, name)
             #create the directory for then zipping on a .zip
             os.mkdir(rivers_path)
@@ -73,7 +77,7 @@ class Download:
             list_file.append((label, name))
         if builds is not None:
             label = "Capa de construcciones"
-            name = "builds_layera"
+            name = "{}builds_layer".format(self.date)
             builds_path = "{}/{}".format(self.path, name)
             #create the directory for then zipping on a .zip
             os.mkdir(builds_path)
@@ -91,7 +95,7 @@ class Download:
             list_file.append((label, name))
         if roi is not None:
             label = "Capa de regiones"
-            name = "roi_layer"
+            name = "{}roi_layer".format(self.date)
 
             rois_path = "{}/{}".format(self.path, name)
             #create the directory for then zipping on a .zip
