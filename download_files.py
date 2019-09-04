@@ -14,17 +14,15 @@ import zipfile
 #libraries needed for deleting files
 import shutil
 
-# code taken from: https://www.tutorialspoint.com/How-to-create-a-zip-file-using-Python
-def zipdir(path, ziph):
-    # ziph is zipfile handle
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            ziph.write(os.path.join(root, file))
+#library for getting the current datetime for naming folders
+from datetime import datetime
 
 class Download:
 
     def __init__(self, path):
         self.path = path
+        self.date = datetime.now().strftime("%b%d%Y%H%M%S")
+        
     
 
     def file_download_link(self, filename):
@@ -46,23 +44,30 @@ class Download:
         })
         return button
 
+    # code taken from: https://www.tutorialspoint.com/How-to-create-a-zip-file-using-Python
+    def zipdir(self, path, ziph, name):
+        # ziph is zipfile handle
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                # ziph.write(os.path.join(root, file))
+                ziph.write(os.path.join(root, file), file)
+
+
     def download_file (self, rivers = None, builds = None, roi = None ):
         list_file = []
         if rivers is not None:
             label = "Capa de rios"
-            name = "rivers_layer"
+            name = "{}rivers_layer".format(self.date)
             rivers_path = "{}/{}".format(self.path, name)
             #create the directory for then zipping on a .zip
             os.mkdir(rivers_path)
-
-            #fixing the rivers geopandas
            
             rivers.to_file("{}/{}.shp".format(rivers_path, name))
             #creating the zipfile
             zip_rivers = zipfile.ZipFile('{}/{}.zip'.format(self.path, name), 'w', zipfile.ZIP_DEFLATED)
 
             #zipping all files on specified folder
-            zipdir(rivers_path, zip_rivers)
+            self.zipdir(rivers_path, zip_rivers, name)
             #closing the zip
             zip_rivers.close()
             shutil.rmtree(rivers_path)
@@ -72,7 +77,7 @@ class Download:
             list_file.append((label, name))
         if builds is not None:
             label = "Capa de construcciones"
-            name = "builds_layer"
+            name = "{}builds_layer".format(self.date)
             builds_path = "{}/{}".format(self.path, name)
             #create the directory for then zipping on a .zip
             os.mkdir(builds_path)
@@ -81,18 +86,16 @@ class Download:
             zip_builds = zipfile.ZipFile('{}/{}.zip'.format(self.path, name), 'w', zipfile.ZIP_DEFLATED)
 
             #zipping all files on specified folder
-            zipdir(builds_path, zip_builds)
+            self.zipdir(builds_path, zip_builds, name)
             #closing the zip 
             zip_builds.close()
             shutil.rmtree(builds_path)
             builds.to_file("{}/{}.geojson".format(self.path, name), driver = 'GeoJSON')
             
-
-       
             list_file.append((label, name))
         if roi is not None:
             label = "Capa de regiones"
-            name = "roi_layer"
+            name = "{}roi_layer".format(self.date)
 
             rois_path = "{}/{}".format(self.path, name)
             #create the directory for then zipping on a .zip
@@ -102,7 +105,7 @@ class Download:
             zip_rois = zipfile.ZipFile('{}/{}.zip'.format(self.path, name), 'w', zipfile.ZIP_DEFLATED)
 
             #zipping all files on specified folder
-            zipdir(rois_path, zip_rois)
+            self.zipdir(rois_path, zip_rois, name)
             #closing the zip
             zip_rois.close()
             shutil.rmtree(rois_path)
