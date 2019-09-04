@@ -1,0 +1,39 @@
+<head>
+<style>
+
+    #report_title{
+        margin: auto;
+        color: #03396c
+    }
+
+    .description{
+        margin-bottom: 0px;
+        font-weight: bold
+    }
+</style>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+
+            <h1 id= 'report_title'>Reporte de resultados</h1>
+        </div>
+
+        <div class="row">
+            <p class="description">Generado el: {{date}} </p>
+        </div>
+        <div class="row">
+            <p class="description">
+                Localización: {{localization}}
+            </p>
+        </div>
+        <div class="row">
+            <iframe src="temp.html" frameborder="0"></iframe>
+        </div>    
+
+    </div>
+
+
+</body>

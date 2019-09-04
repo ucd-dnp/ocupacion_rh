@@ -30,6 +30,8 @@ import os
 #import functionality of download
 from download_files import Download
 
+#import report generation functionality
+from generateReport import Report
 
 
 
@@ -319,7 +321,15 @@ results_card = dbc.Card([
                                             })                       
 
             ],
-            justify = "center")
+            justify = "center"),
+
+            dbc.Row([
+                dbc.Button("Descargar Reporte", style = {
+                    'background': '#011f4b',
+                    'color': 'white'
+                }, id = "report_button")
+            ],
+            justify = 'center')
         ],
         id = 'dash_board',)
     ])
@@ -416,72 +426,7 @@ hiddenvar = html.Div(children= 'ff',
                      style={'display':'none',
                             'position':'absolute ',
                             'top':'890px'})
-# contairner de resultados
-# dashboard =  html.Div([html.H3('Resultados del Análisis',
-#                                style = {'textAlign':'center',
-#                                         'color':colors[1]}),
-#                        dcc.Graph(id= 'graph_1', style = {'width':'385px',
-#                                                         'height': '385px'}),
-#                     html.Div([
-#                        html.H1(html.B('1.012'), id = 'result1_0',
-#                                style={'position':'relative',
-#                                       'textAlign':'center',
-#                                       'color':colors[2],
-#                                       'margin-bottom':'5px'}),
-#                        html.Div('construcciones dentro',
-#                                style={'position':'relative',
-#                                       'textAlign':'center',
-#                                       'color':colors[3],
-#                                       'fontSize':'26px',
-#                                       'height': '31px'}),
-#                        html.Div('de la zona de susceptibilidad',
-#                                style={'textAlign':'center',
-#                                       'color':colors[3],
-#                                       'fontSize':'26px',
-#                                       'height':'31px'}),
-#                       html.H1(html.B('#####'), id = 'result1_1',
-#                                style={'textAlign':'center',
-#                                       'color':colors[2],
-#                                       'margin-bottom':'0px',
-#                                       'margin-top': '25px'}),
-#                       html.Div('porcentaje',
-#                                style={'textAlign':'center',
-#                                       'color':colors[3],
-#                                       'fontSize':'26px',
-#                                       'height': '31px'})],
-#                                 style ={'position':'relative',
-#                                         'width': '48%',
-#                                         'top':'-320px',
-#                                         'left':'396px'}),
-#                          dcc.Graph(id= 'graph_2', style = {'width':'300px',
-#                                                            'height':'300px',
-#                                                            'position':'relative',
-#                                                            'top':'-180px'},
-#                                     config={'displayModeBar': False}),
-#                    html.Div([
-#                            html.H1(html.B('### Hectareas'), id = 'result2_0',
-#                                    style={'position':'relative',
-#                                           'textAlign':'center',
-#                                           'color':colors[2],
-#                                           'margin-bottom':'5px'}),
-#                            html.Div('dentro de zona susceptible',
-#                                      style={'textAlign':'center',
-#                                             'color':colors[3],
-#                                             'fontSize':'26px',
-#                                             'height':'31px'})],
-#                            style ={'position':'relative',
-#                                         'width': '48%',
-#                                         'top':'-400px',
-#                                         'left':'396px'}
-#                            )                                         
-#                       ],
-#                        id = 'dash_board',
-#                        style = {'position':'absolute',
-#                                 'top':'100px',
-#                                 'left':'630px',
-#                                 'width':'770px',
-#                                 'visibility':'hidden'}
-#                      )
+
 
 errorMsj = dcc.ConfirmDialog(id = 'error_msj',
                              message = 'Datos no disponibles para esta región',
