@@ -580,10 +580,16 @@ Intente con otra región o cambie la fuente de análisis por
                                                             geometry = 'geometry', 
                                                             crs = poly_rivers.crs, index = [0])
                         poly_rivers.geometry = poly_rivers.buffer(2*buffer1)
-                          
-                        roi = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.union(poly_rivers))},
-                                                geometry = 'geometry', 
-                                                crs = rivers.crs)
+
+                        try:
+                            roi = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.union(poly_rivers))},
+                                                    geometry = 'geometry', 
+                                                    crs = rivers.crs)
+                        except:
+                            roi = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.union(poly_rivers))},
+                                                    geometry = 'geometry', 
+                                                    crs = rivers.crs, index = [0])
+                            
                         
                         #Calculando en numero de construcciones que intersectan la zona de susceptibles
                         if roi.shape[0] > 1:
