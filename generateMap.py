@@ -30,7 +30,7 @@ class Map:
         _map = folium.Map(self._location, zoom_start=self._zoom,
                           attr='Análisis susceptibilidad de inundación',
                           max_zoom=18, min_zoom= 10)
-        FloatImage(IMAGE,bottom= 81 ,left=2).add_to(_map)
+        FloatImage(IMAGE,bottom= 81 ,left=1).add_to(_map)
         _map.add_tile_layer(self._url, name='Satelital',
                             attr='Análisis susceptibilidad de inundación',
                             max_zoom=17, min_zoom=10)
@@ -49,13 +49,13 @@ class Map:
             
         if superpixels is not None:
             gjson = superpixels.to_json()
-            lay_sp = folium.FeatureGroup(name='Zonas susceptibles')
+            lay_sp = folium.FeatureGroup(name='Regiones susceptibles')
             lay_sp.add_child(folium.GeoJson(data=gjson,
                                             style_function= lambda x:
-                                                {'color':'#3DCF58',
-                                                 'weight':0.15,
+                                                {'color':'#F08615',
+                                                 'weight':2,
                                                  'fillColor':'#3DCF58',
-                                                 'fillOpacity':0.4}))
+                                                 'fillOpacity':0.1}))
             _map.add_child(lay_sp)
         
         if rivers is not None:
