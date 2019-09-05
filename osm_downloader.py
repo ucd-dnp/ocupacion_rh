@@ -151,8 +151,8 @@ class OSMDownloader:
                                                    index = [0])
                     
             expand_region = all_rivers.buffer(buffer + 20)
-            analysis_region = expand_region.difference(all_rivers)
-            return analysis_region    
+            #analysis_region = expand_region.difference(all_rivers)
+            return expand_region    
 
                 
 if __name__ == '__main__':
