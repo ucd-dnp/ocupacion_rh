@@ -2,6 +2,11 @@
 *.pyc
 
 #ignore temp file html
+temp2.html
 temp.html
+
+#ignore html figures and pdf reports
+generated_figures/
+generated_pdf/
 
 __pycache__/

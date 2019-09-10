@@ -333,12 +333,36 @@ results_card = dbc.Card([
             justify = "center"),
 
             dbc.Row([
+                    html.P("Espere... generando archivo PDF",
+                    style={
+                        'textAlign':'center',
+                        'color': colors[1],
+                        'fontSize': '20px',
+                        'font-weight': 'bold'
+                    }),
+                ],
+                justify = 'center',
+                id = 'pdf_text',
+               
+                ),
+                dbc.Row([
+                    dbc.Spinner(size="lg", color='danger')
+                ],
+                justify = "center",
+                id = 'pdf_spinner',
+               
+               ),
+
+            dbc.Row([
                 dbc.Button("Descargar Reporte", style = {
                     'background': '#011f4b',
                     'color': 'white'
                 }, id = "report_button")
             ],
-            justify = 'center')
+            justify = 'center'),
+
+             
+            
         ],
         id = 'dash_board',)
     ])
@@ -436,7 +460,14 @@ hiddenvar = html.Div(children= 'ff',
                             'position':'absolute ',
                             'top':'890px'})
 
-
+#hidden div for generate report functionality
+hidden_div = html.Div(
+    children = "ff",
+    id = 'hidden_div',
+    style = {
+        'display': 'none'
+    }
+)
 errorMsj = dcc.ConfirmDialog(id = 'error_msj',
                              message = 'Datos no disponibles para esta región',
                              displayed = False)
@@ -446,9 +477,9 @@ loading_state = dcc.Loading(id= 'loading', type = 'graph',
                 
 app.layout = html.Div(children = [navbar,
                                   avant_layout,
-                                     up_button, 
+                                  up_button, 
                                   errorMsj, loading_state,
-                                hidden_geojson, hidden_geodf, hiddenvar])
+                                hidden_geojson, hidden_geodf, hiddenvar, hidden_div])
 
 
 @app.callback(
@@ -954,8 +985,39 @@ def assign_geodf(geojson):
         print(geo_df['geometry'])
 
 
+#callback for display the pdf loading component
+@app.callback(
+    [Output('pdf_text', 'style'),
+    Output('pdf_spinner', 'style')],
+    [Input('report_button', 'n_clicks')]
+)
+def display_loading_pdf(clicks):
+    style = {
+        'display': 'none'
+    }
+    if clicks is not None:
+        style = {
+             'display':'flex',
+             'margin-bottom': '20px'
+        }
+    return  [style, style]
 
-
+#callback for download report
+@app.callback(
+    Output('hidden_div', 'children'),
+    [Input ('report_button', 'n_clicks')],
+    [State('e_lat1', 'value'),
+    State('e_lng1', 'value'),
+    State('result1_0', 'children'),
+    State('result1_1', 'children'),
+    State('result2_0', 'children'),
+    State('graph_1', 'figure'),
+    State('graph_2', 'figure')]
+)
+def generateReport(clicks, lat, long, result_1, result_2, result_3, graph_1, graph_2):
+    if clicks is not None:
+        report = Report(lat, long, result_1, result_2, result_3, graph_1, graph_2).generateTemplate()
+    return " "
 
 
 

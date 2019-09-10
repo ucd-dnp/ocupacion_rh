@@ -1,38 +1,98 @@
 <head>
-<style>
+    <style>
 
-    #report_title{
-        margin: auto;
-        color: #03396c
-    }
+        body{
+            font-family: Arial, Helvetica, sans-serif
+        }
 
-    .description{
-        margin-bottom: 0px;
-        font-weight: bold
-    }
-</style>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        /* img{
+            width: 50%;
+            
+        } */
+        .main-image{
+            width: 50%;
+            margin: 0 auto;
+        }
+
+
+        #report_title_div {
+            /* position: absolute;
+            left: 50%;
+            margin-left: -50px; */
+            display: inline-block;
+            width: 100%;    
+        }
+
+        #report_title {
+            color: #03396c;
+            text-align: center
+        }
+
+        .center_p{
+            text-align: center
+        }
+
+        .description {
+            margin-bottom: 0px;
+            font-weight: bold
+        }
+        
+        #div_map {
+            margin: 20px auto;
+            width: 700px;
+        }
+
+        #mapita {
+            
+            width: 700px;
+            height: 600px; 
+        }
+
+
+        .figures{
+            margin: 15px auto;
+            width: 50%;
+            
+        }
+
+        .fig_frame{
+            height: 500px;
+            width: 500px;
+        }
+        
+    </style>
+
 </head>
 
 <body>
-    <div class="container">
-        <div class="row">
-
-            <h1 id= 'report_title'>Reporte de resultados</h1>
+    <div>
+        <div class="main-image">
+            <img src="./assets/img/dnp.PNG" alt="">
         </div>
 
-        <div class="row">
-            <p class="description">Generado el: {{date}} </p>
-        </div>
-        <div class="row">
-            <p class="description">
-                Localización: {{localization}}
-            </p>
-        </div>
-        <div class="row">
-            <iframe src="temp.html" frameborder="0"></iframe>
-        </div>    
+        <div id="report_title_div">
 
+            <h1 id='report_title'>Reporte de resultados</h1>
+        </div>
+
+
+
+        <p class="description center_p">Generado el: {{date}} </p>
+
+
+        <p class="description center_p">
+            Localización: {{localization}}
+        </p>
+
+        <div id='div_map'>
+            <iframe id='mapita' src="temp2.html" frameborder="0"></iframe>
+        </div>
+        <div class = 'figures'>
+            <iframe class='fig_frame' src="generated_figures/{{graph_1}}_1.html" frameborder="0"></iframe>
+        </div>
+        <div class = 'figures'>
+            <iframe class='fig_frame' src="generated_figures/{{graph_2}}_2.html" frameborder="0"></iframe>
+        </div>
     </div>
 
 
