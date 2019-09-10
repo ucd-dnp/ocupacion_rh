@@ -32,6 +32,9 @@ class Report:
         report_date = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
         #create the date that will be on the html file form avoid concurrent conflicts
         graph_date = datetime.now().strftime("%b%d%Y%H%M%S")
+        #change graph colors
+        graph_colors = ['rgb(31,119,180)', 'rgb(255,127,14)']
+
         #download the report plot
         plotly.offline.plot(self.graph_1, filename = "generated_figures/{}_1.html".format(graph_date), auto_open = False)
         plotly.offline.plot(self.graph_2, filename = "generated_figures/{}_2.html".format(graph_date), auto_open = False)
@@ -44,14 +47,13 @@ class Report:
         templateEnv = jinja2.Environment(loader=templateLoader)
         TEMPLATE_FILE = "report_template.html"
         template = templateEnv.get_template(TEMPLATE_FILE)
-        parameters = template.render(date = report_date, localization = localization, graph_1 = graph_date, graph_2 = graph_date)
-        html_file = open("{}_html_report.html".format(graph_date), 'w')
+        parameters = template.render(date = report_date, localization = localization, result_1 = self.result_1, graph_1 = graph_date, graph_2 = graph_date,  result_2 = self.result_2, result_3 = self.result_3)
+        html_file = open("generated_html/{}_html_report.html".format(graph_date), 'w')
         html_file.write(parameters)
         html_file.close()
 
         #converting and writing into pdf
         
-        css_file = "bootstrap.css"
         config = pdfkit.configuration(wkhtmltopdf=bytes('C://Program Files//wkhtmltopdf//bin//wkhtmltopdf.exe', 'utf-8'))
-        pdfkit.from_file("{}_html_report.html".format(graph_date), "generated_pdf\{}_reporte.pdf".format(graph_date), configuration = config)
+        pdfkit.from_file("generated_html/{}_html_report.html".format(graph_date), "generated_pdf\{}_reporte.pdf".format(graph_date), configuration = config)
        

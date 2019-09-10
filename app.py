@@ -60,6 +60,8 @@ def download(file):
 
 colors = ['#011f4b','#03396c', '#005b96','#6497b1','#b3cde0']
 
+graph_colors = ['rgb(255,127,14)', 'rgb(31,119,180)']
+
 #Crear objeto georreferenciador
 nom = Nominatim(user_agent= 'my-application')
 # crear objeto de clasificación
@@ -236,7 +238,7 @@ geovisor = dbc.Col([
     justify = "center"),
     dbc.Row([
         html.Iframe(id= 'map', 
-                      srcDoc = open('temp.html','r').read(),
+                      srcDoc = open('temp1.html','r').read(),
                       width= '100%', 
                       height= '540')
     ],
@@ -293,23 +295,24 @@ results_card = dbc.Card([
             ],
             justify = "center"),
 
-            dbc.Row([
-            html.P("Porcentaje", 
-            style = {
-                'textAlign':'center',
-                'color':colors[3],
-                'fontSize':'26px',
-                'height': '31px'
-            }
-            ),
+            # dbc.Row([
+            # html.P("Porcentaje", 
+            # style = {
+            #     'textAlign':'center',
+            #     'color':colors[3],
+            #     'fontSize':'26px',
+            #     'height': '31px'
+            # }
+            # ),
 
-            ],
-            justify = "center"),
+            # ],
+            # justify = "center"),
 
             dbc.Row([
-           dcc.Graph(id= 'graph_2', config={'displayModeBar': False},  style = {'width':'330px',
-                                                                                'height':'300px',
-                                                                                }),  
+           dcc.Graph(id= 'graph_2', config={'displayModeBar': False}, style = {
+               'width' : '330px',
+               'height' : '300px'
+           }),  
             ],
             justify = "center"),
             dbc.Row([
@@ -317,20 +320,21 @@ results_card = dbc.Card([
            html.H1(html.B('### Hectareas'), id = 'result2_0',
                                    style={'position':'relative',
                                           'textAlign':'center',
+                                          'margin-bottom': '25px',
                                           'color':colors[2],
                                           }),
             ],
             justify = "center"),
 
-            dbc.Row([
-            html.P('dentro de zona susceptible',
-                                     style={'textAlign':'center',
-                                            'color':colors[3],
-                                            'fontSize':'26px',
-                                            })                       
+            # dbc.Row([
+            # html.P('dentro de zona susceptible',
+            #                          style={'textAlign':'center',
+            #                                 'color':colors[3],
+            #                                 'fontSize':'26px',
+            #                                 })                       
 
-            ],
-            justify = "center"),
+            # ],
+            # justify = "center"),
 
             dbc.Row([
                     html.P("Espere... generando archivo PDF",
@@ -493,7 +497,8 @@ app.layout = html.Div(children = [navbar,
      Output(component_id='result2_0',component_property='children'),
      Output(component_id='graph_1', component_property='figure'),
      Output(component_id='graph_2', component_property='figure'),
-    Output(component_id = 'download_div', component_property = 'children')],
+    Output(component_id = 'download_div', component_property = 'children'),
+    Output(component_id = 'graph_2', component_property = "style")],
     [Input(component_id='b_search',component_property='n_clicks_timestamp'),
      Input(component_id='b_analizar',component_property='n_clicks_timestamp')],
     [State(component_id='searchBar',component_property='value'),
@@ -508,9 +513,18 @@ app.layout = html.Div(children = [navbar,
 def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buffer2):
     buffer1 = int(buffer1)
     buffer2 = int(buffer2)
-
+    #creation of Download class instance
     d_object = Download(FILE_PATH)
     default = d_object.download_file()
+
+    #creation of default style for graph_2
+    d_style_g2 = {
+        'width':'330px',
+        'height':'300px'
+                        }
+
+
+
     if bnt1 is None and bnt2 is None:
         location = (4.5975, -74.0765)
         Map(location= location, zoom= 15).generateMap()
@@ -518,7 +532,7 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
         figure1 = {'data':[go.Pie(visible=False)]}
         figure2 = {'data':[go.Pie(visible=False)]}
         return ['Inicia ', False, ' ', html.Div(' '),{'visibility':'hidden'},
-                '', '','', figure1,figure2, default]
+                '', '','', figure1,figure2, default, d_style_g2]
     if bnt1 is None:
         bnt1 = 1
     if bnt2 is None:
@@ -533,7 +547,7 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
             figure2 = {'data':[go.Pie(visible=False)]}
             
             return ['buscar', False, ' ', html.Div(' '), {'visibility':'hidden'},
-                    '', '','', figure1, figure2, default]
+                    '', '','', figure1, figure2, default, d_style_g2]
         else:
             try:
                 response = nom.geocode(str_loc +', Colombia')
@@ -544,13 +558,13 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
                 figure1 = {'data':[go.Pie(visible=False)]}
                 figure2 = {'data':[go.Pie(visible=False)]}
                 return ['buscar', False, ' ', html.Div(' '), {'visibility':'hidden'},
-                        '', '','', figure1, figure2, default]
+                        '', '','', figure1, figure2, default, d_style_g2]
             except:
                 #####################################  RESULT  ##################################################
                 figure1 = {'data':[go.Pie(visible=False)]}
                 figure2 = {'data':[go.Pie(visible=False)]}
                 return ['reintentar', True, 'Error de conexión', html.Div(' '),{'visibility':'hidden'},
-                        '','','',figure1, figure2, default]
+                        '','','',figure1, figure2, default, d_style_g2]
 
     else: #El boton analizar es presionado
 
@@ -561,7 +575,7 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
             figure1 = {'data':[go.Pie(visible=False)]}
             figure2 = {'data':[go.Pie(visible=False)]}
             return ['', True, 'Existen campos vacíos o erróneos en los campos de entrada.', html.Div(' '), {'visibility':'hidden'},
-                    '','','',figure1,figure2, default]
+                    '','','',figure1,figure2, default, d_style_g2]
             
         box_coords = (float(lat2),float(lng1),float(lat1),float(lng2))
         osm = OSMDownloader(box = box_coords)
@@ -586,7 +600,7 @@ Intente con otra región o cambie la fuente de análisis por
                 figure1 = {'data':[go.Pie(visible=False)]}
                 figure2 = {'data':[go.Pie(visible=False)]}
                 return ['No hay información disponible', True, msj, html.Div(' '),
-                        {'visibility':'hidden'},'','','', figure1, figure2, default]
+                        {'visibility':'hidden'},'','','', figure1, figure2, default, d_style_g2]
             else:
                 builds = osm._builds.to_crs({'init':'epsg:32618'})
                 if type(osm._rivers) is not int:
@@ -653,12 +667,12 @@ Intente con otra región o cambie la fuente de análisis por
                         total_area = np.sum(builds.area)/10000 # hectareas
                         total_area_sus = np.sum(builds_sus.area)/10000 # hectareas
                         figure1 = {'data': [go.Pie(visible= True, values=[n_builds_sus, n_builds-n_builds_sus],
-                                                  labels = ['susceptibles', 'No susceptibles'], hole=0.33)],
+                                                  labels = ['susceptibles', 'No susceptibles'], hole=0.33, marker_colors = graph_colors)],
                                    'layout':go.Layout(margin=go.layout.Margin(l=10, r=95, t=25, b=1,autoexpand = False))}
                         figure2 = {'data': [go.Bar(visible = True, x = ['AREA'], y = [total_area_sus], 
-                                                    name= 'area dentro de z. susceptible'),
+                                                    name= 'area dentro de z. susceptible', marker_color = graph_colors[0]),
                                              go.Bar(visible = True, x= ['AREA'], y = [total_area- total_area_sus], 
-                                                    name= 'area fuera de z. susceptible')],
+                                                    name= 'area fuera de z. susceptible', marker_color = graph_colors[1])],
                                    'layout':go.Layout(barmode= 'stack', 
                                                       margin = go.layout.Margin(l= 80,r = 1, t=10, b=25,autoexpand = False),
                                                       yaxis = go.layout.YAxis(title= 'HECTAREAS'),
@@ -668,9 +682,9 @@ Intente con otra región o cambie la fuente de análisis por
                         
 
                         return ['builds,rivers,poly', False, ' ', html.Div(' '), style,
-                                html.B(str(n_builds_sus) + ' construciones'), html.B(str(porc_builds)+ ' %'), 
-                                html.B(str(round(total_area_sus,1))+ ' Hectareas'),
-                                figure1,figure2, download_component ]
+                                html.B(str(n_builds_sus) + ' construcciones'), html.B(str(porc_builds)+ ' % del total'), 
+                                html.B(str(round(total_area_sus,1))+ ' Hectáreas '),
+                                figure1,figure2, download_component , d_style_g2]
                     
                     else:
                         if rivers.shape[0]>1:
@@ -702,21 +716,21 @@ Intente con otra región o cambie la fuente de análisis por
                         total_area = np.sum(builds.area)/10000 # hectareas
                         total_area_sus = np.sum(builds_sus.area)/10000 # hectareas
                         figure1 = {'data': [go.Pie(visible = True, values=[n_builds_sus, n_builds-n_builds_sus],
-                                                  labels = ['susceptibles', 'No susceptibles'])],
+                                                  labels = ['susceptibles', 'No susceptibles'], marker_colors = graph_colors)],
                                    'layout': go.Layout(margin=go.layout.Margin(l=10, r=95, t=25, b=1,autoexpand = False))}
                         figure2 = {'data': [go.Bar(visible = True, x = ['AREA'], y = [total_area_sus], 
-                                                    name= 'area dentro de z. susceptible'),
+                                                    name= 'area dentro de z. susceptible' , marker_color = graph_colors[0]),
                                              go.Bar(visible = True, x= ['AREA'], y = [total_area- total_area_sus], 
-                                                    name= 'area fuera de z. susceptible')],
+                                                    name= 'area fuera de z. susceptible', marker_color = graph_colors[1])],
                                    'layout':go.Layout(barmode= 'stack', 
                                                       margin = go.layout.Margin(l= 80,r = 1, t=10, b=25,autoexpand = False),
                                                       yaxis = go.layout.YAxis(title= 'HECTAREAS'),
                                                       xaxis = go.layout.XAxis(domain=[0,0.5]))}
                         style = {'width':'770px' ,'visibility':'visible'}
                         return ['builds,rivers', False, ' ', html.Div(' '), style,
-                                html.B(str(n_builds_sus) + ' construcciones'), html.B(str(porc_builds)+ ' %'), 
-                                html.B(str(round(total_area_sus,1))+ ' Hectareas'),
-                                figure1,figure2, download_component]
+                                html.B(str(n_builds_sus) + ' construcciones'), html.B(str(porc_builds)+ ' % del total'), 
+                                html.B(str(round(total_area_sus,1))+ ' Hectáreas'),
+                                figure1,figure2, download_component, d_style_g2]
                 else:
                     Map(location= location, zoom= 15).generateMap()
                     msj = """No hay información disponible de capa de rios
@@ -724,7 +738,7 @@ para esta región. Intente de nuevo o cambie
 la región de análisis"""
                     figure1 = {'data':[go.Pie(visible=False)]}
                     figure2 = {'data':[go.Pie(visible=False)]}
-                    return ['builds', True, msj, html.Div(' '),{'visibility':'hidden'},'','', '',figure1, figure2, default]
+                    return ['builds', True, msj, html.Div(' '),{'visibility':'hidden'},'','', '',figure1, figure2, default, d_style_g2]
 						
         elif src_sel == 'rios':
             #obtencion capa de rios
@@ -779,7 +793,7 @@ la región de análisis"""
                     figure1 = {'data':[go.Pie(visible=False)]}
                     figure2 = {'data':[go.Pie(visible=False)]}
                     return ['rivers, poly', False, '', html.Div(' '), {'visibility':'hidden'},
-                            '','','',figure1,figure2, download_component]
+                            '','','',figure1,figure2, download_component, d_style_g2]
                 else:
                     roi_param  = roi.to_crs({'init':'epsg:4326'} )
                     download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param )
@@ -791,7 +805,7 @@ la región de análisis"""
                     figure1 = {'data':[go.Pie(visible=False)]}
                     figure2 = {'data':[go.Pie(visible=False)]}
                     return ['rivers', False, '', html.Div(' '), {'visibility':'hidden'},
-                            '','','',figure1,figure2, download_component]
+                            '','','',figure1,figure2, download_component, d_style_g2]
             else:
                 Map(location= location, zoom= 15).generateMap()
                 msj = """No hay información disponible de capa de rios
@@ -799,7 +813,7 @@ para esta región. Intente de nuevo o cambie
 la región de análisis"""
                 figure1 = {'data':[go.Pie(visible=False)]}
                 figure2 = {'data':[go.Pie(visible=False)]}
-                return ['builds', True, msj, html.Div(' '),{'visibility':'hidden'},'','', '',figure1, figure2, default]
+                return ['builds', True, msj, html.Div(' '),{'visibility':'hidden'},'','', '',figure1, figure2, default, d_style_g2]
             
         else:
             proj = 'epsg:32618'
@@ -812,9 +826,9 @@ la región de análisis"""
                 ###########################  RESULTS  ####################################
                 figure1 = {'data':[go.Pie(visible=False)]}
                 figure2 = {'data':[go.Pie(visible=False)]}
-                msj = 'La región de análisis es muy grande, por favor intente con una más pequeña!'
+                msj = 'La región de análisis es muy grande, por favor intente con una más pequeña'
                 return ['', True, msj, html.Div(' '), {'visibility':'hidden'},
-                    '','','',figure1,figure2, default]
+                    '','','',figure1,figure2, default, d_style_g2]
             
             #Si la región cumple el tamaño de análisis permitido
             #descarga de información de OSMDownloader
@@ -836,9 +850,9 @@ la región de análisis"""
                     # ##########################  RESULTS  ####################################
                     figure1 = {'data':[go.Pie(visible=False)]}
                     figure2 = {'data':[go.Pie(visible=False)]}
-                    msj = 'No se puede realizar el análisis por imagenes satelitales, revise las coordenadas!'
+                    msj = 'No se puede realizar el análisis por imagenes satelitales, por favor revise las coordenadas'
                     return ['', True, msj, html.Div(' '), {'visibility':'hidden'},
-                        '','','',figure1,figure2, default]
+                        '','','',figure1,figure2, default, d_style_g2]
                 
                 #generando region de analisis en la imagen
                 analysis_region = osm.computeROIsuperpixels(buffer1)
@@ -931,7 +945,7 @@ la región de análisis"""
                     total_area = np.sum(builds_temp.area)/10000 # hectareas
                     n_builds_sus = np.shape(builds_sus)[0]
                     figure1 = {'data': [go.Bar(visible = True, x = ['AREA'], y = [total_area], 
-                                        name= 'area dentro de z. susceptible')],
+                                        name= 'area dentro de z. susceptible', marker_color = graph_colors[0])],
                                'layout':go.Layout(barmode= 'stack', 
                                         margin = go.layout.Margin(l= 80,r = 1, t=10, b=25,autoexpand = False),
                                         yaxis = go.layout.YAxis(title= 'HECTAREAS'),
@@ -942,10 +956,13 @@ la región de análisis"""
                     
                     style = {'width':'770px','visibility':'visible'}
                     #TODO unir tivers y polyrivers
+                    style_figure = {
+                        'display': 'none'
+                    }
                     download_component = d_object.download_file(rivers = osm._rivers, builds = build_sus_param, roi = roi_param)
                     return ['rivers, poly, superpixels', False, '', html.Div(' '), style,
-                            html.B(str(round(total_area,1)) + ' Hectareas'),html.B(str(n_builds_sus) + ' regiones'),'',
-                            figure1,figure2, download_component]
+                            html.B(str(round(total_area,1)) + ' Hectáreas'),html.B(str(n_builds_sus) + ' regiones detectadas'),'',
+                            figure1,figure2, download_component, style_figure]
                             
                 else:
                     ##################################################################################################
@@ -986,16 +1003,20 @@ la región de análisis"""
                     n_builds_sus = np.shape(builds_sus)[0]
                     #####################################  RESULT ###################################################
                     figure1 = {'data': [go.Bar(visible = True, x = ['AREA'], y = [total_area], 
-                                        name= 'area dentro de z. susceptible')],
+                                        name= 'area dentro de z. susceptible', marker_color = graph_colors[0])],
                                'layout':go.Layout(barmode= 'stack', 
                                         margin = go.layout.Margin(l= 80,r = 1, t=10, b=25,autoexpand = False),
                                         yaxis = go.layout.YAxis(title= 'HECTAREAS'),
                                         xaxis = go.layout.XAxis(domain=[0,0.5]))
                                 }
                     figure2 = {'data':[go.Pie(visible=False)]}
+                    style_figure = {
+                        'display': 'none'
+                    }
+
                     return ['rivers, superpixels', False, '', html.Div(' '), style,
-                            html.B(str(round(total_area,1)) + ' Hectareas'),html.B(str(n_builds_sus) + ' regiones'),'',
-                            figure1,figure2, download_component]
+                            html.B(str(round(total_area,1)) + ' Hectáreas'),html.B(str(n_builds_sus) + ' regiones detectadas'),'',
+                            figure1,figure2, download_component, style_figure]
             #No hay informacion de capas de rios, por ende no se genera imagen satelital
             else:
                 Map(location= location, zoom= 15).generateMap()
@@ -1004,7 +1025,7 @@ para esta región. Intente de nuevo o cambie
 la región de análisis"""
                 figure1 = {'data':[go.Pie(visible=False)]}
                 figure2 = {'data':[go.Pie(visible=False)]}
-                return ['builds', True, msj, html.Div(' '),{'visibility':'hidden'},'','', '',figure1, figure2, default]   
+                return ['builds', True, msj, html.Div(' '),{'visibility':'hidden'},'','', '',figure1, figure2, default, d_style_g2]   
 
 @app.callback(
         Output(component_id= 'map', component_property = 'srcDoc'),
@@ -1012,7 +1033,7 @@ la región de análisis"""
         [Input(component_id= 'hidden_var',component_property = 'children')]
 )
 def update_map(value):
-    return open('temp.html','r').read()
+    return open('temp1.html','r').read()
 
 
 
@@ -1090,7 +1111,8 @@ def display_loading_pdf(clicks):
 )
 def generateReport(clicks, lat, long, result_1, result_2, result_3, graph_1, graph_2):
     if clicks is not None:
-        report = Report(lat, long, result_1, result_2, result_3, graph_1, graph_2).generateTemplate()
+        print(graph_1)
+        report = Report(lat, long, result_1['props']['children'], result_2['props']['children'], result_3['props']['children'], graph_1, graph_2).generateTemplate()
     return " "
 
 

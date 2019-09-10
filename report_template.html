@@ -1,15 +1,20 @@
 <head>
     <style>
-
-        body{
+        body {
             font-family: Arial, Helvetica, sans-serif
         }
 
-        /* img{
-            width: 50%;
-            
-        } */
-        .main-image{
+        #watermark-div {
+            position: absolute;
+            z-index: 0;
+            background: white;
+            display: block;
+            min-height: 50%;
+            min-width: 50%;
+            color: yellow;
+        }
+
+        .main-image {
             width: 50%;
             margin: 0 auto;
         }
@@ -20,46 +25,61 @@
             left: 50%;
             margin-left: -50px; */
             display: inline-block;
-            width: 100%;    
+            width: 100%;
         }
 
         #report_title {
             color: #03396c;
-            text-align: center
+            text-align: center;
+            font-size: 3rem
         }
 
-        .center_p{
-            text-align: center
+        .center_p {
+            text-align: center;
+            font-size: 1.5rem
         }
 
         .description {
             margin-bottom: 0px;
             font-weight: bold
         }
-        
+
         #div_map {
-            margin: 20px auto;
-            width: 700px;
+            margin: 50px auto 600px;
+            width: 800px;
         }
 
         #mapita {
-            
-            width: 700px;
-            height: 600px; 
+
+            width: 800px;
+            height: 800px;
         }
 
+        .figure-text {
+            display: block;
+            justify-content: space-around
+        }
 
-        .figures{
+        .figures {
             margin: 15px auto;
             width: 50%;
-            
+
         }
 
-        .fig_frame{
+        .fig_frame {
             height: 500px;
             width: 500px;
         }
-        
+
+        .results-text {
+            font-size: 2.5rem;
+            color: #FF7F0E;
+            text-align: center
+        }
+
+        .highlighted-text {
+            color: #005B96
+        }
     </style>
 
 </head>
@@ -67,7 +87,7 @@
 <body>
     <div>
         <div class="main-image">
-            <img src="./assets/img/dnp.PNG" alt="">
+            <img src="../assets/img/dnp.PNG" alt="">
         </div>
 
         <div id="report_title_div">
@@ -85,13 +105,22 @@
         </p>
 
         <div id='div_map'>
-            <iframe id='mapita' src="temp2.html" frameborder="0"></iframe>
+            <iframe id='mapita' src="../temp2.html" frameborder="0"></iframe>
         </div>
-        <div class = 'figures'>
-            <iframe class='fig_frame' src="generated_figures/{{graph_1}}_1.html" frameborder="0"></iframe>
+
+        <div class="figure-text">
+            <p class="results-text"><b class="highlighted-text">{{result_1}}</b> en zona de vulnerabilidad</p>
+            <div class='figures'>
+                <iframe class='fig_frame' src="../generated_figures/{{graph_1}}_1.html" frameborder="0"></iframe>
+            </div>
         </div>
-        <div class = 'figures'>
-            <iframe class='fig_frame' src="generated_figures/{{graph_2}}_2.html" frameborder="0"></iframe>
+
+        <div class="figure-text">
+            <p class="results-text"><b class="highlighted-text">{{result_2}} </b>de construcciones en la zona</p>
+            <div class='figures'>
+                <iframe class='fig_frame' src="../generated_figures/{{graph_2}}_2.html" frameborder="0"></iframe>
+            </div>
+            <p class="results-text"><b class="highlighted-text">{{result_3}}</b> en zona de vulnerabilidad</p>
         </div>
     </div>
 

@@ -3,10 +3,11 @@
 
 #ignore temp file html
 temp2.html
-temp.html
+temp1.html
 
 #ignore html figures and pdf reports
 generated_figures/
 generated_pdf/
+generated_html/
 
 __pycache__/
