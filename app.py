@@ -274,7 +274,7 @@ results_card = dbc.Card([
             justify = "center"),
             dbc.Row([
 
-            html.P('Construcciones dentro de la zona de suceptibilidad',
+            html.P('dentro de la zona de suceptibilidad',
              style={
                 'textAlign':'center',
                 'color':colors[3],
@@ -282,7 +282,7 @@ results_card = dbc.Card([
                 'height':'31px',
                 'margin-bottom': '20px'}
             ),      
-            ]),
+            ], justify = "center"),
             dbc.Row([
 
             html.H1(html.B('#####'), id = 'result1_1',
@@ -552,7 +552,7 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
                 return ['reintentar', True, 'Error de conexión', html.Div(' '),{'visibility':'hidden'},
                         '','','',figure1, figure2, default]
 
-    else:
+    else: #El boton analizar es presionado
 
         try:
             location = ((float(lat1)+float(lat2))*.5, (float(lng1)+float(lng2))*.5)
@@ -668,7 +668,7 @@ Intente con otra región o cambie la fuente de análisis por
                         
 
                         return ['builds,rivers,poly', False, ' ', html.Div(' '), style,
-                                html.B(n_builds_sus), html.B(str(porc_builds)+ ' %'), 
+                                html.B(str(n_builds_sus) + ' construciones'), html.B(str(porc_builds)+ ' %'), 
                                 html.B(str(round(total_area_sus,1))+ ' Hectareas'),
                                 figure1,figure2, download_component ]
                     
@@ -714,7 +714,7 @@ Intente con otra región o cambie la fuente de análisis por
                                                       xaxis = go.layout.XAxis(domain=[0,0.5]))}
                         style = {'width':'770px' ,'visibility':'visible'}
                         return ['builds,rivers', False, ' ', html.Div(' '), style,
-                                html.B(n_builds_sus), html.B(str(porc_builds)+ ' %'), 
+                                html.B(str(n_builds_sus) + ' construcciones'), html.B(str(porc_builds)+ ' %'), 
                                 html.B(str(round(total_area_sus,1))+ ' Hectareas'),
                                 figure1,figure2, download_component]
                 else:
@@ -833,7 +833,7 @@ la región de análisis"""
                     img = np.array(gmd.generateImage(), dtype = np.uint8)
                     img_hsv = cv2.cvtColor(img,cv2.COLOR_RGB2HSV)
                 except:
-                    ###########################  RESULTS  ####################################
+                    # ##########################  RESULTS  ####################################
                     figure1 = {'data':[go.Pie(visible=False)]}
                     figure2 = {'data':[go.Pie(visible=False)]}
                     msj = 'No se puede realizar el análisis por imagenes satelitales, revise las coordenadas!'
@@ -847,18 +847,20 @@ la región de análisis"""
                 out, m = imtools.maskRasterIm(img, gmd.GT, analysis_region)
                 segments = imtools.computeSegments(out,mask=m) 
                 
-                ### aqui modelo de clasificacicón de la imagen  ###
-                ###################################################
+                # ## aqui modelo de clasificacicón de la imagen  ###
+                # ##################################################
                 Xtest = imtools.Feature_im2hist(img_hsv,segments, nbins=16,clrSpc='hsv')
                 Ytest_pred = pipeline.predict(Xtest)
-                #Ytest_prob = pipeline.predict_proba(Xtest)[:,1]
-                #Ytest_pred2 = Ytest_prob>0.35
-                mask_est = imtools.draw_GT(labels= Ytest_pred,segments = segments)
+                Ytest_prob = pipeline.predict_proba(Xtest)[:,1]
+                Ytest_pred2 = Ytest_prob>0.35
+                mask_est = imtools.draw_GT(labels= Ytest_pred2,segments = segments)
                 segments[mask_est == 0] = 0
-                ###################################################
-                ## mapeando los segmentos al mapa de dash  
+                # ##################################################
+                
+                #  mapeando los segmentos al mapa de dash  
                 seg_polygons = imtools.mapSuperPixels(segments=segments, GT=gmd.GT, verbose=False)
-                #generando buffer de rios
+                
+                # ####   generando buffer de rios ############
                 rivers= osm._rivers.to_crs({'init':'epsg:32618'})
                 rivers.geometry = [r.buffer(2*buffer1) if w=='river' else r.buffer(2*buffer2) 
                                    for r, w in zip(rivers.geometry,rivers['waterway'])]
@@ -891,37 +893,109 @@ la región de análisis"""
                         roi = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.union(poly_rivers))},
                                                 geometry = 'geometry', 
                                                 crs = rivers.crs, index = [0])
-                    
-                    roi_params = roi.to_crs({'init':'epsg:4326'})
-                    superpixels_params = seg_polygons.to_crs(crs={'init':'epsg:4326'})
+                                                
+                    #######################################################################################
+                    #Calculando en numero de construcciones que intersectan la zona de susceptibles
+                    if roi.shape[0] > 1:
+                        builds_sus = np.array([seg_polygons.geometry.intersects(x) for x in roi.geometry])
+                        builds_sus = seg_polygons[np.logical_or.reduce(builds_sus)]
+                    else:
+                        builds_sus = seg_polygons[seg_polygons.geometry.intersects(roi.geometry[0])]
+                        
+                    if builds_sus.shape[0] == 0:
+                        roi_param = roi.to_crs({'init':'epsg:4326'})
+                        Map(location= location, zoom= 15).generateMap(rivers=osm._rivers, 
+                                                                      roi = roi_param,
+                                                                      bounding = box_coords)
+                        download_component = d_object.download_file(rivers = osm._rivers, roi = roi.to_crs({'init':'epsg:4326'} ))
 
-                    Map(location= location, zoom= 15).generateMap(rivers=osm._rivers,
-                                                                  poly_rivers = osm._poly_rivers,
-                                                                  roi = roi_params,
-                                                                  superpixels= superpixels_params,
-                                                                  bounding=box_coords)
+                    else:
+                        roi_param = roi.to_crs({'init':'epsg:4326'})
+                        build_sus_param = builds_sus.to_crs({'init':'epsg:4326'})
+                        Map(location= location, zoom= 15).generateMap(superpixels = build_sus_param,
+                                                                      rivers=osm._rivers, 
+                                                                      roi = roi_param,
+                                                                      bounding=box_coords)
+                        download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param, builds = build_sus_param)
+                        
                     #####################################  RESULT ###################################################
-                    figure1 = {'data':[go.Pie(visible=False)]}
+                    # calculo de area
+                    try:
+                        builds_temp = gpd.GeoDataFrame({'geometry':cascaded_union(builds_sus.geometry)},geometry = 'geometry',
+                                                        crs = rivers.crs)
+                    except:
+                        builds_temp = gpd.GeoDataFrame({'geometry':cascaded_union(builds_sus.geometry)},geometry = 'geometry',
+                                                        crs = rivers.crs, index = [0])
+                    
+                    #TODO: poner bonita la información de numero de regiones y hectareas
+                    total_area = np.sum(builds_temp.area)/10000 # hectareas
+                    n_builds_sus = np.shape(builds_sus)[0]
+                    figure1 = {'data': [go.Bar(visible = True, x = ['AREA'], y = [total_area], 
+                                        name= 'area dentro de z. susceptible')],
+                               'layout':go.Layout(barmode= 'stack', 
+                                        margin = go.layout.Margin(l= 80,r = 1, t=10, b=25,autoexpand = False),
+                                        yaxis = go.layout.YAxis(title= 'HECTAREAS'),
+                                        xaxis = go.layout.XAxis(domain=[0,0.5]))
+                                }
                     figure2 = {'data':[go.Pie(visible=False)]}
+                    
+                    
+                    style = {'width':'770px','visibility':'visible'}
                     #TODO unir tivers y polyrivers
-                    download_component = d_object.download_file(rivers = osm._rivers, builds = superpixels_params, roi = roi_params)
-                    return ['rivers, poly, superpixels', False, '', html.Div(' '), {'visibility':'hidden'},
-                            '','','',figure1,figure2, download_component]
+                    download_component = d_object.download_file(rivers = osm._rivers, builds = build_sus_param, roi = roi_param)
+                    return ['rivers, poly, superpixels', False, '', html.Div(' '), style,
+                            html.B(str(round(total_area,1)) + ' Hectareas'),html.B(str(n_builds_sus) + ' regiones'),'',
+                            figure1,figure2, download_component]
                             
                 else:
+                    ##################################################################################################
+                    roi = rivers.copy()
+                    #Calculando en numero de construcciones que intersectan la zona de susceptibles
+                    if roi.shape[0] > 1:
+                        builds_sus = np.array([seg_polygons.geometry.intersects(x) for x in roi.geometry])
+                        builds_sus = seg_polygons[np.logical_or.reduce(builds_sus)]
+                    else:
+                        builds_sus = seg_polygons[seg_polygons.geometry.intersects(roi.geometry[0])]
+                        
+                    if builds_sus.shape[0] == 0:
+                        roi_param = roi.to_crs({'init':'epsg:4326'})
+                        Map(location= location, zoom= 15).generateMap(rivers=osm._rivers, 
+                                                                      roi = roi_param,
+                                                                      bounding = box_coords)
+                        download_component = d_object.download_file(rivers = osm._rivers, roi = roi.to_crs({'init':'epsg:4326'} ))
 
-                    roi_params = rivers.to_crs({'init':'epsg:4326'})
-                    superpixels_params = seg_polygons.to_crs({'init':'epsg:4326'})
-                    Map(location= location, zoom= 15).generateMap(rivers=osm._rivers,
-                                                                  roi = roi_params,
-                                                                  superpixels= superpixels_params,
-                                                                  bounding=box_coords)
+                    else:
+                        roi_param = roi.to_crs({'init':'epsg:4326'})
+                        build_sus_param = builds_sus.to_crs({'init':'epsg:4326'})
+                        Map(location= location, zoom= 15).generateMap(superpixels = build_sus_param,
+                                                                      rivers=osm._rivers, 
+                                                                      roi = roi_param,
+                                                                      bounding=box_coords)
+                        download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param, builds = build_sus_param)
+                   
+                    # calculo de area
+                    try:
+                        builds_temp = gpd.GeoDataFrame({'geometry':cascaded_union(builds_sus.geometry)},geometry = 'geometry',
+                                                        crs = rivers.crs)
+                    except:
+                        builds_temp = gpd.GeoDataFrame({'geometry':cascaded_union(builds_sus.geometry)},geometry = 'geometry',
+                                                        crs = rivers.crs, index = [0])
+                    
+                    #TODO: poner bonita la información de numero de regiones y hectareas
+                    total_area = np.sum(builds_temp.area)/10000 # hectareas
+                    n_builds_sus = np.shape(builds_sus)[0]
                     #####################################  RESULT ###################################################
-                    figure1 = {'data':[go.Pie(visible=False)]}
+                    figure1 = {'data': [go.Bar(visible = True, x = ['AREA'], y = [total_area], 
+                                        name= 'area dentro de z. susceptible')],
+                               'layout':go.Layout(barmode= 'stack', 
+                                        margin = go.layout.Margin(l= 80,r = 1, t=10, b=25,autoexpand = False),
+                                        yaxis = go.layout.YAxis(title= 'HECTAREAS'),
+                                        xaxis = go.layout.XAxis(domain=[0,0.5]))
+                                }
                     figure2 = {'data':[go.Pie(visible=False)]}
-                    download_component = d_object.download_file(rivers = osm._rivers, builds = superpixels_params, roi = roi_params)
-                    return ['rivers, superpixels', False, '', html.Div(' '), {'visibility':'hidden'},
-                            '','','',figure1,figure2, download_component]
+                    return ['rivers, superpixels', False, '', html.Div(' '), style,
+                            html.B(str(round(total_area,1)) + ' Hectareas'),html.B(str(n_builds_sus) + ' regiones'),'',
+                            figure1,figure2, download_component]
             #No hay informacion de capas de rios, por ende no se genera imagen satelital
             else:
                 Map(location= location, zoom= 15).generateMap()
