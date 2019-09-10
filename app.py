@@ -45,6 +45,8 @@ server = Flask(__name__)
 #create a file path for storing the files that will be downloaded - implementation mostly for production 
 FILE_PATH = '/resources/shp_geojson'
 
+REPORT_PATH = '/Users/cv-machine/OneDrive - Departamento Nacional de Planeacion/DNP/DNP/inundaciones/inundaciones_ucd/generated_pdf'
+
 #creating the path if doesn't exists
 if not os.path.exists(FILE_PATH):
     os.makedirs(FILE_PATH)
@@ -54,6 +56,9 @@ if not os.path.exists(FILE_PATH):
 def download(file):
     return send_from_directory(FILE_PATH, file, as_attachment=True)
 
+@server.route("/report/<path:file>")
+def download_report(file):
+    return send_from_directory(REPORT_PATH, file, as_attachment=True)
 
 
 
@@ -295,18 +300,7 @@ results_card = dbc.Card([
             ],
             justify = "center"),
 
-            # dbc.Row([
-            # html.P("Porcentaje", 
-            # style = {
-            #     'textAlign':'center',
-            #     'color':colors[3],
-            #     'fontSize':'26px',
-            #     'height': '31px'
-            # }
-            # ),
-
-            # ],
-            # justify = "center"),
+            
 
             dbc.Row([
            dcc.Graph(id= 'graph_2', config={'displayModeBar': False}, style = {
@@ -326,15 +320,7 @@ results_card = dbc.Card([
             ],
             justify = "center"),
 
-            # dbc.Row([
-            # html.P('dentro de zona susceptible',
-            #                          style={'textAlign':'center',
-            #                                 'color':colors[3],
-            #                                 'fontSize':'26px',
-            #                                 })                       
-
-            # ],
-            # justify = "center"),
+            
 
             dbc.Row([
                     html.P("Espere... generando archivo PDF",
@@ -358,12 +344,18 @@ results_card = dbc.Card([
                ),
 
             dbc.Row([
-                dbc.Button("Descargar Reporte", style = {
+                dbc.Button("Generar reporte", style = {
                     'background': '#011f4b',
                     'color': 'white'
                 }, id = "report_button")
             ],
             justify = 'center'),
+
+            dbc.Row([
+
+            ],
+            id = 'download_report',
+            justify = 'center')
 
              
             
@@ -1099,7 +1091,7 @@ def display_loading_pdf(clicks):
 
 #callback for download report
 @app.callback(
-    Output('hidden_div', 'children'),
+    Output('download_report', 'children'),
     [Input ('report_button', 'n_clicks')],
     [State('e_lat1', 'value'),
     State('e_lng1', 'value'),
@@ -1110,10 +1102,19 @@ def display_loading_pdf(clicks):
     State('graph_2', 'figure')]
 )
 def generateReport(clicks, lat, long, result_1, result_2, result_3, graph_1, graph_2):
+    
     if clicks is not None:
-        print(graph_1)
         report = Report(lat, long, result_1['props']['children'], result_2['props']['children'], result_3['props']['children'], graph_1, graph_2).generateTemplate()
-    return " "
+        location = "/report/{}_reporte.pdf".format(report)
+        d_report_button = dbc.Button([html.A("Descargar reporte", href = location, style = {"text-decoration" : "none", "color": "white"})],
+        size = "sm",
+        style = {
+            "background" : "#6497b1"
+        })
+
+        
+        return d_report_button
+    return ""
 
 
 

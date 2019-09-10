@@ -7,11 +7,19 @@
         #watermark-div {
             position: absolute;
             z-index: 0;
-            background: white;
+            top: 600px;
+            left: 150px;
             display: block;
             min-height: 50%;
             min-width: 50%;
             color: yellow;
+        }
+
+        #watermark-text {
+            color: grey;
+            font-size: 110px;
+            transform: rotate(320deg);
+            -webkit-transform: rotate(320deg);
         }
 
         .main-image {
@@ -86,6 +94,11 @@
 
 <body>
     <div>
+        <div id="watermark-div">
+            <p id="watermark-text">
+                Información no oficial
+            </p>
+        </div>
         <div class="main-image">
             <img src="../assets/img/dnp.PNG" alt="">
         </div>
@@ -122,6 +135,7 @@
             </div>
             <p class="results-text"><b class="highlighted-text">{{result_3}}</b> en zona de vulnerabilidad</p>
         </div>
+        <p><b>Atención:</b> Este reporte fue generado con una herramienta de predicción de zonas de inundaciones, por ningún motivo puede ser considerado como información oficial por ninguna entidad estatal, ya que los resultados obtenidos pueden tener un porcentaje de error que puede presentar un contraste con las situaciones actuales de las zonas analizadas.</p>
     </div>
 
 

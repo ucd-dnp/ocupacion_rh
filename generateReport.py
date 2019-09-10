@@ -56,4 +56,4 @@ class Report:
         
         config = pdfkit.configuration(wkhtmltopdf=bytes('C://Program Files//wkhtmltopdf//bin//wkhtmltopdf.exe', 'utf-8'))
         pdfkit.from_file("generated_html/{}_html_report.html".format(graph_date), "generated_pdf\{}_reporte.pdf".format(graph_date), configuration = config)
-       
+        return graph_date
