@@ -6,7 +6,8 @@ import requests
 import jinja2
 #lib for create pdf
 import pdfkit
-# from weasyprint import HTML, CSS
+
+import plotly.graph_objects as go
 
 
 class Report:
@@ -36,8 +37,13 @@ class Report:
         graph_colors = ['rgb(31,119,180)', 'rgb(255,127,14)']
 
         #download the report plot
-        plotly.offline.plot(self.graph_1, filename = "generated_figures/{}_1.html".format(graph_date), auto_open = False)
-        plotly.offline.plot(self.graph_2, filename = "generated_figures/{}_2.html".format(graph_date), auto_open = False)
+        # plotly.offline.plot(self.graph_1, filename = "generated_figures/{}_1.html".format(graph_date), auto_open = False)
+        # plotly.offline.plot(self.graph_2, filename = "generated_figures/{}_2.html".format(graph_date), auto_open = False)
+        graph_png_1 = go.Figure(self.graph_1)
+        graph_png_2 = go.Figure(self.graph_2)
+
+        graph_png_1.write_image("generated_figures/{}_1.png".format(graph_date))
+        graph_png_2.write_image("generated_figures/{}_2.png".format(graph_date))
         #reverse geocoding
         localization = self.make_request()
 

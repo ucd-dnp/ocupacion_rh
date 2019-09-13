@@ -379,7 +379,37 @@ results_tab = dbc.Tabs([
 
 ])
 
+#creating the webpage disclaimer and information row
 
+disclaimer = dbc.Row([
+    dbc.Col([
+        html.Img(src = './assets/img/warning.ico', width = '50', height = '50')
+    ],
+    width = 1),
+    dbc.Col([
+
+    html.P([html.B("Atención: "),  'Este reporte fue generado con una herramienta de predicción de zonas de inundaciones, por ningún motivo puede ser considerado como información oficial por ninguna entidad estatal, ya que los resultados obtenidos pueden tener un porcentaje de error que puede presentar un contraste con las situaciones actuales de las zonas analizadas.'],
+    style = {
+        "font-size": '13px',
+        'color': 'yellow'
+    }),
+    ],
+    width = 10),
+     dbc.Col([
+        html.Img(src = './assets/img/warning.ico', width = '50', height = '50')
+    ],
+    style = {
+        'padding':'0'
+    },
+    width = 1),
+],
+style = {
+    'background-color': 'red',
+    'padding-top': '10px',
+    'padding-bottom': '10px',
+    'margin': '0'
+},
+)
 
 
 
@@ -470,23 +500,9 @@ hidden_div = html.Div(
         'display': 'none'
     })
 
-#hiddden div for being alert of generate report button
-hidden_div_2 =  html.Div(
-    children = "0",
-    id = 'report_alert',
-    style = {
-        'display': 'none'
-    })
-#hidden div for being alert of download report button
-hidden_div_3 = html.Div(
-    children = "0",
-    id = 'download_report_alert',
-    style = {
-        'display': 'none'
-    }
-)
 
-#create a div for verifying if download report need to be hidden
+
+
 
 errorMsj = dcc.ConfirmDialog(id = 'error_msj',
                              message = 'Datos no disponibles para esta región',
@@ -495,11 +511,11 @@ errorMsj = dcc.ConfirmDialog(id = 'error_msj',
 loading_state = dcc.Loading(id= 'loading', type = 'graph',
                             fullscreen=True)
                 
-app.layout = html.Div(children = [navbar,
+app.layout = html.Div(children = [navbar, disclaimer,
                                   avant_layout,
                                   up_button, 
-                                  errorMsj, loading_state,
-                                hidden_geojson, hidden_geodf, hiddenvar, hidden_div, hidden_div_2, hidden_div_3])
+                                  errorMsj, loading_state, disclaimer,
+                                hidden_geojson, hidden_geodf, hiddenvar, hidden_div])
 
 
 
