@@ -63,7 +63,7 @@ class Download:
             os.mkdir(rivers_path)
            
             rivers.to_file("{}/{}.shp".format(rivers_path, name))
-            #creating the zipfile
+            # creating the zipfile
             zip_rivers = zipfile.ZipFile('{}/{}.zip'.format(self.path, name), 'w', zipfile.ZIP_DEFLATED)
 
             #zipping all files on specified folder

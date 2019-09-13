@@ -333,6 +333,7 @@ results_card = dbc.Card([
                 ],
                 justify = 'center',
                 id = 'pdf_text',
+                style = {'display': 'none'}
                
                 ),
                 dbc.Row([
@@ -340,19 +341,24 @@ results_card = dbc.Card([
                 ],
                 justify = "center",
                 id = 'pdf_spinner',
-               
+                style = {'display': 'none'}
                ),
 
             dbc.Row([
-                dbc.Button("Generar reporte", style = {
-                    'background': '#011f4b',
-                    'color': 'white'
-                }, id = "report_button")
+                dbc.Button("Generar reporte", id = "report_button",
+               )
             ],
+           
             justify = 'center'),
 
             dbc.Row([
-
+                dbc.Button([],
+                size = "lg",
+                id = "download_report_button",
+                style = {
+                    'display':'none'
+                }
+                ) 
             ],
             id = 'download_report',
             justify = 'center')
@@ -462,8 +468,26 @@ hidden_div = html.Div(
     id = 'hidden_div',
     style = {
         'display': 'none'
+    })
+
+#hiddden div for being alert of generate report button
+hidden_div_2 =  html.Div(
+    children = "0",
+    id = 'report_alert',
+    style = {
+        'display': 'none'
+    })
+#hidden div for being alert of download report button
+hidden_div_3 = html.Div(
+    children = "0",
+    id = 'download_report_alert',
+    style = {
+        'display': 'none'
     }
 )
+
+#create a div for verifying if download report need to be hidden
+
 errorMsj = dcc.ConfirmDialog(id = 'error_msj',
                              message = 'Datos no disponibles para esta región',
                              displayed = False)
@@ -475,7 +499,12 @@ app.layout = html.Div(children = [navbar,
                                   avant_layout,
                                   up_button, 
                                   errorMsj, loading_state,
-                                hidden_geojson, hidden_geodf, hiddenvar, hidden_div])
+                                hidden_geojson, hidden_geodf, hiddenvar, hidden_div, hidden_div_2, hidden_div_3])
+
+
+
+
+#------------------------------------- CALLBACKS-------------------------------------------------
 
 
 @app.callback(
@@ -1072,50 +1101,94 @@ def assign_geodf(geojson):
         print(geo_df['geometry'])
 
 
-#callback for display the pdf loading component
-@app.callback(
-    [Output('pdf_text', 'style'),
-    Output('pdf_spinner', 'style')],
-    [Input('report_button', 'n_clicks')]
-)
-def display_loading_pdf(clicks):
-    style = {
-        'display': 'none'
-    }
-    if clicks is not None:
-        style = {
-             'display':'flex',
-             'margin-bottom': '20px'
-        }
-    return  [style, style]
 
-#callback for download report
+#callback for create the pdf report and generate the download button
 @app.callback(
-    Output('download_report', 'children'),
-    [Input ('report_button', 'n_clicks')],
+    [Output('download_report_button', 'children'),
+    Output('download_report_button', 'style'),
+    Output('report_button', 'style')],
+    [Input ('report_button', 'n_clicks'),
+    Input('download_report_button', 'n_clicks')],
     [State('e_lat1', 'value'),
     State('e_lng1', 'value'),
     State('result1_0', 'children'),
     State('result1_1', 'children'),
     State('result2_0', 'children'),
     State('graph_1', 'figure'),
-    State('graph_2', 'figure')]
+    State('graph_2', 'figure'),
+    ]
 )
-def generateReport(clicks, lat, long, result_1, result_2, result_3, graph_1, graph_2):
-    
-    if clicks is not None:
+def generateReport(clicks_generate, clicks_download, lat, long, result_1, result_2, result_3, graph_1, graph_2):
+    dissapear = {
+        'display': 'none',
+        'color': 'white'
+    }
+
+    style_2 = {
+        'display': 'flex',  
+        'color': 'white',
+        'background': '#011f4b'
+    }
+
+    style_3 = {
+        'display': 'flex',  
+        'color': 'white',
+        'background': 'red'
+    }
+
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        print("entered in not_triggered")
+        return ["", dissapear, style_2]
+    else:
+        which_one = ctx.triggered[0]['prop_id'].split('.')[0]
+
+    if which_one == 'report_button':
+        
         report = Report(lat, long, result_1['props']['children'], result_2['props']['children'], result_3['props']['children'], graph_1, graph_2).generateTemplate()
         location = "/report/{}_reporte.pdf".format(report)
-        d_report_button = dbc.Button([html.A("Descargar reporte", href = location, style = {"text-decoration" : "none", "color": "white"})],
-        size = "sm",
-        style = {
-            "background" : "#6497b1"
-        })
+        download_button =  html.A("Descargar reporte", href = location, style = { "text-decoration" : "none", "color": "white",}) 
+       
+        print("entered in report button and stayed there")
+        return [download_button, style_3, dissapear]
 
+    if which_one == 'download_report_button':
         
-        return d_report_button
-    return ""
+        return["", dissapear, style_2]
+    
+    print("not enetered anypart")
+    return ["", dissapear, style_2]
+    
 
+#callback for display the pdf loading component
+@app.callback(
+    [Output('pdf_text', 'style'),
+    Output('pdf_spinner', 'style')],
+    [Input('report_button', 'n_clicks'),
+    Input('download_report_button', 'n_clicks'),],
+    
+)
+def display_loading_pdf(clicks, download_clicks):
+    dissapear = {
+        'display': 'none'
+    }
+
+    style_2 = {
+             'display':'flex',
+             'margin-bottom': '20px'
+        }
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        print("entered in not_triggered")
+        return [dissapear, dissapear]
+    else:
+        which_one = ctx.triggered[0]['prop_id'].split('.')[0]
+    if which_one == 'report_button':
+        return [style_2, style_2]
+
+    if which_one == 'download_report_button':
+        return [dissapear, dissapear]
+    return  [dissapear, dissapear]
 
 
 #start aplication 
