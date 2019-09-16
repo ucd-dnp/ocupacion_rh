@@ -22,45 +22,54 @@
             -webkit-transform: rotate(320deg);
         }
 
-        .main-image {
-            width: 50%;
-            margin: 0 auto;
-        }
+
 
 
         #report_title_div {
             /* position: absolute;
             left: 50%;
             margin-left: -50px; */
-            display: inline-block;
+            /* display: inline-block; */
             width: 100%;
         }
 
         #report_title {
             color: #03396c;
             text-align: center;
-            font-size: 3rem
+            font-size: 2rem
         }
 
         .center_p {
             text-align: center;
-            font-size: 1.5rem
+            font-size: 1rem
         }
 
         .description {
             margin-bottom: 0px;
+            margin-top: 0px;
             font-weight: bold
         }
 
+        .container {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+        }
+
         #div_map {
-            margin: 50px auto 600px;
-            width: 800px;
+            margin: 50px 0 auto;
+            width: 600px;
         }
 
         #mapita {
 
-            width: 800px;
-            height: 800px;
+            width: 400px;
+            height: 400px;
+        }
+
+        .figure {
+            width: 30%
         }
 
         .figure-text {
@@ -75,12 +84,12 @@
         }
 
         .fig_frame {
-            height: 500px;
-            width: 500px;
+            height: 300px;
+            width: 300px;
         }
 
         .results-text {
-            font-size: 2.5rem;
+            font-size: 1rem;
             color: #FF7F0E;
             text-align: center
         }
@@ -93,50 +102,69 @@
 </head>
 
 <body>
-    <div>
-        <div id="watermark-div">
+
+    <!-- <div id="watermark-div">
             <p id="watermark-text">
                 Información no oficial
             </p>
-        </div>
-        <div class="main-image">
-            <img src="../assets/img/dnp.PNG" alt="">
-        </div>
-
-        <div id="report_title_div">
-
-            <h1 id='report_title'>Reporte de resultados</h1>
-        </div>
+        </div> -->
 
 
+    <div id="report_title_div">
 
-        <p class="description center_p">Generado el: {{date}} </p>
-
-
-        <p class="description center_p">
-            Localización: {{localization}}
-        </p>
-
-        <div id='div_map'>
-            <iframe id='mapita' src="../temp2.html" frameborder="0"></iframe>
-        </div>
-
-        <div class="figure-text">
-            <p class="results-text"><b class="highlighted-text">{{result_1}}</b> en zona de vulnerabilidad</p>
-            <div class='figures'>
-                <img class='fig_frame' src="../generated_figures/{{graph_1}}_1.png" ></img>
-            </div>
-        </div>
-
-        <div class="figure-text">
-            <p class="results-text"><b class="highlighted-text">{{result_2}} </b>de construcciones en la zona</p>
-            <div class='figures'>
-                <img class='fig_frame' src="../generated_figures/{{graph_2}}_2.png" ></img>
-            </div>
-            <p class="results-text"><b class="highlighted-text">{{result_3}}</b> en zona de vulnerabilidad</p>
-        </div>
-        <p><b>Atención:</b> Este reporte fue generado con una herramienta de predicción de zonas de inundaciones, por ningún motivo puede ser considerado como información oficial por ninguna entidad estatal, ya que los resultados obtenidos pueden tener un porcentaje de error que puede presentar un contraste con las situaciones actuales de las zonas analizadas.</p>
+        <h1 id='report_title'>Reporte de resultados</h1>
     </div>
+
+
+
+    <p class="description center_p">Generado el: {{date}} </p>
+
+
+    <p class="description center_p">
+        Localización: {{localization}}
+    </p>
+
+    <p class="description center_p">
+        Coordenadas: ({{lat_1}}, {{long_1}} ) - ({{lat_2}}, {{long_2}})
+    </p>
+    <div id='div_map'>
+        <iframe id='mapita' src="../temp2.html" frameborder="0"></iframe>
+    </div>
+
+    <div class="container">
+        <div class="figure">
+
+            <div class="figure-text">
+                <p class="results-text"><b class="highlighted-text">{{result_1}}</b> en zona de vulnerabilidad</p>
+                <div class='figures'>
+                    <img class='fig_frame' src="../generated_figures/{{graph_1}}_1.png"></img>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="figure">
+            <div class="figure-text">
+                <p class="results-text"><b class="highlighted-text">{{result_2}} </b>de construcciones en la zona
+                </p>
+                <div class='figures'>
+                    <img class='fig_frame' src="../generated_figures/{{graph_2}}_2.png"></img>
+                </div>
+                <p class="results-text"><b class="highlighted-text">{{result_3}}</b> en zona de vulnerabilidad</p>
+            </div>
+
+        </div>
+
+
+
+    </div>
+    <footer>
+
+        <p><b>Atención:</b> Este reporte fue generado con una herramienta de predicción de zonas de inundaciones, por
+            ningún motivo puede ser considerado como información oficial por ninguna entidad estatal, ya que los
+            resultados obtenidos pueden tener un porcentaje de error que puede presentar un contraste con las
+            situaciones actuales de las zonas analizadas.</p>
+    </footer>
 
 
 </body>

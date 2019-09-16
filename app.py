@@ -1127,6 +1127,8 @@ def assign_geodf(geojson):
     Input('download_report_button', 'n_clicks')],
     [State('e_lat1', 'value'),
     State('e_lng1', 'value'),
+    State('e_lat2', 'value'),
+    State('e_lng2', 'value'),
     State('result1_0', 'children'),
     State('result1_1', 'children'),
     State('result2_0', 'children'),
@@ -1134,7 +1136,7 @@ def assign_geodf(geojson):
     State('graph_2', 'figure'),
     ]
 )
-def generateReport(clicks_generate, clicks_download, lat, long, result_1, result_2, result_3, graph_1, graph_2):
+def generateReport(clicks_generate, clicks_download, lat_1, long_1, lat_2, long_2, result_1, result_2, result_3, graph_1, graph_2):
     dissapear = {
         'display': 'none',
         'color': 'white'
@@ -1161,7 +1163,7 @@ def generateReport(clicks_generate, clicks_download, lat, long, result_1, result
 
     if which_one == 'report_button':
         
-        report = Report(lat, long, result_1['props']['children'], result_2['props']['children'], result_3['props']['children'], graph_1, graph_2).generateTemplate()
+        report = Report(lat_1, long_1, lat_2, long_2, result_1['props']['children'], result_2['props']['children'], result_3['props']['children'], graph_1, graph_2).generateTemplate()
         location = "/report/{}_reporte.pdf".format(report)
         download_button =  html.A("Descargar reporte", href = location, style = { "text-decoration" : "none", "color": "white",}) 
        

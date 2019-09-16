@@ -12,9 +12,11 @@ import plotly.graph_objects as go
 
 class Report:
 
-    def __init__(self, lat, long, result_1, result_2, result_3, graph_1, graph_2):
-        self.lat = lat
-        self.long = long
+    def __init__(self, lat_1, long_1, lat_2, long_2, result_1, result_2, result_3, graph_1, graph_2):
+        self.lat_1 = lat_1
+        self.long_1 = long_1
+        self.lat_2 = lat_2
+        self.long_2 = long_2
         self.result_1 = result_1
         self.result_2 = result_2
         self.result_3 = result_3
@@ -23,7 +25,7 @@ class Report:
     
     #method for make the reverse geocoding request and return the place
     def make_request(self):
-        r_url = "https://nominatim.openstreetmap.org/reverse?format=json&lat={}&lon={}&zoom=10".format(self.lat, self.long)
+        r_url = "https://nominatim.openstreetmap.org/reverse?format=json&lat={}&lon={}&zoom=10".format(self.lat_1, self.long_1)
         r = requests.get(url = r_url)
         data = r.json()
         return data['display_name']
@@ -53,7 +55,7 @@ class Report:
         templateEnv = jinja2.Environment(loader=templateLoader)
         TEMPLATE_FILE = "report_template.html"
         template = templateEnv.get_template(TEMPLATE_FILE)
-        parameters = template.render(date = report_date, localization = localization, result_1 = self.result_1, graph_1 = graph_date, graph_2 = graph_date,  result_2 = self.result_2, result_3 = self.result_3)
+        parameters = template.render(date = report_date, localization = localization, result_1 = self.result_1, graph_1 = graph_date, graph_2 = graph_date,  result_2 = self.result_2, result_3 = self.result_3, lat_1 = self.lat_1, long_1 = self.long_1, lat_2 = self.lat_2, long_2 = self.long_2)
         html_file = open("generated_html/{}_html_report.html".format(graph_date), 'w')
         html_file.write(parameters)
         html_file.close()
