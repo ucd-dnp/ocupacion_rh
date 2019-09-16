@@ -12,7 +12,7 @@ import plotly.graph_objects as go
 
 class Report:
 
-    def __init__(self, lat_1, long_1, lat_2, long_2, result_1, result_2, result_3, graph_1, graph_2):
+    def __init__(self, lat_1, long_1, lat_2, long_2, result_1, result_2, graph_1, result_3 = None, graph_2 = None):
         self.lat_1 = lat_1
         self.long_1 = long_1
         self.lat_2 = lat_2
@@ -38,14 +38,19 @@ class Report:
         #change graph colors
         graph_colors = ['rgb(31,119,180)', 'rgb(255,127,14)']
 
-        #download the report plot
-        # plotly.offline.plot(self.graph_1, filename = "generated_figures/{}_1.html".format(graph_date), auto_open = False)
-        # plotly.offline.plot(self.graph_2, filename = "generated_figures/{}_2.html".format(graph_date), auto_open = False)
-        graph_png_1 = go.Figure(self.graph_1)
-        graph_png_2 = go.Figure(self.graph_2)
+        #verifying if is image analysis case
+        image_analysis_flag = True if self.result_3 is None else False
 
+        #download the report plot
+       
+        graph_png_1 = go.Figure(self.graph_1)
         graph_png_1.write_image("generated_figures/{}_1.png".format(graph_date))
-        graph_png_2.write_image("generated_figures/{}_2.png".format(graph_date))
+
+        if not image_analysis_flag:
+            graph_png_2 = go.Figure(self.graph_2)
+            graph_png_2.write_image("generated_figures/{}_2.png".format(graph_date))
+
+
         #reverse geocoding
         localization = self.make_request()
 
@@ -55,7 +60,10 @@ class Report:
         templateEnv = jinja2.Environment(loader=templateLoader)
         TEMPLATE_FILE = "report_template.html"
         template = templateEnv.get_template(TEMPLATE_FILE)
-        parameters = template.render(date = report_date, localization = localization, result_1 = self.result_1, graph_1 = graph_date, graph_2 = graph_date,  result_2 = self.result_2, result_3 = self.result_3, lat_1 = self.lat_1, long_1 = self.long_1, lat_2 = self.lat_2, long_2 = self.long_2)
+        
+        
+        parameters = template.render(date = report_date, localization = localization, result_1 = self.result_1, graph_1 = graph_date, graph_2 = graph_date,  result_2 = self.result_2, result_3 = self.result_3, lat_1 = self.lat_1, long_1 = self.long_1, lat_2 = self.lat_2, long_2 = self.long_2, flag = image_analysis_flag)
+         
         html_file = open("generated_html/{}_html_report.html".format(graph_date), 'w')
         html_file.write(parameters)
         html_file.close()

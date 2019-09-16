@@ -978,7 +978,6 @@ la región de análisis"""
                         builds_temp = gpd.GeoDataFrame({'geometry':cascaded_union(builds_sus.geometry)},geometry = 'geometry',
                                                         crs = rivers.crs, index = [0])
                     
-                    #TODO: poner bonita la información de numero de regiones y hectareas
                     total_area = np.sum(builds_temp.area)/10000 # hectareas
                     n_builds_sus = np.shape(builds_sus)[0]
                     figure1 = {'data': [go.Bar(visible = True, x = ['AREA'], y = [total_area], 
@@ -1035,7 +1034,6 @@ la región de análisis"""
                         builds_temp = gpd.GeoDataFrame({'geometry':cascaded_union(builds_sus.geometry)},geometry = 'geometry',
                                                         crs = rivers.crs, index = [0])
                     
-                    #TODO: poner bonita la información de numero de regiones y hectareas
                     total_area = np.sum(builds_temp.area)/10000 # hectareas
                     n_builds_sus = np.shape(builds_sus)[0]
                     #####################################  RESULT ###################################################
@@ -1154,6 +1152,14 @@ def generateReport(clicks_generate, clicks_download, lat_1, long_1, lat_2, long_
         'background': 'red'
     }
 
+    image_analysis_flag = False
+
+     
+
+    if result_3 == "":
+        image_analysis_flag = True
+        print("son iguales")
+
     ctx = dash.callback_context
     if not ctx.triggered:
         print("entered in not_triggered")
@@ -1163,8 +1169,14 @@ def generateReport(clicks_generate, clicks_download, lat_1, long_1, lat_2, long_
 
     if which_one == 'report_button':
         
-        report = Report(lat_1, long_1, lat_2, long_2, result_1['props']['children'], result_2['props']['children'], result_3['props']['children'], graph_1, graph_2).generateTemplate()
+        if not image_analysis_flag:
+            report = Report(lat_1, long_1, lat_2, long_2, result_1['props']['children'], result_2['props']['children'], graph_1, result_3 = result_3['props']['children'], graph_2 = graph_2).generateTemplate()
+        else:
+            report = Report(lat_1 = lat_1, long_1 = long_1, lat_2 = lat_2, long_2 = long_2, result_1 = result_1['props']['children'], result_2 = result_2['props']['children'], graph_1 = graph_1).generateTemplate()
+        
         location = "/report/{}_reporte.pdf".format(report)
+
+        
         download_button =  html.A("Descargar reporte", href = location, style = { "text-decoration" : "none", "color": "white",}) 
        
         print("entered in report button and stayed there")
@@ -1208,7 +1220,7 @@ def display_loading_pdf(clicks, download_clicks):
         return [dissapear, dissapear]
     return  [dissapear, dissapear]
 
-
+app.css.config.serve_locally = True
 #start aplication 
 if __name__ == '__main__':
     app.run_server(debug=True)

@@ -145,18 +145,21 @@
 
         </div>
 
+        
         <div class="figure">
             <div class="figure-text">
                 <p class="results-text"><b class="highlighted-text">{{result_2}} </b>de construcciones en la zona
                 </p>
+                {% if not flag %}
                 <div class='figures'>
                     <img class='fig_frame' src="../generated_figures/{{graph_2}}_2.png"></img>
                 </div>
                 <p class="results-text"><b class="highlighted-text">{{result_3}}</b> en zona de vulnerabilidad</p>
+                {% endif %}    
             </div>
 
         </div>
-
+       
 
 
     </div>
