@@ -29,7 +29,7 @@ class Map:
     def generatePDFMap(self, builds, rivers, roi, 
                     poly_rivers, superpixels, bounding):
         
-        _map = folium.Map(width = 400, height = 400, location= self._location, zoom_start=self._zoom,
+        _map = folium.Map(width = 900, height = 500, location= self._location, zoom_start=self._zoom,
                           attr='Análisis susceptibilidad de inundación',
                           max_zoom=18, min_zoom= 10)
        
