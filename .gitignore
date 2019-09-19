@@ -5,9 +5,13 @@
 temp2.html
 temp1.html
 
+#ignore variables path
+env_variables.dat
+
 #ignore html figures and pdf reports
 generated_figures/
 generated_pdf/
 generated_html/
+resources/
 
 __pycache__/

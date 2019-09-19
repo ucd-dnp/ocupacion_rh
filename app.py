@@ -41,15 +41,15 @@ from generateReport import Report
 server = Flask(__name__)
 
 
+env_file = open('env_variables.dat', 'r')
+envs_names = [line.strip() for line in env_file]
 
 #create a file path for storing the files that will be downloaded - implementation mostly for production 
-FILE_PATH = '/resources/shp_geojson'
+FILE_PATH = envs_names[1]
 
-REPORT_PATH = '/Users/cv-machine/OneDrive - Departamento Nacional de Planeacion/DNP/DNP/inundaciones/inundaciones_ucd/generated_pdf'
+REPORT_PATH = envs_names[0]
 
-#creating the path if doesn't exists
-if not os.path.exists(FILE_PATH):
-    os.makedirs(FILE_PATH)
+
 
 
 @server.route("/download/<path:file>")
@@ -202,14 +202,11 @@ tab_search = dbc.Card([
                         justify = "between"),
 
                         dbc.Row([
-                        dbc.Input(id = 'e_lat1', value =  5.4234, style={"width": "20%"}), 
-                        dbc.Input(id = 'e_lng1', value = -74.6806, style={"width": "20%"}),
-                        dbc.Input(id = 'e_lat2', value = 5.4002, style={"width": "20%"}),
-                        dbc.Input(id = 'e_lng2', value = -74.6548, style={"width": "20%"})
-                        # dbc.Input(id = 'e_lat1', value =  1.1573, style={"width": "20%"}), 
-                        # dbc.Input(id = 'e_lng1', value = -76.6590, style={"width": "20%"}),
-                        # dbc.Input(id = 'e_lat2', value = 1.1355, style={"width": "20%"}),
-                        # dbc.Input(id = 'e_lng2', value = -76.6312, style={"width": "20%"})
+                        
+                         dbc.Input(id = 'e_lat1', value =  1.1573, style={"width": "20%"}), 
+                         dbc.Input(id = 'e_lng1', value = -76.6590, style={"width": "20%"}),
+                         dbc.Input(id = 'e_lat2', value = 1.1355, style={"width": "20%"}),
+                         dbc.Input(id = 'e_lng2', value = -76.6312, style={"width": "20%"})
                         ],
                         justify = "between"),
 
