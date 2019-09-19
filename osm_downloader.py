@@ -111,7 +111,7 @@ class OSMDownloader:
         if (response.ok):
             buildings = response.json()
             buildings = buildings['elements']
-            if len(buildings) < 0:
+            if len(buildings) == 0:
                 self._builds = -1
                 return
             self._builds = gpd.GeoDataFrame(geometry=[Polygon([(pt['lon'],pt['lat']) 

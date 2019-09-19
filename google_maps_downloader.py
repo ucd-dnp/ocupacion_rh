@@ -213,7 +213,7 @@ def main():
         img = np.array(img)
         plt.imshow(img)
         plt.axis('off')
-        #gmd.save_raster(img,name)
+        gmd.save_raster(img,name)
     except IOError:
         print("Could not generate the image - try adjusting the zoom level and checking your coordinates")
     else:

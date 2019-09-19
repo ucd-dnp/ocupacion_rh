@@ -58,6 +58,9 @@ def download(file):
 
 @server.route("/report/<path:file>")
 def download_report(file):
+    print("si entré, pero me jodí")
+    print("fiel: {}".format(file))
+    print("path: {}".format(REPORT_PATH))
     return send_from_directory(REPORT_PATH, file, as_attachment=True)
 
 
@@ -199,10 +202,14 @@ tab_search = dbc.Card([
                         justify = "between"),
 
                         dbc.Row([
-                        dbc.Input(id = 'e_lat1', value =  1.1573, style={"width": "20%"}), 
-                        dbc.Input(id = 'e_lng1', value = -76.6590, style={"width": "20%"}),
-                        dbc.Input(id = 'e_lat2', value = 1.1355, style={"width": "20%"}),
-                        dbc.Input(id = 'e_lng2', value = -76.6312, style={"width": "20%"})
+                        dbc.Input(id = 'e_lat1', value =  5.4234, style={"width": "20%"}), 
+                        dbc.Input(id = 'e_lng1', value = -74.6806, style={"width": "20%"}),
+                        dbc.Input(id = 'e_lat2', value = 5.4002, style={"width": "20%"}),
+                        dbc.Input(id = 'e_lng2', value = -74.6548, style={"width": "20%"})
+                        # dbc.Input(id = 'e_lat1', value =  1.1573, style={"width": "20%"}), 
+                        # dbc.Input(id = 'e_lng1', value = -76.6590, style={"width": "20%"}),
+                        # dbc.Input(id = 'e_lat2', value = 1.1355, style={"width": "20%"}),
+                        # dbc.Input(id = 'e_lng2', value = -76.6312, style={"width": "20%"})
                         ],
                         justify = "between"),
 
@@ -640,6 +647,7 @@ Intente con otra región o cambie la fuente de análisis por
                         {'visibility':'hidden'},'','','', figure1, figure2, default, d_style_g2]
             else:
                 builds = osm._builds.to_crs({'init':'epsg:32618'})
+                print("builds : {}".format(builds))
                 if type(osm._rivers) is not int:
                     rivers = osm._rivers.to_crs({'init':'epsg:32618'})
                     rivers.geometry = [r.buffer(2*buffer1) if w=='river' else r.buffer(2*buffer2) 
@@ -655,10 +663,10 @@ Intente con otra región o cambie la fuente de análisis por
                     if type(osm._poly_rivers) is not int:
                         poly_rivers = osm._poly_rivers.to_crs({'init':'epsg:32618'})
                         try:
-                            poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.geometry)},
+                            poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.buffer(5).geometry)},
                                                             geometry = 'geometry', crs = poly_rivers.crs)
                         except:
-                            poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.geometry)},
+                            poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.buffer(5).geometry)},
                                                             geometry = 'geometry', 
                                                             crs = poly_rivers.crs, index = [0])
                         poly_rivers.geometry = poly_rivers.buffer(2*buffer1)
@@ -801,14 +809,17 @@ la región de análisis"""
                                                crs =rivers.crs, index = [0])
                 if type(osm._poly_rivers) is not int:
                     poly_rivers = osm._poly_rivers.to_crs({'init':'epsg:32618'})
+                    
                     try:
-                        poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.geometry)},
+                        poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.buffer(5).geometry)},
                                                         geometry = 'geometry', crs = poly_rivers.crs)
                     except:
-                        poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.geometry)},
+                        poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.buffer(5).geometry)},
                                                         geometry = 'geometry', 
                                                         crs = poly_rivers.crs, index = [0])
+                                                    
                     poly_rivers.geometry = poly_rivers.buffer(2*buffer1)
+                 
                     try:      
                         roi = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.union(poly_rivers))},
                                                 geometry = 'geometry', 
@@ -817,6 +828,7 @@ la región de análisis"""
                         roi = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.union(poly_rivers))},
                                                 geometry = 'geometry', 
                                                 crs = rivers.crs, index = [0])
+                   
                     roi_param = roi.to_crs({'init':'epsg:4326'})
                     Map(location= location, zoom= 15).generateMap(rivers=osm._rivers,
                                                                   poly_rivers = osm._poly_rivers,
@@ -832,7 +844,7 @@ la región de análisis"""
                     return ['rivers, poly', False, '', html.Div(' '), {'visibility':'hidden'},
                             '','','',figure1,figure2, download_component, d_style_g2]
                 else:
-                    roi_param  = roi.to_crs({'init':'epsg:4326'} )
+                    roi_param  = rivers.to_crs({'init':'epsg:4326'} )
                     download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param )
 
                     Map(location= location, zoom= 15).generateMap(rivers=osm._rivers,
@@ -927,13 +939,15 @@ la región de análisis"""
                 if type(osm._poly_rivers) is not int:
                     poly_rivers = osm._poly_rivers.to_crs({'init':'epsg:32618'})
                     try:
-                        poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.geometry)},
-                                                        geometry='geometry', crs = poly_rivers.crs)
+                        poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.buffer(5).geometry)},
+                                                        geometry = 'geometry', crs = poly_rivers.crs)
                     except:
-                        poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.geometry)},
-                                                        geometry='geometry', 
-                                                        crs = poly_rivers.crs, index = [0])
+                        poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.buffer(5).geometry)},
+                                                        geometry = 'geometry', 
+                                                        crs = poly_rivers.crs, index = [0])                    
+                    
                     poly_rivers.geometry = poly_rivers.buffer(2*buffer1)
+                                  
                     
                     #### generando ROI (región de análisis)
                     try:      
@@ -1049,6 +1063,7 @@ la región de análisis"""
                         'display': 'none'
                     }
 
+                    style = {'width':'770px','visibility':'visible'}
                     return ['rivers, superpixels', False, '', html.Div(' '), style,
                             html.B(str(round(total_area,1)) + ' Hectáreas'),html.B(str(n_builds_sus) + ' regiones detectadas'),'',
                             figure1,figure2, download_component, style_figure]
@@ -1220,7 +1235,7 @@ def display_loading_pdf(clicks, download_clicks):
         return [dissapear, dissapear]
     return  [dissapear, dissapear]
 
-app.css.config.serve_locally = True
+
 #start aplication 
 if __name__ == '__main__':
     app.run_server(debug=True)
