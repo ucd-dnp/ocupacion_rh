@@ -47,6 +47,7 @@ La aplicación consta de un tablero de datos que permite al usuario, con ayuda d
 #### Windows
 
 
+Todas las librerías en formato _.whl_ necesarias se encuentran en la carpeta _libs_ del repositorio
 
 #### Ubuntu y sistemas basados en Debian
 
