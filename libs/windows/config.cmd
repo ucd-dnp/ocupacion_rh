@@ -8,3 +8,12 @@ pip install Rtree-0.8.3-cp37-cp37m-win_amd64.whl
 pip install Shapely-1.6.4.post2-cp37-cp37m-win_amd64.whl
 pip install geopandas-0.5.1-py2.py3-none-any.whl
 pip install Cartopy-0.17.0-cp37-cp37m-win_amd64.whl
+pip install -r requirements.txt
+cd ..
+type nul > temp1.html
+type nul > env_variables.dat
+mkdir generated_pdf
+mkdir generated_figures
+mkdir generated_html
+mkdir resources
+mkdir resources/shp_geojson

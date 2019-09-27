@@ -33,6 +33,8 @@ De igual manera se usaron las siguientes librerías:
 - Pandas
 - Matplotlib
 - Dash-daq
+- Pyproj
+- PDFkit
 
 La especificación de las versiones de las librerías, así como la manera de como estas deben ser instaladas se verá en la sección de [instalación](#instalación) 
 
@@ -73,13 +75,41 @@ cd <nombre del entorno>/Scripts
 activate
 ```
 
-Para la instalación en Windows es necesario que se instalen algunas librerías manualmente, ya que pueden surgir errores si dichas librerías son instaladas desde el gestor de paquetes de Python (_pip_). Para ello, se recomienda buscar estos archivos (archivos _.whl_) en el repositorio del profesor [Cristoph Gohlke](https://www.lfd.uci.edu/~gohlke/pythonlibs/)
+Para la instalación en Windows es necesario que se instalen algunas librerías manualmente, ya que pueden surgir errores si dichas librerías son instaladas desde el gestor de paquetes de Python (_pip_). Para ello, se recomienda buscar estos archivos (archivos _.whl_) en el repositorio del profesor [Cristoph Gohlke](https://www.lfd.uci.edu/~gohlke/pythonlibs/).
 
-Para instalar estas librerías se proponen dos formas:
+Las librerías son las siguientes:
 
-- 
+- [Cartopy‑0.17.0‑cp37‑cp37m‑win_amd64](https://www.lfd.uci.edu/~gohlke/pythonlibs/#cartopy)
+- [Fiona-1.8.6-cp37-cp37m-win_amd64](https://www.lfd.uci.edu/~gohlke/pythonlibs/#fiona)
+- [numpy-1.16.4+mkl-cp37-cp37m-win_amd64](https://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy)
+- [geopandas-0.5.1-py2.py3-none-any](https://www.lfd.uci.edu/~gohlke/pythonlibs/#geopandas)
+- [pyproj-2.1.3-cp37-cp37m-win_amd64](https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyproj)
+- [Rtree-0.8.3-cp37-cp37m-win_amd64](https://www.lfd.uci.edu/~gohlke/pythonlibs/#rtree)
+- [Shapely-1.6.4.post2-cp37-cp37m-win_amd64](https://www.lfd.uci.edu/~gohlke/pythonlibs/#shapely)
+- [GDAL-2.4.1-cp37-cp37m-win_amd64](https://www.lfd.uci.edu/~gohlke/pythonlibs/#gdal)
+
+La librería _rasterio_ también es necesaria. Sin embargo, la versión requerida ya no se encuentra en la página antes mencionada, por lo que se decidió incluir este archivo en el repositorio; esta se encuentra en la carpeta _libs_.
+
+Para instalar estas librerías siga estos pasos:
+
+- Normalmente, la forma para instalar archivos _.whl_ es la siguiente:
+
+    ```bash
+    pip install <nombre del archivo.whl>	
+    ```
+
+    Sin embargo, para automatizar este proceso se creó un script, que instala estas librerías.
+
+- Ubíquese en la carpeta _libs_, descargue todas las librerías mencionadas anteriormente, y ejecute el archivo _config.cmd_ ubicado en la carpeta _libs/windows_ _**Es importante que las librerías que se descarguen, conserven el nombre con el que fueron descargados, de lo contrario este método no funcionará**_. Este script también creará automáticamente archivos y carpetas necesarias para el funcionamiento de la aplicación. 
 
 
+
+Para la ejecución de los programas _Orca_ y _wkhtmltopdf_ es necesario que las rutas a estos sean añadidas al _path_ del sistema, para esto se sugiere ver la siguiente [guia](https://helpdeskgeek.com/windows-10/add-windows-path-environment-variable/#targetText=To add a new path,click on the Edit button.).
+
+Finalmente ingrese al archivo _env_variables.dat_ e ingrese el _path_ absoluto de las siguientes carpetas:
+
+- _generated_pdf_
+- _resources/shp_geojson_
 
 #### Ubuntu y sistemas basados en Debian
 
