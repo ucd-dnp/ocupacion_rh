@@ -115,7 +115,7 @@ class Map:
         
         # self.generatePDFMap(builds, rivers, roi, poly_rivers, superpixels, bounding)
 
-        _map = folium.Map(location = self._location, width = 900, height = 500,  zoom_start=self._zoom,
+        _map = folium.Map(location = self._location, width = 875, height = 660,  zoom_start=self._zoom,
                           attr='Análisis susceptibilidad de inundación',
                           max_zoom=18, min_zoom= 10)
         FloatImage(IMAGE,bottom= 81 ,left=1).add_to(_map)
