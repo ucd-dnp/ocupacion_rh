@@ -33,7 +33,7 @@ class Map:
                           attr='Análisis susceptibilidad de inundación',
                           max_zoom=18, min_zoom= 10)
        
-        FloatImage(IMAGE,bottom= 81 ,left=2).add_to(_map)
+        FloatImage(IMAGE,bottom= 75,left=1).add_to(_map)
         _map.add_tile_layer(self._url, name='Satelital',
                             attr='Análisis susceptibilidad de inundación',
                             max_zoom=17, min_zoom=10)
@@ -117,7 +117,9 @@ class Map:
 
         _map = folium.Map(location = self._location, zoom_start=self._zoom,
                           attr='Análisis susceptibilidad de inundación',
-                          max_zoom=18, min_zoom= 10)
+                          max_zoom=18, min_zoom= 10,
+                          width = 875,
+                          height = 660)
         FloatImage(IMAGE,bottom= 81 ,left=1).add_to(_map)
         _map.add_tile_layer(self._url, name='Satelital',
                             attr='Análisis susceptibilidad de inundación',
