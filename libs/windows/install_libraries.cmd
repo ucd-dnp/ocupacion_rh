@@ -1,3 +1,4 @@
+cd ..
 pip install numpy-1.16.4+mkl-cp37-cp37m-win_amd64.whl
 pip install GDAL-2.4.1-cp37-cp37m-win_amd64.whl
 pip install rasterio-1.0.23-cp37-cp37m-win_amd64.whl

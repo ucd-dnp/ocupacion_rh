@@ -110,7 +110,7 @@ class Map:
        
         
 
-    def generateMap(self, builds = None, rivers = None, roi = None, 
+    def generateMap(self, width = 900, height = 500,  builds = None, rivers = None, roi = None, 
                     poly_rivers = None, superpixels = None, bounding = None):
         
         self.generatePDFMap(builds, rivers, roi, poly_rivers, superpixels, bounding)
