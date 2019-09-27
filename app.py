@@ -249,7 +249,7 @@ geovisor = dbc.Col([
         html.Iframe(id= 'map', 
                       srcDoc = open('temp1.html','r').read(),
                       width= '100%', 
-                      height= '540')
+                      height= '671')
     ],
     # justify = "center",
     style = {
@@ -260,119 +260,85 @@ geovisor = dbc.Col([
 
 #creating the results card for display the graphics
 results_card = dbc.Card([
-
     dbc.CardBody([
         dbc.Col([
-            dbc.Row([
+            dbc.Row([html.H3('Resultados del Análisis',
+                             style = {'textAlign':'center',
+                                      'color'    :colors[1]})]
+            ),
 
-            html.H3('Resultados del Análisis',
-                               style = {'textAlign':'center',
-                                        'color':colors[1]}),
-            ]),
+            dbc.Row([dcc.Graph(id= 'graph_1', 
+                               style = {'width' : '385px',
+                                        'height': '385px'})],
+                    justify = "center"
+            ),
 
-            dbc.Row([
-            dcc.Graph(id= 'graph_1', style = {'width':'355px',
-                                                        'height': '385px'}) 
-            ],
-            justify = "center"),
-
-            dbc.Row([
-            html.H1(html.B('1.012'), id = 'result1_0', style={
-                                    'textAlign':'center',
-                                       'color':colors[2],
-                                       }),
-            ],
-            justify = "center"),
-            dbc.Row([
-
-            html.P('dentro de la zona de suceptibilidad',
-             style={
-                'textAlign':'center',
-                'color':colors[3],
-                'fontSize':'26px',
-                'height':'31px',
-                'margin-bottom': '20px'}
-            ),      
-            ], justify = "center"),
-            dbc.Row([
-
-            html.H1(html.B('#####'), id = 'result1_1',
-                        style={'textAlign':'center',
-                               'color':colors[2],
-                               'margin-top': '40px'
-                              }), 
-            ],
-            justify = "center"),
-
+            dbc.Row([html.H1(html.B('######'), id = 'result1_0', 
+                             style={'textAlign':'center',
+                                    'color'    :colors[2]})],
+                    justify = "center"
+            ),
             
-
-            dbc.Row([
-           dcc.Graph(id= 'graph_2', config={'displayModeBar': False}, style = {
-               'width' : '330px',
-               'height' : '300px'
-           }),  
-            ],
-            justify = "center"),
-            dbc.Row([
-
-           html.H1(html.B('### Hectareas'), id = 'result2_0',
-                                   style={'position':'relative',
-                                          'textAlign':'center',
-                                          'margin-bottom': '25px',
-                                          'color':colors[2],
-                                          }),
-            ],
-            justify = "center"),
-
+            dbc.Row([html.P ('dentro de la zona de suceptibilidad',
+                             style={'textAlign'    : 'center',
+                                    'color'        : colors[3],
+                                    'fontSize'     : '26px',
+                                    'height'       : '31px',
+                                    'margin-bottom': '20px'})], 
+                    justify = "center"
+            ),
             
+            dbc.Row([html.H1(html.B('######'), id = 'result1_1',
+                             style={'textAlign' : 'center',
+                                    'color'     : colors[2],
+                                    'margin-top': '40px'})],
+                    justify = "center"
+            ),
 
-            dbc.Row([
-                    html.P("Espere... generando archivo PDF",
-                    style={
-                        'textAlign':'center',
-                        'color': colors[1],
-                        'fontSize': '20px',
-                        'font-weight': 'bold'
-                    }),
-                ],
-                justify = 'center',
-                id = 'pdf_text',
-                style = {'display': 'none'}
-               
-                ),
-                dbc.Row([
-                    dbc.Spinner(size="lg", color='danger')
-                ],
-                justify = "center",
-                id = 'pdf_spinner',
-                style = {'display': 'none'}
-               ),
-
-            dbc.Row([
-                dbc.Button("Generar reporte", id = "report_button",
-               )
-            ],
-           
-            justify = 'center'),
-
-            dbc.Row([
-                dbc.Button([],
-                size = "lg",
-                id = "download_report_button",
-                style = {
-                    'display':'none'
-                }
-                ) 
-            ],
-            id = 'download_report',
-            justify = 'center')
-
-             
+            dbc.Row([dcc.Graph(id= 'graph_2', config={'displayModeBar': False}, 
+                              style = {'width' : '385px',
+                                       'height': '320px'})],
+                    justify = "center"
+            ),
             
+            dbc.Row([html.H1(html.B('### Hectareas'), id = 'result2_0',
+                             style={'position'     : 'relative',
+                                    'textAlign'    : 'center',
+                                    'margin-bottom': '25px',
+                                    'color'        : colors[2]})],
+                    justify = "center"
+            ),
+
+            dbc.Row([html.P("Generando archivo PDF",
+                            style={'textAlign'  :'center',
+                                   'color'      : colors[1],
+                                   'fontSize'   : '20px',
+                                   'font-weight': 'bold'})],
+                    justify = 'center',
+                    id = 'pdf_text',
+                    style = {'display': 'none'}
+            ),
+            
+            dbc.Row([dbc.Spinner(size="lg", color='danger')],
+                    justify = "center",
+                    id = 'pdf_spinner',
+                    style = {'display': 'none'}
+            ),
+
+            dbc.Row([dbc.Button("Generar reporte", id = "report_button")],
+                    justify = 'center'
+            ),
+
+            dbc.Row([dbc.Button([],
+                                size = "lg",
+                                id = "download_report_button",
+                                style = {'display': 'none'})],
+                    id = 'download_report',
+                    justify = 'center'
+            ) 
         ],
         id = 'dash_board',)
     ])
-
 ])
 
 
@@ -528,18 +494,18 @@ app.layout = html.Div(children = [navbar, disclaimer,
 
 
 @app.callback(
-    [Output(component_id='hidden_var',component_property='children'),
-     Output(component_id='error_msj', component_property='displayed'),
-     Output(component_id='error_msj',component_property='message'),
-     Output(component_id= 'loading', component_property = 'children'),
-     Output(component_id='dash_board',component_property='style'),
-	 Output(component_id='result1_0',component_property='children'),
-     Output(component_id='result1_1',component_property='children'),
-     Output(component_id='result2_0',component_property='children'),
-     Output(component_id='graph_1', component_property='figure'),
-     Output(component_id='graph_2', component_property='figure'),
-    Output(component_id = 'download_div', component_property = 'children'),
-    Output(component_id = 'graph_2', component_property = "style")],
+    [Output(component_id = 'hidden_var',component_property='children'),
+     Output(component_id = 'error_msj', component_property='displayed'),
+     Output(component_id = 'error_msj',component_property='message'),
+     Output(component_id = 'loading', component_property = 'children'),
+     Output(component_id = 'dash_board',component_property='style'),
+	 Output(component_id = 'result1_0',component_property='children'),
+     Output(component_id = 'result1_1',component_property='children'),
+     Output(component_id = 'result2_0', component_property='children'),
+     Output(component_id = 'graph_1', component_property='figure'),
+     Output(component_id = 'graph_2', component_property='figure'),
+     Output(component_id = 'download_div', component_property = 'children'),
+     Output(component_id = 'graph_2', component_property = "style")],
     [Input(component_id='b_search',component_property='n_clicks_timestamp'),
      Input(component_id='b_analizar',component_property='n_clicks_timestamp')],
     [State(component_id='searchBar',component_property='value'),
@@ -560,11 +526,9 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
 
     #creation of default style for graph_2
     d_style_g2 = {
-        'width':'330px',
-        'height':'300px'
+        'width':'385px',
+        'height':'320px'
                         }
-
-
 
     if bnt1 is None and bnt2 is None:
         location = (4.5975, -74.0765)
@@ -644,7 +608,6 @@ Intente con otra región o cambie la fuente de análisis por
                         {'visibility':'hidden'},'','','', figure1, figure2, default, d_style_g2]
             else:
                 builds = osm._builds.to_crs({'init':'epsg:32618'})
-                print("builds : {}".format(builds))
                 if type(osm._rivers) is not int:
                     rivers = osm._rivers.to_crs({'init':'epsg:32618'})
                     rivers.geometry = [r.buffer(2*buffer1) if w=='river' else r.buffer(2*buffer2) 
@@ -708,15 +671,23 @@ Intente con otra región o cambie la fuente de análisis por
                         porc_builds = int(100*n_builds_sus/n_builds)
                         total_area = np.sum(builds.area)/10000 # hectareas
                         total_area_sus = np.sum(builds_sus.area)/10000 # hectareas
-                        figure1 = {'data': [go.Pie(visible= True, values=[n_builds_sus, n_builds-n_builds_sus],
-                                                  labels = ['susceptibles', 'No susceptibles'], hole=0.33, marker_colors = graph_colors)],
-                                   'layout':go.Layout(margin=go.layout.Margin(l=10, r=95, t=25, b=1,autoexpand = False))}
+                        figure1 = {'data': [go.Pie(visible= True, 
+                                                   values=[n_builds_sus, n_builds-n_builds_sus],
+                                                   labels = ['susceptibles', 'No susceptibles'], 
+                                                   hole=0.33, marker_colors = graph_colors,
+                                                   insidetextfont={'size':20})],
+                                   'layout':go.Layout(margin= go.layout.Margin(l=40, r=40, t=15, b=10,autoexpand = False),
+                                                      legend= go.layout.Legend(orientation= 'h', 
+                                                                               font={'size':15}))}      
+                                   
                         figure2 = {'data': [go.Bar(visible = True, x = ['AREA'], y = [total_area_sus], 
                                                     name= 'area dentro de z. susceptible', marker_color = graph_colors[0]),
                                              go.Bar(visible = True, x= ['AREA'], y = [total_area- total_area_sus], 
                                                     name= 'area fuera de z. susceptible', marker_color = graph_colors[1])],
                                    'layout':go.Layout(barmode= 'stack', 
-                                                      margin = go.layout.Margin(l= 80,r = 1, t=10, b=25,autoexpand = False),
+                                                      margin = go.layout.Margin(l= 50,r = 1, t=1, b=50,autoexpand = False),
+                                                      legend = go.layout.Legend(orientation= 'h', 
+                                                                               font={'size':15}),
                                                       yaxis = go.layout.YAxis(title= 'HECTAREAS'),
                                                       xaxis = go.layout.XAxis(domain=[0,0.5]))
                                 }
