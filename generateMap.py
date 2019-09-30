@@ -11,6 +11,7 @@ genera mapa base
 import folium
 from folium.plugins import FloatImage
 IMAGE = ("https://raw.githubusercontent.com/davidinsuasty/git_tutorial/master/icons/compass_icon.png")
+IMAGE2 = ("https://raw.githubusercontent.com/davidinsuasty/git_tutorial/master/icons/no_oficial.png")
 class Map:
     '''
         A class to generate tile map
@@ -119,6 +120,8 @@ class Map:
                           attr='Análisis susceptibilidad de inundación',
                           max_zoom=18, min_zoom= 10)
         FloatImage(IMAGE,bottom= 81 ,left=1).add_to(_map)
+        FloatImage(IMAGE2,bottom= 95 ,left=12).add_to(_map)
+        FloatImage(IMAGE2,bottom= 12 ,left=12).add_to(_map)
         _map.add_tile_layer(self._url, name='Satelital',
                             attr='Análisis susceptibilidad de inundación',
                             max_zoom=17, min_zoom=10)
