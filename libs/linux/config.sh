@@ -1,5 +1,5 @@
 cd ..
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 cd ..\..
 touch temp1.html
 touch env_variables.dat
