@@ -16,4 +16,6 @@ mkdir generated_pdf
 mkdir generated_figures
 mkdir generated_html
 mkdir resources
-mkdir resources/shp_geojson
+cd resources
+mkdir shp_geojson
+cd ..
