@@ -100,7 +100,7 @@ Para instalar estas librerías siga estos pasos:
 
     Sin embargo, para automatizar este proceso se creó un script, que instala estas librerías.
 
-- Ubíquese en la carpeta _libs_, descargue todas las librerías mencionadas anteriormente, y ejecute el archivo _config.cmd_ ubicado en la carpeta _libs/windows_ _**Es importante que las librerías que se descarguen, conserven el nombre con el que fueron descargados, de lo contrario este método no funcionará**_. Este script también creará automáticamente archivos y carpetas necesarias para el funcionamiento de la aplicación. 
+- Ubíquese en la carpeta _libs/windows_, descargue todas las librerías mencionadas anteriormente, y ejecute el archivo _config.cmd_ ubicado en la carpeta _libs/windows_ _**Es importante que las librerías que se descarguen, conserven el nombre con el que fueron descargados, de lo contrario este método no funcionará**_. Este script también creará automáticamente archivos y carpetas necesarias para el funcionamiento de la aplicación. 
 
 
 
