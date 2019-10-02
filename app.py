@@ -876,11 +876,11 @@ la región de análisis"""
                 
                 # mask image and superpixel computing
                 out, m = imtools.maskRasterIm(img, gmd.GT, analysis_region)
-                segments = imtools.computeSegments(out,mask=m) 
+                segments = imtools.computeSegments(out, compactness=25, mask = m) 
                 
                 # ## aqui modelo de clasificacicón de la imagen  ###
                 # ##################################################
-                Xtest = imtools.Feature_im2hist(img_hsv,segments, nbins=16,clrSpc='hsv')
+                Xtest = imtools.Feature_im2hist(img_hsv,segments, nbins=35,clrSpc='hsv')
                 Ytest_pred = pipeline.predict(Xtest)
                 Ytest_prob = pipeline.predict_proba(Xtest)[:,1]
                 Ytest_pred2 = Ytest_prob>0.35
