@@ -81,6 +81,27 @@ external_stylesheets = [dbc.themes.BOOTSTRAP]
 app = dash.Dash(server=server   , external_stylesheets=external_stylesheets,
                 meta_tags=[{"name": "viewport", 
                             "content": "width=device-width, initial-scale=1"} ])
+
+
+
+#       .o8                     oooo                                                    oooo         o8o            
+#      "888                     `888                                                    `888         `"'            
+#  .oooo888   .oooo.    .oooo.o  888 .oo.       .oooooooo oooo d8b  .oooo.   oo.ooooo.   888 .oo.   oooo   .ooooo.  
+# d88' `888  `P  )88b  d88(  "8  888P"Y88b     888' `88b  `888""8P `P  )88b   888' `88b  888P"Y88b  `888  d88' `"Y8 
+# 888   888   .oP"888  `"Y88b.   888   888     888   888   888      .oP"888   888   888  888   888   888  888       
+# 888   888  d8(  888  o.  )88b  888   888     `88bod8P'   888     d8(  888   888   888  888   888   888  888   .o8 
+# `Y8bod88P" `Y888""8o 8""888P' o888o o888o    `8oooooo.  d888b    `Y888""8o  888bod8P' o888o o888o o888o `Y8bod8P' 
+#                                              d"     YD                      888                                   
+#                                              "Y88888P'                     o888o                                  
+                                                                                                                  
+#           oooo                                                        .            
+#           `888                                                      .o8            
+#  .ooooo.   888   .ooooo.  ooo. .oo.  .oo.    .ooooo.  ooo. .oo.   .o888oo  .oooo.o 
+# d88' `88b  888  d88' `88b `888P"Y88bP"Y88b  d88' `88b `888P"Y88b    888   d88(  "8 
+# 888ooo888  888  888ooo888  888   888   888  888ooo888  888   888    888   `"Y88b.  
+# 888    .o  888  888    .o  888   888   888  888    .o  888   888    888 . o.  )88b 
+# `Y8bod8P' o888o `Y8bod8P' o888o o888o o888o `Y8bod8P' o888o o888o   "888" 8""888P' 
+
 app.title = 'Inundaciones'
 
 #create navbar and set it to fixed
@@ -490,7 +511,15 @@ app.layout = html.Div(children = [navbar, disclaimer,
 
 
 
-#------------------------------------- CALLBACKS-------------------------------------------------
+
+#                     oooo  oooo   .o8                           oooo                 
+#                     `888  `888  "888                           `888                 
+#  .ooooo.   .oooo.    888   888   888oooo.   .oooo.    .ooooo.   888  oooo   .oooo.o 
+# d88' `"Y8 `P  )88b   888   888   d88' `88b `P  )88b  d88' `"Y8  888 .8P'   d88(  "8 
+# 888        .oP"888   888   888   888   888  .oP"888  888        888888.    `"Y88b.  
+# 888   .o8 d8(  888   888   888   888   888 d8(  888  888   .o8  888 `88b.  o.  )88b 
+# `Y8bod8P' `Y888""8o o888o o888o  `Y8bod8P' `Y888""8o `Y8bod8P' o888o o888o 8""888P' 
+                                                                                    
 
 
 @app.callback(
