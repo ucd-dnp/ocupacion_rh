@@ -15,7 +15,7 @@ import pandas as pd
 
 class OSMDownloader:
     """
-        A clas which download the rivers shapes from de interest region
+        Una clase que descarga los shapes de los rios desde una zona de interés
     """
 
     def __init__(self, box=None,
@@ -59,9 +59,9 @@ class OSMDownloader:
                 self._rivers = -1
                 return 
             rivers.drop(labels='nodes',axis=1,inplace=True)
-            #original coords reference system
+            #Sistema de referencia de coordenadas original
             rivers.crs = {'init' :'epsg:4326'}
-            #Colombia coords reference system
+            #Sistema de coordenadas de colombia
             #rivers = rivers.to_crs({'init':'epsg:32618'})
             self._rivers = rivers
         else:

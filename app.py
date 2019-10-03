@@ -76,8 +76,7 @@ nom = Nominatim(user_agent= 'my-application')
 pipeline = pickle.load(open('./training/model.p','rb'))
 
 external_stylesheets = [dbc.themes.BOOTSTRAP]
-#external_stylesheets = [
-#    "https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css"]
+
 app = dash.Dash(server=server   , external_stylesheets=external_stylesheets,
                 meta_tags=[{"name": "viewport", 
                             "content": "width=device-width, initial-scale=1"} ])
@@ -102,9 +101,9 @@ app = dash.Dash(server=server   , external_stylesheets=external_stylesheets,
 # 888    .o  888  888    .o  888   888   888  888    .o  888   888    888 . o.  )88b 
 # `Y8bod8P' o888o `Y8bod8P' o888o o888o o888o `Y8bod8P' o888o o888o   "888" 8""888P' 
 
+#En esta seccion se crean los elementos que conformarán la vista de la aplicación 
 app.title = 'Inundaciones'
 
-#create navbar and set it to fixed
 navbar = dbc.Col([
         dbc.Row([
         html.H2("Zonas susceptibles de inundación",
@@ -137,8 +136,7 @@ navbar = dbc.Col([
     
     )
 
-#creating the search tab component
-
+#Se crea el panel de datos 
 tab_search = dbc.Card([
     dbc.CardBody([
             dbc.Row([
@@ -244,9 +242,7 @@ tab_search = dbc.Card([
 ])
 
 
-#creating the download tab component
-
-
+#Panel de descarga de archivos
 tab_download = dbc.Card([
 
     dbc.CardBody([
@@ -272,14 +268,14 @@ geovisor = dbc.Col([
                       width= '100%', 
                       height= '671')
     ],
-    # justify = "center",
+
     style = {
         "margin-left": "15px"
     })
 
 ])
 
-#creating the results card for display the graphics
+
 results_card = dbc.Card([
     dbc.CardBody([
         dbc.Col([
@@ -363,14 +359,14 @@ results_card = dbc.Card([
 ])
 
 
-
+# Se añade el panel de resultados dentro de un contenedor (tab)
 results_tab = dbc.Tabs([
 
     dbc.Tab(results_card, label = "Resultados")
 
 ])
 
-#creating the webpage disclaimer and information row
+
 
 disclaimer = dbc.Row([
     dbc.Col([
@@ -404,15 +400,15 @@ style = {
 
 
 
-#create a variable to store all the elements before sending it to the dash layout
+#Se crea una variable para almacenar todos los elementos antes de agregarlos al layout de la app
 avant_layout = dbc.Row([
-    #column of data input, buttons, map and coordinates
+    #columna del panel de datos y el geovisor
     dbc.Col([
         tabs,
         geovisor,
     
     ],
-    #define the sizes of elements in mobile and web
+
     xl = 7,
     lg = 7,
     md = 7,
@@ -420,7 +416,7 @@ avant_layout = dbc.Row([
     xs = 12
     ),
 
-    #column of results
+    #columna de resultados
     dbc.Col([
         results_tab
     ],
@@ -434,7 +430,8 @@ avant_layout = dbc.Row([
 
 ])
 
-#upload shapefile button
+#TODO: Hacer que se cargue el archivo primero al servidor y luego cargarlo con la app
+#botón de aubir un archivo Shapefile
 up_button = html.Div([
    dcc.Markdown('''
     Por favor seleccione un archivo
@@ -454,9 +451,10 @@ up_button = html.Div([
 
 
 
+##*************************************HIDDEN DIVS PARA APOYAR LAS FUNCIONALIDADES DE LOS CALLBACKS******************
 
-
-#hidden div for storing the geojson
+#TODO: Quitar en caso de que se pueda subir un shapefile
+#hidden div para almacenar el objeto geoJSON
 hidden_geojson = html.Div(
     id= 'hidden_geojson',
     style={'display':'none',
@@ -464,7 +462,7 @@ hidden_geojson = html.Div(
     'top':'990px'}
 )
 
-#hidden div for storing the output callback of dataframe
+#hidden div para apoyar al callback assign_geodf
 hidden_geodf = html.Div(
     id= 'hidden_geodf',
     style={'display':'none',
@@ -483,13 +481,7 @@ hiddenvar = html.Div(children= 'ff',
                             'position':'absolute ',
                             'top':'890px'})
 
-#hidden div for generate report functionality
-hidden_div = html.Div(
-    children = "ff",
-    id = 'hidden_div',
-    style = {
-        'display': 'none'
-    })
+
 
 
 
@@ -506,7 +498,7 @@ app.layout = html.Div(children = [navbar, disclaimer,
                                   avant_layout,
                                   up_button, 
                                   errorMsj, loading_state, disclaimer,
-                                hidden_geojson, hidden_geodf, hiddenvar, hidden_div])
+                                hidden_geojson, hidden_geodf, hiddenvar])
 
 
 
@@ -521,6 +513,40 @@ app.layout = html.Div(children = [navbar, disclaimer,
 # `Y8bod8P' `Y888""8o o888o o888o  `Y8bod8P' `Y888""8o `Y8bod8P' o888o o888o 8""888P' 
                                                                                     
 
+
+"""
+           Callback principal, se maneja el botón de buscar y analizar (inputs), se toma información (states) de los elementos del 
+            panel de datos y se retornan elementos pertenecientes al panel de resultados o a los mensajes de error (outputs) 
+
+            
+            Inputs:
+                b_search:       Escucha si el botón buscar es oprimido
+                b_analizar:     Escucha si el botón analizar es oprimido
+            States:
+                searchBar:     Barra búsqueda de lugares
+                sel_src:       Selector de fuente de análisis
+                e_lat1:        Caja de texto latitud 1
+                e_lat2:        Caja de texto latitud 2
+                e_lng1:        Caja de texto longitud 1
+                e_lng2:        Caja de texto longitud 1
+                i_buffer1:     Ancho franja de suceptibilidad afluentes principales
+                i_buffer2:     Ancho franja de suceptibilidad afluentes secundarios
+
+            Returns:
+                hidden_var:              Var auxiliar usado en callback update_map
+                error_msj (displayed):   Flag que determina si se muestra o no el mensaje
+                error_msj (message):     Mensaje del error
+                loading:                 Determina cuando se muestra el componente de espera
+                dash_board:              Determina cuando se ve el panel de resultados
+                result1_0:               # de construcciones identificadas
+                result1_1:               % del total de construcciones
+                result2_0:               # de hectareas identificadas
+                graph_1:                 Figura 1
+                graph_2:                 Figura 2
+                download_div:            Botones de las capas para descargar
+                graph_2 (style):         Flag para mostrar o no la figura 2
+                
+"""
 
 @app.callback(
     [Output(component_id = 'hidden_var',component_property='children'),
@@ -549,11 +575,11 @@ app.layout = html.Div(children = [navbar, disclaimer,
 def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buffer2):
     buffer1 = int(buffer1)
     buffer2 = int(buffer2)
-    #creation of Download class instance
+    #Se crea una instancia por default de la clase Download en caso de que no se tenga nada para descargar
     d_object = Download(FILE_PATH)
     default = d_object.download_file()
 
-    #creation of default style for graph_2
+    #Se crea un estilo por default para graph_2
     d_style_g2 = {
         'width':'385px',
         'height':'320px'
@@ -864,7 +890,7 @@ la región de análisis"""
         else:
             proj = 'epsg:32618'
             box_google = (float(lat1),float(lng1),float(lat2),float(lng2))
-            # objecto de google maps para descarga de imagen satelital 
+            # objeto de google maps para descarga de imagen satelital 
             gmd = GoogleMapDownloader(coords = box_google, proj=proj)
             ntiles = gmd.computeNtiles()
             #tamano permitido de región de análisis
@@ -1074,17 +1100,29 @@ la región de análisis"""
                 figure2 = {'data':[go.Pie(visible=False)]}
                 return ['builds', True, msj, html.Div(' '),{'visibility':'hidden'},'','', '',figure1, figure2, default, d_style_g2]   
 
+
 @app.callback(
         Output(component_id= 'map', component_property = 'srcDoc'),
-         #Output(component_id= 'error_msj',component_property = 'message')],
         [Input(component_id= 'hidden_var',component_property = 'children')]
 )
 def update_map(value):
     return open('temp1.html','r').read()
 
 
+"""
+           Callback para realizar la funcionalidad de carga
+            
+            Inputs:
+                upload-data:       Contenido que es cargado
+            States:
+                upload-data:       Nombre del archivo cargado
 
-#callback for upload a shapefile
+            Returns:
+                hidden_geojson:     Div auxiliar para almacenar el geoJSON
+               
+"""
+#TODO: REGIÓN EN COSTRUCCIÓN
+
 @app.callback(
     Output('hidden_geojson', 'children'),
     [Input('upload-data', 'contents')],
@@ -1114,7 +1152,18 @@ def set_shapefile(contents, filename):
     else:
         return None
 
-#callback for create a geodataframe and put it on map
+
+"""
+           Callback para crear un geodataframe y ponerlo en el mapa
+            
+            Inputs:
+                hidden_geojson:       Contenido que fue cargado
+            
+            Returns:
+                hidden_geodf:         Geodataframe creado a partir del geoJSON
+                
+"""
+#TODO: REGIÓN EN COSTRUCCIÓN
 @app.callback(
     Output ('hidden_geodf', 'children'),
     [Input ('hidden_geojson', 'children')]
@@ -1127,8 +1176,28 @@ def assign_geodf(geojson):
         print(geo_df['geometry'])
 
 
-
-#callback for create the pdf report and generate the download button
+"""
+           Callback para generar y descargar el reporte PDF
+            
+            Inputs:
+                report_button:            Botón de generar reporte
+                download_report_button:   Botón de descargar reporte
+            States:
+                e_lat1:                   Valor de latitud 1
+                e_lng1:                   Valor de longitud 1
+                e_lat2:                   Valor de latitud 2
+                e_lng2:                   Valor de longitud 2
+                result1_0:                # de construcciones identificadas
+                result1_1:                % del total de construcciones
+                result2_0:                # de hectareas identificadas
+                graph_1:                  Figura 1
+                graph_2:                  Figura 2
+            Returns:
+                download_report_button:   Botón con hipervinculo a archivo PDF
+                download_report_button (style):   Estilo que determina si el botón aparece o desaparece  
+                report_button:            Estilo que determina si el botón aparece o desaparece
+               
+"""
 @app.callback(
     [Output('download_report_button', 'children'),
     Output('download_report_button', 'style'),
@@ -1147,6 +1216,8 @@ def assign_geodf(geojson):
     ]
 )
 def generateReport(clicks_generate, clicks_download, lat_1, long_1, lat_2, long_2, result_1, result_2, result_3, graph_1, graph_2):
+    
+    #Se crean los estilos que se van usar en cada uno de los casos
     dissapear = {
         'display': 'none',
         'color': 'white'
@@ -1170,11 +1241,11 @@ def generateReport(clicks_generate, clicks_download, lat_1, long_1, lat_2, long_
 
     if result_3 == "":
         image_analysis_flag = True
-        print("son iguales")
-
+        
+# se mira cual botón fue presionado
     ctx = dash.callback_context
     if not ctx.triggered:
-        print("entered in not_triggered")
+        
         return ["", dissapear, style_2]
     else:
         which_one = ctx.triggered[0]['prop_id'].split('.')[0]
@@ -1191,18 +1262,28 @@ def generateReport(clicks_generate, clicks_download, lat_1, long_1, lat_2, long_
         
         download_button =  html.A("Descargar reporte", href = location, style = { "text-decoration" : "none", "color": "white",}) 
        
-        print("entered in report button and stayed there")
+        
         return [download_button, style_3, dissapear]
 
     if which_one == 'download_report_button':
-        
+        #se vuelve al estado original
         return["", dissapear, style_2]
     
-    print("not enetered anypart")
+    
     return ["", dissapear, style_2]
     
 
-#callback for display the pdf loading component
+""" 
+        
+            Callback para mostrar el componente de carga de PDF
+            
+            Inputs:
+                report_button:           Escucha si el botón generar reporte es oprimido
+                download_report_button:  Escucha si el botón descargar reporte es oprimido
+            Returns:
+                pdf_text:                Texto de espera mientras se genera pdf   
+                pdf_spinner:             spinner
+"""
 @app.callback(
     [Output('pdf_text', 'style'),
     Output('pdf_spinner', 'style')],
@@ -1233,6 +1314,6 @@ def display_loading_pdf(clicks, download_clicks):
     return  [dissapear, dissapear]
 
 
-#start aplication 
+# ****************************** MAIN *****************************
 if __name__ == '__main__':
     app.run_server(debug=True)
