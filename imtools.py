@@ -218,8 +218,9 @@ class imtools():
         else:
             segments = None
             print(method, 'Not supported')
+        if  mask is not None:   
+            segments[mask] = -1
             
-        segments[mask] = -1
         segments = label(segments, connectivity=2, background=-1)
         
         if verbose: print('---   Done - execution time: {} seconds'.format(time.time()-start))
