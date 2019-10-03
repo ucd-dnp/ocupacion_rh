@@ -48,7 +48,7 @@ La aplicación consta de un tablero de datos que permite al usuario, con ayuda d
 
 Este análisis se puede llevar a cabo de dos maneras:
 
-- Usando el API de Open Street Map, que permite extraer información correspondiente a los ríos y construcciones que se encuentran en la zona. De igual manera permite crear regiones para llevar a cabo el cálculo de determinar si una construcción se encuentra dentro de un área o no.
+- Usando la API de Open Street Map, que permite extraer información correspondiente a los ríos y construcciones que se encuentran en la zona. De igual manera permite crear regiones para llevar a cabo el cálculo de determinar si una construcción se encuentra dentro de un área o no.
 - Calculando las construcciones que se encuentran en la zona usando la técnica SLIC y la segmentación de la imagen en _superpixels_ de modo que, si no se tiene información acerca de las construcciones, se pueda identificar mediante este algoritmo, qué construcciones se encuentran en una condición de vulnerabilidad.
 
 ## Instalación
@@ -60,15 +60,17 @@ Para la instalación de la aplicación, es necesario que externamente se instale
 
 Se recomienda altamente usar un entorno virtual de Python para ejecutar la aplicación. Esto con el fin de evitar conflictos con otras librerías que puedan estar instaladas. Para esto se sugiere usar la librería [_virtualenv_](https://pypi.org/project/virtualenv/) , disponible en en gestor de paquetes de Python.
 
+
+
+#### Windows
+
 Para crear un entorno virtual ejecute el siguiente comando:
 
 ```bash
 python -m venv <nombre del entorno>
 ```
 
-#### Windows
-
-Para activar el entorno virtual en Windows ejecute:
+Para activar el entorno virtual ejecute:
 
 ```bash
 cd <nombre del entorno>/Scripts
@@ -113,21 +115,56 @@ Finalmente ingrese al archivo _env_variables.dat_ e ingrese el _path_ absoluto d
 
 #### Ubuntu y sistemas basados en Debian
 
+Para crear un entorno virtual instale virtualenv:
+
+```bash
+sudo apt-get install virtualenv
+```
+
+Luego cree un entorno virtual usando:
+
+```bash
+virtualenv -p python3.7 <nombre del entorno>
+```
+
 Para activar el entorno virtual en Ubuntu o Debian ejecute:
 
 ```bash
-<nombre del entorno>/bin/activate
+source <nombre del entorno>/bin/activate
+```
+Añadimos el siguiente repositorio
+
+```bash
+sudo add-apt-repository ppa:ubuntugis/ppa && sudo apt-get update
 ```
 
+Y luego instalamos programas y dependencias que son necesarias para instalar las librerías
 
+```bash
+sudo apt-get install libproj-dev proj-data proj-bin libgeos-dev build-essential python3-dev cython3 python3-setuptools python3-pip python3-wheel python3-numpy libz-dev libblosc-dev liblzma-dev liblz4-dev libzstd-dev libpng-dev libwebp-dev libbz2-dev libopenjp2-7-dev libjxr-dev liblcms2-dev libtiff-dev
+```
+
+Procedemos entonces a instalar las librerías de python necesarias. Para ello nos ubicamos en la carpeta _libs/linux_ y ejecutamos el archivo config.sh,.
+
+```bash
+./config.sh
+```
+
+Para la ejecución de los programas _Orca_ y _wkhtmltopdf_ es necesario que las rutas a estos sean añadidas al _path_ del sistema, para esto se sugiere ver la siguiente [guia](https://opensource.com/article/17/6/set-path-linux.).
+
+Finalmente ingrese al archivo _env_variables.dat_ e ingrese el _path_ absoluto de las siguientes carpetas:
+
+- _generated_pdf_
+- _resources/shp_geojson_
 
 ## Ejecución
 
-Para ejecutar la aplicación, ubíquese en la carpeta del programa y ejecute:
+Para ejecutar la aplicación, ubíquese en la carpeta donde se encuentra ubicado el programa y ejecute:
 
 ```python
 python app.py
 ```
+
 
 
 
