@@ -90,7 +90,7 @@ class Download:
             zip_rivers = zipfile.ZipFile('{}/{}.zip'.format(self.path, name), 'w', zipfile.ZIP_DEFLATED)
 
             #Se comprimen todos los archivos en el directorio dado
-            self.zipdir(rivers_path, zip_rivers, name)
+            self.zipdir(rivers_path, zip_rivers)
             zip_rivers.close()
 
             shutil.rmtree(rivers_path)
@@ -109,7 +109,7 @@ class Download:
             zip_builds = zipfile.ZipFile('{}/{}.zip'.format(self.path, name), 'w', zipfile.ZIP_DEFLATED)
 
             #Se comprimen todos los archivos en el directorio dado
-            self.zipdir(builds_path, zip_builds, name)
+            self.zipdir(builds_path, zip_builds)
             zip_builds.close()
             shutil.rmtree(builds_path)
             builds.to_file("{}/{}.geojson".format(self.path, name), driver = 'GeoJSON')
@@ -127,7 +127,7 @@ class Download:
             zip_rois = zipfile.ZipFile('{}/{}.zip'.format(self.path, name), 'w', zipfile.ZIP_DEFLATED)
 
            #Se comprimen todos los archivos en el directorio dado
-            self.zipdir(rois_path, zip_rois, name)
+            self.zipdir(rois_path, zip_rois)
            
             zip_rois.close()
             shutil.rmtree(rois_path)
