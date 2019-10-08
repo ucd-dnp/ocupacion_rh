@@ -116,7 +116,7 @@ navbar = dbc.Col([
         ]),
         dbc.Row([
 
-        html.P('Herramienta para identificar áreas ocupadas y conteo de infraestructura en zonas de ronda hídrica',
+        html.P('Herramienta para identificar áreas ocupadas y conteo de infraestructura en zonas de ronda hídrica (RH)',
         
         style = {
             'textAllign': 'center',
@@ -729,21 +729,21 @@ Intente con otra región o cambie la fuente de análisis por
                         total_area_sus = np.sum(builds_sus.area)/10000 # hectareas
                         figure1 = {'data': [go.Pie(visible= True, 
                                                    values=[n_builds_sus, n_builds-n_builds_sus],
-                                                   labels = ['Dentro de Ronda hídrica', 'Fuera de Ronda hídrica'], 
+                                                   labels = ['Dentro de ronda hídrica', 'Fuera de ronda hídrica'], 
                                                    hole=0.33, marker_colors = graph_colors,
-                                                   insidetextfont={'size':18})],
-                                   'layout':go.Layout(margin= go.layout.Margin(l=40, r=40, t=15, b=10,autoexpand = False),
+                                                   insidetextfont={'size':22})],
+                                   'layout':go.Layout(margin= go.layout.Margin(l=47, r=47, t=0, b=0,autoexpand = True),
                                                       legend= go.layout.Legend(orientation= 'h', 
-                                                                               font={'size':15}))}      
+                                                                               font={'size':14}))}      
                                    
                         figure2 = {'data': [go.Bar(visible = True, x = ['ÁREA'], y = [total_area_sus], 
                                                     name= 'Área dentro de ronda hídrica', marker_color = graph_colors[0]),
                                              go.Bar(visible = True, x= ['ÁREA'], y = [total_area- total_area_sus], 
                                                     name= 'Área fuera de ronda hídrica', marker_color = graph_colors[1])],
                                    'layout':go.Layout(barmode= 'stack', 
-                                                      margin = go.layout.Margin(l= 50,r = 1, t=1, b=50,autoexpand = False),
+                                                      margin = go.layout.Margin(l= 50,r = 0, t=5, b=50,autoexpand = True),
                                                       legend = go.layout.Legend(orientation= 'h', 
-                                                                               font={'size':15}),
+                                                                               font={'size':14}),
                                                       yaxis = go.layout.YAxis(title= 'HECTÁREAS'),
                                                       xaxis = go.layout.XAxis(domain=[0,0.5]))
                                 }
@@ -784,18 +784,27 @@ Intente con otra región o cambie la fuente de análisis por
                         porc_builds = int(100*n_builds_sus/n_builds)
                         total_area = np.sum(builds.area)/10000 # hectareas
                         total_area_sus = np.sum(builds_sus.area)/10000 # hectareas
-                        figure1 = {'data': [go.Pie(visible = True, values=[n_builds_sus, n_builds-n_builds_sus],
-                                                  labels = ['Dentro de ronda hídrica', 'fuera de ronda hídrica'], marker_colors = graph_colors)],
-                                   'layout': go.Layout(margin=go.layout.Margin(l=10, r=95, t=25, b=1,autoexpand = False))}
-                        figure2 = {'data': [go.Bar(visible = True, x = ['AREA'], y = [total_area_sus], 
+                        figure1 = {'data': [go.Pie(visible = True, 
+                                                   values=[n_builds_sus, n_builds-n_builds_sus],
+                                                   labels = ['Dentro de ronda hídrica', 'Fuera de ronda hídrica'], 
+                                                   hole = 0.33, marker_colors = graph_colors,
+                                                   insidetextfont={'size':22})],
+                                   'layout':go.Layout(margin= go.layout.Margin(l=47, r=47, t=0, b=0,autoexpand = True),
+                                                      legend= go.layout.Legend(orientation= 'h', 
+                                                                               font={'size':14}))}
+                        
+                        figure2 = {'data': [go.Bar(visible = True, x = ['ÁREA'], y = [total_area_sus], 
                                                     name= 'Área dentro de ronda hídrica' , marker_color = graph_colors[0]),
-                                             go.Bar(visible = True, x= ['AREA'], y = [total_area- total_area_sus], 
+                                             go.Bar(visible = True, x= ['ÁREA'], y = [total_area- total_area_sus], 
                                                     name= 'Área fuera de ronda hídrica', marker_color = graph_colors[1])],
                                    'layout':go.Layout(barmode= 'stack', 
-                                                      margin = go.layout.Margin(l= 80,r = 1, t=10, b=25,autoexpand = False),
+                                                      margin = go.layout.Margin(l= 50,r = 1, t=5, b=50,autoexpand = True),
+                                                      legend = go.layout.Legend(orientation= 'h', 
+                                                                               font={'size':14}),
                                                       yaxis = go.layout.YAxis(title= 'HECTÁREAS'),
                                                       xaxis = go.layout.XAxis(domain=[0,0.5]))}
                         style = {'width':'770px' ,'visibility':'visible'}
+                        
                         return ['builds,rivers', False, ' ', html.Div(' '), style,
                                 html.B(str(n_builds_sus) + ' construcciones'), html.B(str(porc_builds)+ ' % del total'), 
                                 html.B(str(round(total_area_sus,1))+ ' Hectáreas'),
