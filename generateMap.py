@@ -36,20 +36,20 @@ class Map:
         
 
         _map = folium.Map(location = self._location, width = 875, height = 660,  zoom_start=self._zoom,
-                          attr='Análisis susceptibilidad de inundación',
+                          attr='Ocupación en zonas de ronda hídrica',
                           max_zoom=18, min_zoom= 10)
         FloatImage(IMAGE,bottom= 81 ,left=1).add_to(_map)
         FloatImage(IMAGE2,bottom= 95 ,left=12).add_to(_map)
         FloatImage(IMAGE2,bottom= 12 ,left=12).add_to(_map)
         _map.add_tile_layer(self._url, name='Satelital',
-                            attr='Análisis susceptibilidad de inundación',
+                            attr='Ocupación en zonas de ronda hídrica',
                             max_zoom=17, min_zoom=10)
         _map.add_child(folium.LatLngPopup())
    
         
         if builds is not None:
             gjson = builds.to_json()
-            lay_builds = folium.FeatureGroup(name='Construcciones susceptibles')
+            lay_builds = folium.FeatureGroup(name='Construcciones dentro de ronda hidrica')
             lay_builds.add_child(folium.GeoJson(data=gjson,
                                                 style_function= lambda x:
                                                     {'color':'#000000',
@@ -61,7 +61,7 @@ class Map:
             
         if superpixels is not None:
             gjson = superpixels.to_json()
-            lay_sp = folium.FeatureGroup(name='Regiones susceptibles')
+            lay_sp = folium.FeatureGroup(name='Regiones dentro de ronda hidrica')
             lay_sp.add_child(folium.GeoJson(data=gjson,
                                             style_function= lambda x:
                                                 {'color':'#F08615',
@@ -95,7 +95,7 @@ class Map:
             
         if roi is not None:
             gjson = roi.to_json()
-            lay_susceptibilidad = folium.FeatureGroup(name="Zona de susceptibilidad")
+            lay_susceptibilidad = folium.FeatureGroup(name="Ronda Hidrica")
             lay_susceptibilidad.add_child(folium.GeoJson(data= gjson,
                                                          style_function=lambda x: 
                                                              {'color':'#B70015',
