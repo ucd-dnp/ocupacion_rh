@@ -71,7 +71,7 @@ colors = ['#011f4b','#03396c', '#005b96','#6497b1','#b3cde0']
 graph_colors = ['rgb(255,127,14)', 'rgb(31,119,180)']
 
 #Crear objeto georreferenciador
-nom = Nominatim(user_agent= 'my-application')
+nom = Nominatim(user_agent= 'my-application1')
 # crear objeto de clasificación
 pipeline = pickle.load(open('./training/model.p','rb'))
 
@@ -106,7 +106,7 @@ app.title = 'Inundaciones'
 
 navbar = dbc.Col([
         dbc.Row([
-        html.H2("Zonas susceptibles de inundación",
+        html.H2("Ocupación e infraestructura en zonas de ronda hídrica",
         style = {
             'textAllign': 'center',
             'color': 'white ',
@@ -116,7 +116,7 @@ navbar = dbc.Col([
         ]),
         dbc.Row([
 
-        html.P('Herramienta para identificar zonas susceptibles de inundación debido a la cercania con las rondas de los ríos',
+        html.P('Herramienta para identificar áreas ocupadas y conteo de infraestructura en zonas de ronda hídrica',
         
         style = {
             'textAllign': 'center',
@@ -173,7 +173,7 @@ tab_search = dbc.Card([
                 }),
                 dbc.Col([
                     dbc.Row([
-                        html.B('Franja de susceptibilidad (metros)')
+                        html.B('Ronda Hídrica (metros)')
                     ]),
                     dbc.Row([
                         html.B("Afluentes principales: ", style={'color': colors[2] })
@@ -296,7 +296,7 @@ results_card = dbc.Card([
                     justify = "center"
             ),
             
-            dbc.Row([html.P ('dentro de la zona de suceptibilidad',
+            dbc.Row([html.P ('dentro de la ronda hídrica',
                              style={'textAlign'    : 'center',
                                     'color'        : colors[3],
                                     'fontSize'     : '26px',
@@ -375,10 +375,11 @@ disclaimer = dbc.Row([
     width = 1),
     dbc.Col([
 
-    html.P([html.B("Atención: "),  'Este reporte fue generado con una herramienta de predicción de zonas de inundaciones, por ningún motivo puede ser considerado como información oficial por ninguna entidad estatal, ya que los resultados obtenidos pueden tener un porcentaje de error que puede presentar un contraste con las situaciones actuales de las zonas analizadas.'],
+    dcc.Markdown('''Este reporte contiene *información indicativa* de las áreas ocupadas y del inventario de la infraestructura ubicada en zonas de rondas hídricas. La información depende de la actualización de los datos de [OpenStreetMap](https://wiki.openstreetmap.org/wiki/Main_Page), herramienta de construcción colectiva y no está basada en la cartografía oficial.  La infraestructura en esta área puede estar expuesta a inundaciones, movimientos en masa, procesos erosivos, crecientes súbitas y flujos torrenciales.  Los resultados que arroja esta herramienta no sustituyen los estudios y análisis de riesgo para instrumentos de ordenamiento.
+    **El [DNP](https://www.dnp.gov.co/DNPN/Paginas/default.aspx) no se hace responsable del uso indebido de la información, la cual debe verse como de  referencia**''',
     style = {
-        "font-size": '13px',
-        'color': 'yellow'
+        "font-size": '12px',
+        'color': 'gray'
     }),
     ],
     width = 10),
@@ -391,9 +392,9 @@ disclaimer = dbc.Row([
     width = 1),
 ],
 style = {
-    'background-color': 'red',
-    'padding-top': '10px',
-    'padding-bottom': '10px',
+    'background-color': '#FBE7AE',
+    'padding-top': '6px',
+    'padding-bottom': '4px',
     'margin': '0'
 },
 )
@@ -728,22 +729,22 @@ Intente con otra región o cambie la fuente de análisis por
                         total_area_sus = np.sum(builds_sus.area)/10000 # hectareas
                         figure1 = {'data': [go.Pie(visible= True, 
                                                    values=[n_builds_sus, n_builds-n_builds_sus],
-                                                   labels = ['susceptibles', 'No susceptibles'], 
+                                                   labels = ['Dentro de Ronda hídrica', 'Fuera de Ronda hídrica'], 
                                                    hole=0.33, marker_colors = graph_colors,
-                                                   insidetextfont={'size':20})],
+                                                   insidetextfont={'size':18})],
                                    'layout':go.Layout(margin= go.layout.Margin(l=40, r=40, t=15, b=10,autoexpand = False),
                                                       legend= go.layout.Legend(orientation= 'h', 
                                                                                font={'size':15}))}      
                                    
-                        figure2 = {'data': [go.Bar(visible = True, x = ['AREA'], y = [total_area_sus], 
-                                                    name= 'area dentro de z. susceptible', marker_color = graph_colors[0]),
-                                             go.Bar(visible = True, x= ['AREA'], y = [total_area- total_area_sus], 
-                                                    name= 'area fuera de z. susceptible', marker_color = graph_colors[1])],
+                        figure2 = {'data': [go.Bar(visible = True, x = ['ÁREA'], y = [total_area_sus], 
+                                                    name= 'Área dentro de ronda hídrica', marker_color = graph_colors[0]),
+                                             go.Bar(visible = True, x= ['ÁREA'], y = [total_area- total_area_sus], 
+                                                    name= 'Área fuera de ronda hídrica', marker_color = graph_colors[1])],
                                    'layout':go.Layout(barmode= 'stack', 
                                                       margin = go.layout.Margin(l= 50,r = 1, t=1, b=50,autoexpand = False),
                                                       legend = go.layout.Legend(orientation= 'h', 
                                                                                font={'size':15}),
-                                                      yaxis = go.layout.YAxis(title= 'HECTAREAS'),
+                                                      yaxis = go.layout.YAxis(title= 'HECTÁREAS'),
                                                       xaxis = go.layout.XAxis(domain=[0,0.5]))
                                 }
                         style = {'width':'770px','visibility':'visible'}
@@ -784,15 +785,15 @@ Intente con otra región o cambie la fuente de análisis por
                         total_area = np.sum(builds.area)/10000 # hectareas
                         total_area_sus = np.sum(builds_sus.area)/10000 # hectareas
                         figure1 = {'data': [go.Pie(visible = True, values=[n_builds_sus, n_builds-n_builds_sus],
-                                                  labels = ['susceptibles', 'No susceptibles'], marker_colors = graph_colors)],
+                                                  labels = ['Dentro de ronda hídrica', 'fuera de ronda hídrica'], marker_colors = graph_colors)],
                                    'layout': go.Layout(margin=go.layout.Margin(l=10, r=95, t=25, b=1,autoexpand = False))}
                         figure2 = {'data': [go.Bar(visible = True, x = ['AREA'], y = [total_area_sus], 
-                                                    name= 'area dentro de z. susceptible' , marker_color = graph_colors[0]),
+                                                    name= 'Área dentro de ronda hídrica' , marker_color = graph_colors[0]),
                                              go.Bar(visible = True, x= ['AREA'], y = [total_area- total_area_sus], 
-                                                    name= 'area fuera de z. susceptible', marker_color = graph_colors[1])],
+                                                    name= 'Área fuera de ronda hídrica', marker_color = graph_colors[1])],
                                    'layout':go.Layout(barmode= 'stack', 
                                                       margin = go.layout.Margin(l= 80,r = 1, t=10, b=25,autoexpand = False),
-                                                      yaxis = go.layout.YAxis(title= 'HECTAREAS'),
+                                                      yaxis = go.layout.YAxis(title= 'HECTÁREAS'),
                                                       xaxis = go.layout.XAxis(domain=[0,0.5]))}
                         style = {'width':'770px' ,'visibility':'visible'}
                         return ['builds,rivers', False, ' ', html.Div(' '), style,
@@ -922,7 +923,7 @@ la región de análisis"""
                     # ##########################  RESULTS  ####################################
                     figure1 = {'data':[go.Pie(visible=False)]}
                     figure2 = {'data':[go.Pie(visible=False)]}
-                    msj = 'No se puede realizar el análisis por imagenes satelitales, por favor revise las coordenadas'
+                    msj = 'No se puede realizar el análisis por imágenes satelitales, por favor revise las coordenadas'
                     return ['', True, msj, html.Div(' '), {'visibility':'hidden'},
                         '','','',figure1,figure2, default, d_style_g2]
                 
@@ -1017,11 +1018,11 @@ la región de análisis"""
                     
                     total_area = np.sum(builds_temp.area)/10000 # hectareas
                     n_builds_sus = np.shape(builds_sus)[0]
-                    figure1 = {'data': [go.Bar(visible = True, x = ['AREA'], y = [total_area], 
-                                        name= 'area dentro de z. susceptible', marker_color = graph_colors[0])],
+                    figure1 = {'data': [go.Bar(visible = True, x = ['ÁREA'], y = [total_area], 
+                                        name= 'Área dentro de ronda hídrica', marker_color = graph_colors[0])],
                                'layout':go.Layout(barmode= 'stack', 
                                         margin = go.layout.Margin(l= 80,r = 1, t=10, b=25,autoexpand = False),
-                                        yaxis = go.layout.YAxis(title= 'HECTAREAS'),
+                                        yaxis = go.layout.YAxis(title= 'HECTÁREAS'),
                                         xaxis = go.layout.XAxis(domain=[0,0.5]))
                                 }
                     figure2 = {'data':[go.Pie(visible=False)]}
@@ -1074,11 +1075,11 @@ la región de análisis"""
                     total_area = np.sum(builds_temp.area)/10000 # hectareas
                     n_builds_sus = np.shape(builds_sus)[0]
                     #####################################  RESULT ###################################################
-                    figure1 = {'data': [go.Bar(visible = True, x = ['AREA'], y = [total_area], 
-                                        name= 'area dentro de z. susceptible', marker_color = graph_colors[0])],
+                    figure1 = {'data': [go.Bar(visible = True, x = ['ÁREA'], y = [total_area], 
+                                        name= 'Área dentro de ronda hídrica', marker_color = graph_colors[0])],
                                'layout':go.Layout(barmode= 'stack', 
                                         margin = go.layout.Margin(l= 80,r = 1, t=10, b=25,autoexpand = False),
-                                        yaxis = go.layout.YAxis(title= 'HECTAREAS'),
+                                        yaxis = go.layout.YAxis(title= 'HECTÁREAS'),
                                         xaxis = go.layout.XAxis(domain=[0,0.5]))
                                 }
                     figure2 = {'data':[go.Pie(visible=False)]}
