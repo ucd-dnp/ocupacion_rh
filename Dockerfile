@@ -114,6 +114,9 @@ RUN pip install -U pip && pip install -r /tmp/requirements.txt --no-cache-dir
 
 RUN touch /etc/nginx/conf.d/custom_timeout.conf && echo "uwsgi_read_timeout 1000s;fastcgi_read_timeout 600;proxy_read_timeout 600;" > /etc/nginx/conf.d/custom_timeout.conf
 
+RUN mkdir generated_figures && mkdir generated_html && mkdir generated_pdf && mkdir resources && mkdir resources/shp_geojson
+RUN touch temp1.html && touch temp2.html
+RUN echo "/app/generated_pdf\n/app/resources/shp_geojson\n/usr/local/bin/wkhtmltopdf" > env_variables.dat
 
 ENV NGINX_WORKER_PROCESSES auto
 
