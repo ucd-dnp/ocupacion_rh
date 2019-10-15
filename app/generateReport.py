@@ -81,6 +81,7 @@ class Report:
 
         #Se renderiza el html a pdf
         
-        config = pdfkit.configuration(wkhtmltopdf=bytes('C://Program Files//wkhtmltopdf//bin//wkhtmltopdf.exe', 'utf-8'))
-        pdfkit.from_file("generated_html/{}_html_report.html".format(file_name), "generated_pdf\{}_reporte.pdf".format(file_name), configuration = config)
+        # config = pdfkit.configuration(wkhtmltopdf=bytes('C://Program Files//wkhtmltopdf//bin//wkhtmltopdf.exe', 'utf-8'))
+        config = pdfkit.configuration(wkhtmltopdf=bytes('/usr/local/bin/wkhtmltopdf', 'utf-8'))
+        pdfkit.from_file("generated_html/{}_html_report.html".format(file_name), "generated_pdf/{}_reporte.pdf".format(file_name), configuration = config)
         return file_name

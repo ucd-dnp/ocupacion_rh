@@ -58,9 +58,7 @@ def download(file):
 
 @server.route("/report/<path:file>")
 def download_report(file):
-    print("si entré, pero me jodí")
-    print("fiel: {}".format(file))
-    print("path: {}".format(REPORT_PATH))
+   
     return send_from_directory(REPORT_PATH, file, as_attachment=True)
 
 
@@ -1353,4 +1351,4 @@ def display_loading_pdf(clicks, download_clicks):
 
 # ****************************** MAIN *****************************
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, host='0.0.0.0', port=80)
