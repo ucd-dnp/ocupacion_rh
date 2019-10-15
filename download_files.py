@@ -24,6 +24,38 @@ class Download:
     def __init__(self, path):
         self.path = path
         self.date = datetime.now().strftime("%b%d%Y%H%M%S")
+        self.readme = """
+        *****************************************************************************************
+        Ocupación e infraestructura en zonas de ronda hídrica
+        *****************************************************************************************
+        Esta herramienta permite aproximar la cantidad de construcciones que están dentro de la 
+        ronda de los ríos, a partir de información de capas de ríos y construcciones obtenidas de 
+        OpenStreetMap cuando están disponibles. En caso contrario la herramienta utiliza 
+        algoritmos de clasificación de imagen para estimar las regiones con construcciones que 
+        estén dentro de la ronda de los ríos. 
+
+        Para más información consulte el manual de usuario en: https://planeacionnacional-my.sharepoint.com/:b:/g/personal/ucd_dnp_gov_co/EabRJUEc05hLnlnyORvyYx0BILFyqUGlsh1oxGWKC87qJA?e=hc3JeM
+        *****************************************************************************************
+        Este reporte contiene información indicativa de las áreas ocupadas y del inventario de la 
+        infraestructura ubicada en zonas de rondas hídricas. La información depende de la 
+        actualización de los datos de Open Street Map, herramienta de construcción colectiva y no 
+        está basada en la cartografía oficial.  La infraestructura en esta área puede estar 
+        expuesta a inundaciones, movimientos en masa, procesos erosivos, crecientes súbitas y 
+        flujos torrenciales. 
+
+        Los resultados que arroja esta herramienta no sustituyen los estudios y análisis de riesgo 
+        para instrumentos de ordenamiento. El DNP no se hace responsable del uso indebido de la 
+        información, la cual debe verse como de  referencia.
+
+        ******************************************************************************************
+        Herramienta elaborada por el Departamento Nacional de Planeación, en la Dirección de 
+        Desarrollo Digital con el apoyo de la Dirección de Ambiente y Desarrollo Sostenible.
+        ______________________________
+        --------------Licencia pendiente-------------------
+        _______________________________
+
+        Bogotá, Colombia, 2019.
+        """
         
     """
            Callback para generar y descargar el reporte PDF
@@ -80,13 +112,16 @@ class Download:
                 botones con vinculos a los archivos de las capas.
     """
     def download_file (self, rivers = None, builds = None, roi = None ):
+
+
         list_file = []
         if rivers is not None:
             label = "Capa de rios"
             name = "{}rivers_layer".format(self.date)
             rivers_path = "{}/{}".format(self.path, name)
             os.mkdir(rivers_path)
-           
+            with open('{}/readme.txt'.format(rivers_path), 'w+') as opened_file:
+                opened_file.write(self.readme)
             rivers.to_file("{}/{}.shp".format(rivers_path, name))
             
             zip_rivers = zipfile.ZipFile('{}/{}.zip'.format(self.path, name), 'w', zipfile.ZIP_DEFLATED)
@@ -106,7 +141,8 @@ class Download:
             name = "{}builds_layer".format(self.date)
             builds_path = "{}/{}".format(self.path, name)
             os.mkdir(builds_path)
-
+            with open('{}/readme.txt'.format(builds_path), 'w+') as opened_file:
+                opened_file.write(self.readme)
             builds.to_file("{}/{}.shp".format(builds_path, name))
             zip_builds = zipfile.ZipFile('{}/{}.zip'.format(self.path, name), 'w', zipfile.ZIP_DEFLATED)
 
@@ -124,7 +160,8 @@ class Download:
             rois_path = "{}/{}".format(self.path, name)
            
             os.mkdir(rois_path)
-
+            with open('{}/readme.txt'.format(rois_path), 'w+') as opened_file:
+                opened_file.write(self.readme)
             roi.to_file("{}/{}.shp".format(rois_path, name))
             zip_rois = zipfile.ZipFile('{}/{}.zip'.format(self.path, name), 'w', zipfile.ZIP_DEFLATED)
 

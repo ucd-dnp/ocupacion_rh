@@ -722,7 +722,7 @@ Intente con otra región o cambie la fuente de análisis por
                                                                           bounding=box_coords)
                             rivers_mag = osm._rivers.to_crs({'init':'epsg:3116'})
                             roi_mag = roi.to_crs({'init':'epsg:3116'})
-                            builds_mag = build_sus.to_crs({'init':'epsg:3116'})
+                            builds_mag = builds_sus.to_crs({'init':'epsg:3116'})
                             download_component = d_object.download_file(rivers = rivers_mag, roi = roi_mag, builds = builds_mag)
 
                         
