@@ -14,6 +14,8 @@ import zipfile
 #libreria necesaria para borrar archivos
 import shutil
 
+#libreria usada para listar archivos que cumplan una condicion dada
+import glob
 
 from datetime import datetime
 
@@ -69,9 +71,9 @@ class Download:
            Método para generar los botones y vínculos de descarga de archivos
             
             Inputs:
-                rivers:     Capa de rios
-                builds:     Capa de Construcciones
-                roi:        Capa de regiones de suceptibilidad
+                rivers:       Capa de rios
+                builds:       Capa de Construcciones
+                roi:          Capa de rondas hídricas
             
             Returns:
                 En caso de que no se le mande ninguna capa, retorna un texto. En caso contrario, retorna
@@ -116,7 +118,7 @@ class Download:
             
             list_file.append((label, name))
         if roi is not None:
-            label = "Capa de regiones"
+            label = "Capa de rondas hídricas"
             name = "{}roi_layer".format(self.date)
 
             rois_path = "{}/{}".format(self.path, name)
