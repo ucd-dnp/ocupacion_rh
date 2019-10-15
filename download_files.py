@@ -18,6 +18,7 @@ import shutil
 import glob
 
 from datetime import datetime
+from datetime import timedelta  
 
 class Download:
 
@@ -100,6 +101,18 @@ class Download:
                 ziph.write(os.path.join(root, file), file)
 
     """
+           Método para eliminar archivos de descarga que ya no se utilizan y solo acumulan espacio
+    """
+    def deleteFormerFiles(self):
+        file_arr = ["*.geojson", "*.zip"]
+        found_files = []
+        for i in file_arr:
+            found_files.extend(glob.glob("{}/{}".format(self.path, i)))
+        time_limit = (datetime.now() - timedelta(hours=1)).timestamp()
+        [os.remove(i) for i in found_files if os.path.getctime(i) < time_limit]
+        # print("archivitos: {}".format(to_delete))
+
+    """
            Método para generar los botones y vínculos de descarga de archivos
             
             Inputs:
@@ -112,8 +125,7 @@ class Download:
                 botones con vinculos a los archivos de las capas.
     """
     def download_file (self, rivers = None, builds = None, roi = None ):
-
-
+        self.deleteFormerFiles()
         list_file = []
         if rivers is not None:
             label = "Capa de rios"
