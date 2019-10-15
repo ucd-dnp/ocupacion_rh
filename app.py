@@ -709,7 +709,9 @@ Intente con otra región o cambie la fuente de análisis por
                             Map(location= location, zoom= 15).generateMap(rivers=osm._rivers, 
                                                                           roi = roi_param,
                                                                           bounding = box_coords)
-                            download_component = d_object.download_file(rivers = osm._rivers, roi = roi.to_crs({'init':'epsg:4326'} ))
+                            rivers_mag = osm._rivers.to_crs({'init':'epsg:3116'})
+                            roi_mag = roi.to_crs({'init':'epsg:3116'})
+                            download_component = d_object.download_file(rivers = rivers_mag, roi = roi_mag)
 
                         else:
                             roi_param = roi.to_crs({'init':'epsg:4326'})
@@ -718,7 +720,10 @@ Intente con otra región o cambie la fuente de análisis por
                                                                           rivers=osm._rivers, 
                                                                           roi = roi_param,
                                                                           bounding=box_coords)
-                            download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param, builds = build_sus_param)
+                            rivers_mag = osm._rivers.to_crs({'init':'epsg:3116'})
+                            roi_mag = roi.to_crs({'init':'epsg:3116'})
+                            builds_mag = build_sus.to_crs({'init':'epsg:3116'})
+                            download_component = d_object.download_file(rivers = rivers_mag, roi = roi_mag, builds = builds_mag)
 
                         
                         ########################################## RESULTS #######################################
@@ -732,7 +737,7 @@ Intente con otra región o cambie la fuente de análisis por
                                                    labels = ['Dentro de ronda hídrica', 'Fuera de ronda hídrica'], 
                                                    hole=0.33, marker_colors = graph_colors,
                                                    insidetextfont={'size':22})],
-                                   'layout':go.Layout(margin= go.layout.Margin(l=47, r=47, t=0, b=0,autoexpand = True),
+                                   'layout':go.Layout(margin= go.layout.Margin(l=47, r=47, t=0, b=0,autoexpand = True   ),
                                                       legend= go.layout.Legend(orientation= 'h', 
                                                                                font={'size':14}))}      
                                    
@@ -767,7 +772,9 @@ Intente con otra región o cambie la fuente de análisis por
                             Map(location= location, zoom= 15).generateMap(rivers=osm._rivers, 
                                                                           roi = roi_param,
                                                                           bounding=box_coords)
-                            download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param)
+                            rivers_mag = osm._rivers.to_crs({'init':'epsg:3116'})
+                            roi_mag = rivers.to_crs({'init':'epsg:3116'})
+                            download_component = d_object.download_file(rivers = rivers_mag, roi = roi_mag)
 
                         else:
                             build_sus_param = builds_sus.to_crs({'init':'epsg:4326'})
@@ -775,8 +782,11 @@ Intente con otra región o cambie la fuente de análisis por
                             Map(location= location, zoom= 15).generateMap(builds = build_sus_param,
                                                                           rivers=osm._rivers, 
                                                                           roi = roi_param,
-                                                                          bounding=box_coords)   
-                            download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param, builds = build_sus_param)
+                                                                          bounding=box_coords)
+                            rivers_mag = osm._rivers.to_crs({'init':'epsg:3116'})
+                            roi_mag = rivers.to_crs({'init':'epsg:3116'})
+                            builds_mag = builds_sus.to_crs({'init':'epsg:3116'})
+                            download_component = d_object.download_file(rivers = rivers_mag, roi = roi_mag, builds = builds_mag)
 
                         #####################################  RESULTS  ##########################################
                         n_builds = np.shape(osm._builds)[0]
@@ -869,7 +879,9 @@ la región de análisis"""
                                                                   bounding=box_coords)
                     #TODO: unir poly_rivers y rivers
                     #FIXME: revisar si builds en verdad va ahi
-                    download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param)
+                    rivers_mag = osm._rivers.to_crs({'init':'epsg:3116'})
+                    roi_mag = roi.to_crs({'init':'epsg:3116'})
+                    download_component = d_object.download_file(rivers = rivers_mag, roi = roi_mag)
 
                     #####################################  RESULT ###################################################
                     figure1 = {'data':[go.Pie(visible=False)]}
@@ -877,8 +889,10 @@ la región de análisis"""
                     return ['rivers, poly', False, '', html.Div(' '), {'visibility':'hidden'},
                             '','','',figure1,figure2, download_component, d_style_g2]
                 else:
-                    roi_param  = rivers.to_crs({'init':'epsg:4326'} )
-                    download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param )
+                    roi_param  = rivers.to_crs({'init':'epsg:4326'})
+                    rivers_mag = osm._rivers.to_crs({'init':'epsg:3116'})
+                    roi_mag = rivers.to_crs({'init':'epsg:3116'})
+                    download_component = d_object.download_file(rivers = rivers_mag, roi = roi_mag )
 
                     Map(location= location, zoom= 15).generateMap(rivers=osm._rivers,
                                                                   roi = roi_param,
@@ -1005,7 +1019,9 @@ la región de análisis"""
                         Map(location= location, zoom= 15).generateMap(rivers=osm._rivers, 
                                                                       roi = roi_param,
                                                                       bounding = box_coords)
-                        download_component = d_object.download_file(rivers = osm._rivers, roi = roi.to_crs({'init':'epsg:4326'} ))
+                        rivers_mag = osm._rivers.to_crs({'init':'epsg:3116'})
+                        roi_mag = roi.to_crs({'init':'epsg:3116'})
+                        download_component = d_object.download_file(rivers = rivers_mag, roi = roi_mag)
 
                     else:
                         roi_param = roi.to_crs({'init':'epsg:4326'})
@@ -1014,7 +1030,10 @@ la región de análisis"""
                                                                       rivers=osm._rivers, 
                                                                       roi = roi_param,
                                                                       bounding=box_coords)
-                        download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param, builds = build_sus_param)
+                        rivers_mag = osm._rivers.to_crs({'init':'epsg:3116'})
+                        roi_mag = roi.to_crs({'init':'epsg:3116'})
+                        builds_mag = builds_sus.to_crs({'init':'epsg:3116'})
+                        download_component = d_object.download_file(rivers = rivers_mag, roi = roi_mag, builds = builds_mag)
                         
                     #####################################  RESULT ###################################################
                     # calculo de area
@@ -1042,7 +1061,10 @@ la región de análisis"""
                     style_figure = {
                         'display': 'none'
                     }
-                    download_component = d_object.download_file(rivers = osm._rivers, builds = build_sus_param, roi = roi_param)
+                    rivers_mag = osm._rivers.to_crs({'init':'epsg:3116'})
+                    builds_mag = build_sus_param.to_crs({'init':'epsg:3116'})
+                    roi_mag = roi_param.to_crs({'init':'epsg:3116'})
+                    download_component = d_object.download_file(rivers = rivers_mag, builds = builds_mag, roi = roi_mag)
                     return ['rivers, poly, superpixels', False, '', html.Div(' '), style,
                             html.B(str(round(total_area,1)) + ' Hectáreas'),html.B(str(n_builds_sus) + ' regiones detectadas'),'',
                             figure1,figure2, download_component, style_figure]
@@ -1062,7 +1084,9 @@ la región de análisis"""
                         Map(location= location, zoom= 15).generateMap(rivers=osm._rivers, 
                                                                       roi = roi_param,
                                                                       bounding = box_coords)
-                        download_component = d_object.download_file(rivers = osm._rivers, roi = roi.to_crs({'init':'epsg:4326'} ))
+                        rivers_mag = osm._rivers.to_crs({'init':'epsg:3116'})
+                        roi_mag = roi.to_crs({'init':'epsg:3116'})
+                        download_component = d_object.download_file(rivers = rivers_mag, roi = roi_mag)
 
                     else:
                         roi_param = roi.to_crs({'init':'epsg:4326'})
@@ -1071,6 +1095,9 @@ la región de análisis"""
                                                                       rivers=osm._rivers, 
                                                                       roi = roi_param,
                                                                       bounding=box_coords)
+                        rivers_mag = osm._rivers.to_crs({'init':'epsg:3116'})
+                        roi_mag = roi.to_crs({'init':'epsg:3116'})
+                        builds_mag = builds_sus.to_crs({'init':'epsg:3116'})
                         download_component = d_object.download_file(rivers = osm._rivers, roi = roi_param, builds = build_sus_param)
                    
                     # calculo de area
