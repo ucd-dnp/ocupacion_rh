@@ -264,7 +264,7 @@ geovisor = dbc.Col([
     justify = "center"),
     dbc.Row([
         html.Iframe(id= 'map', 
-                      srcDoc = open('temp1.html','r').read(),
+                      srcDoc = open('temp2.html','r').read(),
                       width= '100%', 
                       height= '671')
     ],
@@ -1143,7 +1143,7 @@ la región de análisis"""
         [Input(component_id= 'hidden_var',component_property = 'children')]
 )
 def update_map(value):
-    return open('temp1.html','r').read()
+    return open('temp2.html','r').read()
 
 
 """

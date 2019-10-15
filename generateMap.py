@@ -31,10 +31,99 @@ class Map:
  
         
 
+    def generateMap2(self, builds = None, rivers = None, roi = None, 
+                    poly_rivers = None, superpixels = None, bounding = None):
+        
+
+        _map = folium.Map(location = self._location,  zoom_start=self._zoom,
+                          attr='Ocupación en zonas de ronda hídrica',
+                          max_zoom=18, min_zoom= 10)
+        FloatImage(IMAGE,bottom= 81 ,left=1).add_to(_map)
+        FloatImage(IMAGE2,bottom= 95 ,left=12).add_to(_map)
+        FloatImage(IMAGE2,bottom= 12 ,left=12).add_to(_map)
+        _map.add_tile_layer(self._url, name='Satelital',
+                            attr='Ocupación en zonas de ronda hídrica',
+                            max_zoom=17, min_zoom=10)
+        _map.add_child(folium.LatLngPopup())
+   
+        
+        if builds is not None:
+            gjson = builds.to_json()
+            lay_builds = folium.FeatureGroup(name='Construcciones dentro de ronda hidrica')
+            lay_builds.add_child(folium.GeoJson(data=gjson,
+                                                style_function= lambda x:
+                                                    {'color':'#000000',
+                                                     'weight':0.15,
+                                                     'fillColor':'#F08615',
+                                                     'fillOpacity': 1.0}))
+            _map.add_child(lay_builds)
+      
+            
+        if superpixels is not None:
+            gjson = superpixels.to_json()
+            lay_sp = folium.FeatureGroup(name='Regiones dentro de ronda hidrica')
+            lay_sp.add_child(folium.GeoJson(data=gjson,
+                                            style_function= lambda x:
+                                                {'color':'#F08615',
+                                                 'weight':2,
+                                                 'fillColor':'#3DCF58',
+                                                 'fillOpacity':0.1}))
+            _map.add_child(lay_sp)
+  
+        
+        if rivers is not None:
+            gjson = rivers.to_json()
+            lay_rivers = folium.FeatureGroup(name='Rios')
+            lay_rivers.add_child(folium.GeoJson(data= gjson,
+                                                style_function=lambda x: 
+                                                    {'color':'#0083E9', 
+                                                     'opacity':0.8,
+                                                     'fillColor':'#0083E9', 
+                                                     'fillOpacity': 1,
+                                                     'width':0.1}))
+            if poly_rivers is not None:
+                gjson = poly_rivers.to_json()
+                lay_rivers.add_child(folium.GeoJson(data = gjson,
+                                                    style_function=lambda x: 
+                                                    {'color':'#0083E9', 
+                                                     'opacity':0.8,
+                                                     'fillColor':'#0083E9', 
+                                                     'fillOpacity': 1,
+                                                     'width':0.1}))
+            _map.add_child(lay_rivers)
+
+            
+        if roi is not None:
+            gjson = roi.to_json()
+            lay_susceptibilidad = folium.FeatureGroup(name="Ronda Hidrica")
+            lay_susceptibilidad.add_child(folium.GeoJson(data= gjson,
+                                                         style_function=lambda x: 
+                                                             {'color':'#B70015',
+                                                              'opacity':0.2,
+                                                              'fillColor':'#B70015', 
+                                                              'fillOpacity': 0.3,
+                                                              'width':0.1}))
+            _map.add_child(lay_susceptibilidad)
+    
+        
+        if bounding is not None:
+            lat2,lon1,lat1,lon2 = bounding
+            points = [(lat1,lon1),(lat1,lon2),(lat2,lon2),(lat2,lon1),(lat1,lon1)]
+            folium.PolyLine(points,weight=1.5,opacity = 0.5, dashArray=[20,20],dashOffset= 20).add_to(_map)
+            
+        _map.add_child(folium.LayerControl())
+    
+        
+        
+        _map.save('temp2.html')
+  
+        return _map
+
     def generateMap(self, builds = None, rivers = None, roi = None, 
                     poly_rivers = None, superpixels = None, bounding = None):
         
 
+        self.generateMap2(builds, rivers, roi, poly_rivers, superpixels, bounding)
         _map = folium.Map(location = self._location, width = 875, height = 660,  zoom_start=self._zoom,
                           attr='Ocupación en zonas de ronda hídrica',
                           max_zoom=18, min_zoom= 10)

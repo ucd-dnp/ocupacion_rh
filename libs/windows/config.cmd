@@ -11,6 +11,7 @@ pip install Cartopy-0.17.0-cp37-cp37m-win_amd64.whl
 pip install -r requirements.txt
 cd ..
 type nul > temp1.html
+type nul > temp2.html
 type nul > env_variables.dat
 mkdir generated_pdf
 mkdir generated_figures
