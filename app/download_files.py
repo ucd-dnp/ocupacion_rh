@@ -26,36 +26,36 @@ class Download:
         self.path = path
         self.date = datetime.now().strftime("%b%d%Y%H%M%S")
         self.readme = """
-        *****************************************************************************************
-        Ocupación e infraestructura en zonas de ronda hídrica
-        *****************************************************************************************
-        Esta herramienta permite aproximar la cantidad de construcciones que están dentro de la 
-        ronda de los ríos, a partir de información de capas de ríos y construcciones obtenidas de 
-        OpenStreetMap cuando están disponibles. En caso contrario la herramienta utiliza 
-        algoritmos de clasificación de imagen para estimar las regiones con construcciones que 
-        estén dentro de la ronda de los ríos. 
+        *****************************************************************************************\n
+        Ocupación e infraestructura en zonas de ronda hídrica\n
+        *****************************************************************************************\n
+        Esta herramienta permite aproximar la cantidad de construcciones que están dentro de la \n
+        ronda de los ríos, a partir de información de capas de ríos y construcciones obtenidas de \n
+        OpenStreetMap cuando están disponibles. En caso contrario la herramienta utiliza \n
+        algoritmos de clasificación de imagen para estimar las regiones con construcciones que \n
+        estén dentro de la ronda de los ríos. \n
 
-        Para más información consulte el manual de usuario en: https://planeacionnacional-my.sharepoint.com/:b:/g/personal/ucd_dnp_gov_co/EabRJUEc05hLnlnyORvyYx0BILFyqUGlsh1oxGWKC87qJA?e=hc3JeM
-        *****************************************************************************************
-        Este reporte contiene información indicativa de las áreas ocupadas y del inventario de la 
-        infraestructura ubicada en zonas de rondas hídricas. La información depende de la 
-        actualización de los datos de Open Street Map, herramienta de construcción colectiva y no 
-        está basada en la cartografía oficial.  La infraestructura en esta área puede estar 
-        expuesta a inundaciones, movimientos en masa, procesos erosivos, crecientes súbitas y 
-        flujos torrenciales. 
+        Para más información consulte el manual de usuario en: https://planeacionnacional-my.sharepoint.com/:b:/g/personal/ucd_dnp_gov_co/EabRJUEc05hLnlnyORvyYx0BILFyqUGlsh1oxGWKC87qJA?e=hc3JeM\n
+        *****************************************************************************************\n
+        Este reporte contiene información indicativa de las áreas ocupadas y del inventario de la \n
+        infraestructura ubicada en zonas de rondas hídricas. La información depende de la \n
+        actualización de los datos de Open Street Map, herramienta de construcción colectiva y no\n 
+        está basada en la cartografía oficial.  La infraestructura en esta área puede estar \n
+        expuesta a inundaciones, movimientos en masa, procesos erosivos, crecientes súbitas y \n
+        flujos torrenciales. \n
 
-        Los resultados que arroja esta herramienta no sustituyen los estudios y análisis de riesgo 
-        para instrumentos de ordenamiento. El DNP no se hace responsable del uso indebido de la 
-        información, la cual debe verse como de  referencia.
-
-        ******************************************************************************************
-        Herramienta elaborada por el Departamento Nacional de Planeación, en la Dirección de 
-        Desarrollo Digital con el apoyo de la Dirección de Ambiente y Desarrollo Sostenible.
-        ______________________________
-        --------------Licencia pendiente-------------------
-        _______________________________
-
-        Bogotá, Colombia, 2019.
+        Los resultados que arroja esta herramienta no sustituyen los estudios y análisis de riesgo\n 
+        para instrumentos de ordenamiento. El DNP no se hace responsable del uso indebido de la \n
+        información, la cual debe verse como de  referencia.\n
+\n
+        ******************************************************************************************\n
+        Herramienta elaborada por el Departamento Nacional de Planeación, en la Dirección de \n
+        Desarrollo Digital con el apoyo de la Dirección de Ambiente y Desarrollo Sostenible.\n
+        ______________________________\n
+        --------------Licencia pendiente-------------------\n
+        _______________________________\n
+\n
+        Bogotá, Colombia, 2019.\n
         """
         
     """
