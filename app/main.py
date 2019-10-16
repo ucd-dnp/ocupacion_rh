@@ -264,7 +264,7 @@ geovisor = dbc.Col([
         html.Iframe(id= 'map', 
                       srcDoc = open('temp2.html','r').read(),
                       width= '100%', 
-                      height= '671')
+                      height= '600')
     ],
 
     style = {
@@ -1351,4 +1351,4 @@ def display_loading_pdf(clicks, download_clicks):
 
 # ****************************** MAIN *****************************
 if __name__ == '__main__':
-    app.run_server(debug=True, host='0.0.0.0', port=80)
+    server.run(debug=True, host='0.0.0.0', port=80)
