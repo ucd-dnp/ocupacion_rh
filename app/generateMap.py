@@ -40,10 +40,10 @@ class Map:
                           max_zoom=18, min_zoom= 10)
         FloatImage(IMAGE,bottom= 81 ,left=1).add_to(_map)
         FloatImage(IMAGE2,bottom= 95 ,left=12).add_to(_map)
-        FloatImage(IMAGE2,bottom= 12 ,left=12).add_to(_map)
+        FloatImage(IMAGE2,bottom= 7 ,left=12).add_to(_map)
         _map.add_tile_layer(self._url, name='Satelital',
                             attr='Ocupación en zonas de ronda hídrica',
-                            max_zoom=17, min_zoom=10)
+                            max_zoom=18, min_zoom=10)
         _map.add_child(folium.LatLngPopup())
    
         
