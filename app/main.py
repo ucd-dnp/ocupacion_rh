@@ -75,7 +75,7 @@ pipeline = pickle.load(open('./training/model.p','rb'))
 
 external_stylesheets = [dbc.themes.BOOTSTRAP]
 
-app = dash.Dash(server=server   , external_stylesheets=external_stylesheets,
+app = dash.Dash(__name__, server=server   , external_stylesheets=external_stylesheets,
                 meta_tags=[{"name": "viewport", 
                             "content": "width=device-width, initial-scale=1"} ])
 
@@ -468,7 +468,6 @@ hidden_geodf = html.Div(
     'position':'absolute ',
     'top':'990px'}
 )
-
 
 
 
