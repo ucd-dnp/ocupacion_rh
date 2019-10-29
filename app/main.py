@@ -1350,4 +1350,4 @@ def display_loading_pdf(clicks, download_clicks):
 
 # ****************************** MAIN *****************************
 if __name__ == '__main__':
-    server.run(debug=True, host='0.0.0.0', port=80)
+    server.run(debug=False, host='0.0.0.0', port=80)
