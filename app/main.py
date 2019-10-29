@@ -69,7 +69,7 @@ colors = ['#011f4b','#03396c', '#005b96','#6497b1','#b3cde0']
 graph_colors = ['rgb(255,127,14)', 'rgb(31,119,180)']
 
 #Crear objeto georreferenciador
-nom = Nominatim(user_agent= 'inundaciones', timeout = 500)
+nom = Nominatim(user_agent= 'inundaciones')
 # crear objeto de clasificación
 pipeline = pickle.load(open('./training/model.p','rb'))
 
