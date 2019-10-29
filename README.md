@@ -1,6 +1,6 @@
-![DNPLOGO](assets/img/dnp.PNG)
+![DNPLOGO](app/assets/img/dnp.PNG)
 
-# Aplicación para detectar zonas susceptibles de inundación debido a su cercanía con las rondas de los ríos.
+# Herramienta para identificar áreas ocupadas y conteo de infraestructura en zonas de ronda hídrica (RH).
 
 Esta es una aplicación destinada a detectar construcciones que se encuentran en condición de susceptibilidad de ser inundadas, dada su posición con respecto a los cauces de  los ríos.  
 
@@ -44,7 +44,7 @@ La especificación de las versiones de las librerías, así como la manera de co
 
 La aplicación consta de un tablero de datos que permite al usuario, con ayuda de mapas de servicios como Open Street Map o también con información obtenida mediante herramientas como Leaflet, delimitar una zona de interés y analizar de allí, las construcciones que se encuentran cerca a los cauces de los ríos.
 
-![general-view](assets\img\general-view.PNG) 
+![general-view](app/assets\img\general-view.PNG) 
 
 Este análisis se puede llevar a cabo de dos maneras:
 
@@ -60,7 +60,27 @@ Para la instalación de la aplicación, es necesario que externamente se instale
 
 Se recomienda altamente usar un entorno virtual de Python para ejecutar la aplicación. Esto con el fin de evitar conflictos con otras librerías que puedan estar instaladas. Para esto se sugiere usar la librería [_virtualenv_](https://pypi.org/project/virtualenv/) , disponible en en gestor de paquetes de Python.
 
+#### Docker
 
+La manera recomendad y más sencilla para instalar la aplicación es mediante un contenedor de [_Docker_](https://docs.docker.com/). Para esto, luego de seguir la [instalación](https://docs.docker.com/install/) se tienen que seguir los siguientes pasos:
+
+1. Ubíquese en la carpeta raíz del proyecto, en esta se ubica un archivo llamado _Dockerfile_ 
+
+2. Ejecute el siguiente comando:
+
+   ```bash
+   docker build -t <nombre de la imagen> .
+   ```
+
+   Esto configurará e instalará todas las dependencias y programas necesarios para la correcta ejecución de la aplicación.
+
+3. Para crear un contenedor que corra la imagen anteriormente creada ejecute el siguiente comando:
+
+   ```bash
+   docker run -d --name <nombre del contenedor> -p 80:80 <nombre de la imagen>
+   ```
+
+   Esto ejecutará el contenedor, lo que significa que la aplicación esta en ejecución.
 
 #### Windows
 
@@ -144,7 +164,7 @@ Y luego instalamos programas y dependencias que son necesarias para instalar las
 sudo apt-get install libproj-dev proj-data proj-bin libgeos-dev build-essential python3-dev cython3 python3-setuptools python3-pip python3-wheel python3-numpy libz-dev libblosc-dev liblzma-dev liblz4-dev libzstd-dev libpng-dev libwebp-dev libbz2-dev libopenjp2-7-dev libjxr-dev liblcms2-dev libtiff-dev
 ```
 
-Procedemos entonces a instalar las librerías de python necesarias. Para ello nos ubicamos en la carpeta _libs/linux_ y ejecutamos el archivo config.sh,.
+Procedemos entonces a instalar las librerías de python necesarias. Para ello nos ubicamos en la carpeta _libs/linux_ y ejecutamos el archivo config.sh.
 
 ```bash
 ./config.sh
@@ -162,10 +182,8 @@ Finalmente ingrese al archivo _env_variables.dat_ e ingrese el _path_ absoluto d
 Para ejecutar la aplicación, ubíquese en la carpeta donde se encuentra ubicado el programa y ejecute:
 
 ```python
-python app.py
+python app/main.py
 ```
 
+Ingrese a la siguiente dirección web: _localhost:80_ desde un navegador web (**Se recomienda NO usar la aplicación desde los navegadores Mozilla Firefox e Internet Explorer**)
 
-
-
-## Testing

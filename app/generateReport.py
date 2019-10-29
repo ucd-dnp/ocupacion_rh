@@ -32,7 +32,7 @@ class Report:
 
     def make_request(self):
         r_url = "https://nominatim.openstreetmap.org/reverse?format=json&lat={}&lon={}&zoom=10".format(self.lat_1, self.long_1)
-        r = requests.get(url = r_url)
+        r = requests.get(url = r_url, timeout = 20)
         data = r.json()
         return data['display_name']
 
@@ -81,7 +81,7 @@ class Report:
 
         #Se renderiza el html a pdf
         
-        # config = pdfkit.configuration(wkhtmltopdf=bytes('C://Program Files//wkhtmltopdf//bin//wkhtmltopdf.exe', 'utf-8'))
-        config = pdfkit.configuration(wkhtmltopdf=bytes('/usr/local/bin/wkhtmltopdf', 'utf-8'))
+        config = pdfkit.configuration(wkhtmltopdf=bytes('C://Program Files//wkhtmltopdf//bin//wkhtmltopdf.exe', 'utf-8'))
+        #config = pdfkit.configuration(wkhtmltopdf=bytes('/usr/local/bin/wkhtmltopdf', 'utf-8'))
         pdfkit.from_file("generated_html/{}_html_report.html".format(file_name), "generated_pdf/{}_reporte.pdf".format(file_name), configuration = config)
         return file_name
