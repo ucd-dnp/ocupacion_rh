@@ -5,7 +5,8 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 
 import geopandas as gpd
-from geopy.geocoders import Nominatim
+#from geopy.geocoders import Nominatim
+import geocoder
 from shapely.ops import cascaded_union   
 from threading import Thread
 
@@ -69,7 +70,7 @@ colors = ['#011f4b','#03396c', '#005b96','#6497b1','#b3cde0']
 graph_colors = ['rgb(255,127,14)', 'rgb(31,119,180)']
 
 #Crear objeto georreferenciador
-nom = Nominatim(user_agent= 'inundaciones', timeout = 10)
+#nom = Nominatim(user_agent= 'inundaciones', timeout = 10)
 # crear objeto de clasificación
 pipeline = pickle.load(open('./training/model.p','rb'))
 
@@ -608,8 +609,8 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
                     '', '','', figure1, figure2, default, d_style_g2]
         else:
             try:
-                response = nom.geocode(str_loc +', Colombia')
-                lat,lng = response[1]
+                response = geocoder.arcgis(str_loc +', Colombia').geojson['features'][0]['properties']
+                lat,lng = response['lat'],response['lng']
                 location = (lat,lng)
                 Map(location= location, zoom= 15).generateMap()
                 #############################  RESULT  #####################################
