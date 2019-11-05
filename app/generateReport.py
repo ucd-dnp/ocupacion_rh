@@ -81,9 +81,13 @@ class Report:
         html_file.write(parameters)
         html_file.close()
 
+        #cargamos datos de configuracion
+        env_file = open('env_variables.dat', 'r')
+        envs_names = [line.strip() for line in env_file]
+
         #Se renderiza el html a pdf
         
-        config = pdfkit.configuration(wkhtmltopdf=bytes('C://Program Files//wkhtmltopdf//bin//wkhtmltopdf.exe', 'utf-8'))
+        config = pdfkit.configuration(wkhtmltopdf=bytes(envs_names[2], 'utf-8'))
         #config = pdfkit.configuration(wkhtmltopdf=bytes('/usr/local/bin/wkhtmltopdf', 'utf-8'))
         pdfkit.from_file("generated_html/{}_html_report.html".format(file_name), "generated_pdf/{}_reporte.pdf".format(file_name), configuration = config)
         return file_name
