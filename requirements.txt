@@ -63,3 +63,5 @@ snuggs==1.4.7
 tifffile==2019.7.26
 urllib3==1.25.6
 Werkzeug==0.16.0
+geocoder
+reverse_geocoder

@@ -1,7 +1,8 @@
 
 from datetime import datetime
 import plotly
-import requests
+
+import reverse_geocoder as rg
 
 import jinja2
 
@@ -31,10 +32,11 @@ class Report:
     """    
 
     def make_request(self):
-        r_url = "https://nominatim.openstreetmap.org/reverse?format=json&lat={}&lon={}&zoom=10".format(self.lat_1, self.long_1)
-        r = requests.get(url = r_url, timeout = 20)
-        data = r.json()
-        return data['display_name']
+        coordinates = (self.lat_1, self.long_1)
+        r = rg.search(coordinates)
+        data_final = r[0]["name"] + ', ' + r[0]["admin1"]
+       
+        return data_final
 
     """
            Metodo para generar el template en jinja y convertirlo a PDF
