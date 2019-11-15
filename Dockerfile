@@ -79,9 +79,7 @@ RUN dpkg -i libssl1.0.0_1.0.2n-1ubuntu5.3_amd64.deb
 RUN wget http://archive.ubuntu.com/ubuntu/pool/main/i/icu/libicu52_52.1-3ubuntu0.8_amd64.deb
 RUN dpkg -i libicu52_52.1-3ubuntu0.8_amd64.deb
 
-#RUN wget https://bitbucket.org/wkhtmltopdf/wkhtmltopdf/downloads/wkhtmltox-0.13.0-alpha-7b36694_linux-trusty-amd64.deb
-#RUN dpkg -i wkhtmltox-0.13.0-alpha-7b36694_linux-trusty-amd64.deb
-#RUN cd /usr/local/bin && cp wkhtmltopdf /usr/bin/wkhtmltopdf
+
 
 RUN apt-get install wkhtmltopdf -y
 RUN apt-get install xvfb -y
@@ -89,7 +87,6 @@ RUN printf '#!/bin/bash\nxvfb-run -a --server-args="-screen 0, 1024x768x24" /usr
 RUN chmod a+x /usr/bin/wkhtmltopdf.sh
 RUN ln -s /usr/bin/wkhtmltopdf.sh /usr/local/bin/wkhtmltopdf
   
-RUN pip install headless-pdfkit
 
 
 # Download orca AppImage, extract it, and make it executable under xvfb
@@ -106,10 +103,7 @@ RUN pip download GDAL==2.1.0
 RUN tar -xvzf GDAL-2.1.0.tar.gz
 RUN cd GDAL-2.1.0 && python setup.py build_ext --include-dirs=/usr/include/gdal/ && python setup.py install
 
-#RUN export CPLUS_INCLUDE_PATH=/usr/include/gdal
-#RUN export C_INCLUDE_PATH=/usr/include/gdal
-#RUN pip install --global-option=build_ext --global-option="-I/usr/include/gdal" GDAL==2.4.0
-#RUN pip install GDAL==$(gdal-config --version | awk -F'[.]' '{print $1"."$2}') --global-option=build_ext --global-option="-I/usr/include/gdal"
+
 RUN pip install -U pip && pip install -r /tmp/requirements.txt --no-cache-dir
 
 RUN touch /etc/nginx/conf.d/custom_timeout.conf && echo "uwsgi_read_timeout 1000s;fastcgi_read_timeout 600;proxy_read_timeout 600;" > /etc/nginx/conf.d/custom_timeout.conf
