@@ -35,6 +35,7 @@ De igual manera se usaron las siguientes librerías:
 - Dash-daq
 - Pyproj
 - PDFkit
+- Reverse Geocoder
 
 La especificación de las versiones de las librerías, así como la manera de como estas deben ser instaladas se verá en la sección de [instalación](#instalación) 
 
