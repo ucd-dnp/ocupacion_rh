@@ -24,7 +24,6 @@ De igual manera se usaron las siguientes librerías:
 - Folium
 - Sklearn
 - Scikit-image
-- OpenCV
 - Descartes
 - Nominatim
 - Plotly
