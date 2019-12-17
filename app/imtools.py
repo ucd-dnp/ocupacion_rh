@@ -14,6 +14,7 @@ import tifffile as tiff
 from shapely.affinity import affine_transform
 from shapely.geometry import MultiPolygon, Polygon
 from skimage.exposure import equalize_adapthist, equalize_hist
+from skimage.feature import hog
 from skimage.measure import regionprops, label
 from skimage.segmentation import quickshift, felzenszwalb,slic
 import matplotlib.pyplot as plt
@@ -250,3 +251,10 @@ class imtools():
             m, _, _ = mask.raster_geometry_mask(raster, roi_analysis.geometry, invert=False)
             out = out.transpose([1,2,0]).astype('uint8')
         return out, m
+    
+    def compute_hogs(orientation, image):
+        fd = hog(image, orientations=orientation, pixels_per_cell=(16, 16),
+                 cells_per_block=(1, 1), visualize=False, multichannel=True,
+                 feature_vector=True, transform_sqrt=True)
+        Xfeat = np.reshape(fd,(len(fd)//orientation,orientation))
+        return Xfeat
