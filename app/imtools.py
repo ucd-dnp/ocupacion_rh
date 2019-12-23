@@ -245,10 +245,16 @@ class imtools():
             with memfile.open() as dataset:
                 yield dataset
     
-    def maskRasterIm(img, GT, roi_analysis):
+    def maskRasterIm(img, GT, roi_analysis, hogs = False):
         with imtools.convertraster(img, GT) as raster:
             out, _ = mask.mask(raster,roi_analysis.geometry, invert = False)
             m, _, _ = mask.raster_geometry_mask(raster, roi_analysis.geometry, invert=False)
+            if hogs:
+                temp = np.zeros((m.shape[0]//16,m.shape[1]//16), dtype=bool)
+                for i,row in enumerate(range(0,m.shape[0],16)):
+                    for j,col in enumerate(range(0,m.shape[1],16)):
+                        temp[i,j] = m[row,col]
+                m = ~temp.copy()
             out = out.transpose([1,2,0]).astype('uint8')
         return out, m
     
@@ -258,3 +264,13 @@ class imtools():
                  feature_vector=True, transform_sqrt=True)
         Xfeat = np.reshape(fd,(len(fd)//orientation,orientation))
         return Xfeat
+    
+    def labelImageHog(img = None, labels= None):
+        mask = np.zeros(img.shape[:2],dtype=int)
+        yy = labels.reshape((img.shape[0]//16,img.shape[1]//16))
+        rows, cols = np.where(yy==True)
+        for e, (r, c) in enumerate(zip(rows, cols)):
+            mask[16*r:16*r+16,16*c:16*c+16] = e + 1
+        
+        return mask 
+            
