@@ -14,6 +14,7 @@ from imtools import imtools
 from generateMap import Map
 from osm_downloader import OSMDownloader
 from google_maps_downloader import GoogleMapDownloader
+from error_messages import *
 
 import numpy as np
 import plotly.graph_objs as go
@@ -72,8 +73,8 @@ graph_colors = ['rgb(255,127,14)', 'rgb(31,119,180)']
 #Crear objeto georreferenciador
 #nom = Nominatim(user_agent= 'inundaciones', timeout = 10)
 # crear objeto de clasificación
-pipeline = pickle.load(open('./training/model.p','rb'))
-
+pipeline = pickle.load(open('./training/model.p','rb')) #superpixels    
+pipeline2 = pickle.load(open('./training/model_hogs_2.p','rb')) # HOGs 62 orientaciones
 external_stylesheets = [dbc.themes.BOOTSTRAP]
 
 app = dash.Dash(__name__, server=server   , external_stylesheets=external_stylesheets,
@@ -592,11 +593,14 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
         figure2 = {'data':[go.Pie(visible=False)]}
         return ['Inicia ', False, ' ', html.Div(' '),{'visibility':'hidden'},
                 '', '','', figure1,figure2, default, d_style_g2]
+
     if bnt1 is None:
         bnt1 = 1
+
     if bnt2 is None:
         bnt2 = 0
-    #El boton buscar es presionado
+
+    #El boton e buscar geolocalización es presionado
     if bnt1>bnt2:
         if str_loc == None:
             location = (4.5975, -74.0765)
@@ -624,9 +628,7 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
                 figure2 = {'data':[go.Pie(visible=False)]}
                 return ['reintentar', True, 'Error de conexión', html.Div(' '),{'visibility':'hidden'},
                         '','','',figure1, figure2, default, d_style_g2]
-
-    else: #El boton analizar es presionado
-
+    else: #El boton analizar es presionado (análisis principal de la app)
         try:
             location = ((float(lat1)+float(lat2))*.5, (float(lng1)+float(lng2))*.5)
         except:
@@ -638,7 +640,10 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
             
         box_coords = (float(lat2),float(lng1),float(lat1),float(lng2))
         osm = OSMDownloader(box = box_coords)
-        ######################     análisis por OpenStreetMap     ###########################
+
+        #####################################################################
+        #                   analisis por OpenStreetMap                      #
+        #####################################################################
         if src_sel == 'None' or src_sel=='osm': 
             t1 = Thread(target=osm.getBuildings)
             t1.start()
@@ -651,9 +656,7 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
             t3.join()
             
             if type(osm._builds) is int:
-                msj = """No hay información disponible de construcciones para esta región. 
-Intente con otra región o cambie la fuente de análisis por
-'Análisis de imagen'"""
+                msj = MSJ1
                 Map(location= location, zoom= 15).generateMap()
                 ################################  RESULTS #########################################
                 figure1 = {'data':[go.Pie(visible=False)]}
@@ -674,6 +677,7 @@ Intente con otra región o cambie la fuente de análisis por
                         rivers = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.geometry)},
                                                    geometry = 'geometry',
                                                    crs =rivers.crs, index = [0])
+                    
                     if type(osm._poly_rivers) is not int:
                         poly_rivers = osm._poly_rivers.to_crs({'init':'epsg:32618'})
                         try:
@@ -683,6 +687,7 @@ Intente con otra región o cambie la fuente de análisis por
                             poly_rivers = gpd.GeoDataFrame({'geometry':cascaded_union(poly_rivers.buffer(5).geometry)},
                                                             geometry = 'geometry', 
                                                             crs = poly_rivers.crs, index = [0])
+                        
                         poly_rivers.geometry = poly_rivers.buffer(2*buffer1)
 
                         try:
@@ -693,7 +698,6 @@ Intente con otra región o cambie la fuente de análisis por
                             roi = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.union(poly_rivers))},
                                                     geometry = 'geometry', 
                                                     crs = rivers.crs, index = [0])
-                            
                         
                         #Calculando en numero de construcciones que intersectan la zona de susceptibles
                         if roi.shape[0] > 1:
@@ -710,7 +714,6 @@ Intente con otra región o cambie la fuente de análisis por
                             rivers_mag = osm._rivers.to_crs({'init':'epsg:3116'})
                             roi_mag = roi.to_crs({'init':'epsg:3116'})
                             download_component = d_object.download_file(rivers = rivers_mag, roi = roi_mag)
-
                         else:
                             roi_param = roi.to_crs({'init':'epsg:4326'})
                             build_sus_param = builds_sus.to_crs({'init':'epsg:4326'})
@@ -722,8 +725,7 @@ Intente con otra región o cambie la fuente de análisis por
                             roi_mag = roi.to_crs({'init':'epsg:3116'})
                             builds_mag = builds_sus.to_crs({'init':'epsg:3116'})
                             download_component = d_object.download_file(rivers = rivers_mag, roi = roi_mag, builds = builds_mag)
-
-                        
+                       
                         ########################################## RESULTS #######################################
                         n_builds = np.shape(osm._builds)[0]
                         n_builds_sus = np.shape(builds_sus)[0]
@@ -757,7 +759,6 @@ Intente con otra región o cambie la fuente de análisis por
                                 html.B(str(n_builds_sus) + ' construcciones'), html.B(str(porc_builds)+ ' % del total'), 
                                 html.B(str(round(total_area_sus,1))+ ' Hectáreas '),
                                 figure1,figure2, download_component , d_style_g2]
-                    
                     else:
                         if rivers.shape[0]>1:
                             builds_sus = np.array([builds.geometry.intersects(x) for x in rivers.geometry])
@@ -819,13 +820,15 @@ Intente con otra región o cambie la fuente de análisis por
                                 figure1,figure2, download_component, d_style_g2]
                 else:
                     Map(location= location, zoom= 15).generateMap()
-                    msj = """No hay información disponible de capa de rios
-para esta región. Intente de nuevo o cambie
-la región de análisis"""
+                    msj = MSJ2
+                    ################################             RESULTS            ############################################   
                     figure1 = {'data':[go.Pie(visible=False)]}
                     figure2 = {'data':[go.Pie(visible=False)]}
                     return ['builds', True, msj, html.Div(' '),{'visibility':'hidden'},'','', '',figure1, figure2, default, d_style_g2]
-						
+		
+        #####################################################################
+        #                   analisis por capa de rios                       #
+        #####################################################################				
         elif src_sel == 'rios':
             #obtencion capa de rios
             t1 = Thread(target=osm.getRiversLayer)
@@ -848,6 +851,7 @@ la región de análisis"""
                     rivers = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.geometry)},
                                                geometry = 'geometry',
                                                crs =rivers.crs, index = [0])
+                
                 if type(osm._poly_rivers) is not int:
                     poly_rivers = osm._poly_rivers.to_crs({'init':'epsg:32618'})
                     
@@ -875,6 +879,7 @@ la región de análisis"""
                                                                   poly_rivers = osm._poly_rivers,
                                                                   roi = roi_param,
                                                                   bounding=box_coords)
+                    
                     #TODO: unir poly_rivers y rivers
                     #FIXME: revisar si builds en verdad va ahi
                     rivers_mag = osm._rivers.to_crs({'init':'epsg:3116'})
@@ -902,14 +907,16 @@ la región de análisis"""
                             '','','',figure1,figure2, download_component, d_style_g2]
             else:
                 Map(location= location, zoom= 15).generateMap()
-                msj = """No hay información disponible de capa de rios
-para esta región. Intente de nuevo o cambie
-la región de análisis"""
+                msj = MSJ3
                 figure1 = {'data':[go.Pie(visible=False)]}
                 figure2 = {'data':[go.Pie(visible=False)]}
                 return ['builds', True, msj, html.Div(' '),{'visibility':'hidden'},'','', '',figure1, figure2, default, d_style_g2]
-            
+        
+        #####################################################################
+        #                analisis de imagnes satelitales                    #
+        #####################################################################		            
         else:
+            SUPERPIXELS = False  # si False, por HOGs
             proj = 'epsg:32618'
             box_google = (float(lat1),float(lng1),float(lat2),float(lng2))
             # objeto de google maps para descarga de imagen satelital 
@@ -920,7 +927,7 @@ la región de análisis"""
                 ###########################  RESULTS  ####################################
                 figure1 = {'data':[go.Pie(visible=False)]}
                 figure2 = {'data':[go.Pie(visible=False)]}
-                msj = 'La región de análisis es muy grande, por favor intente con una más pequeña'
+                msj = MSJ4
                 return ['', True, msj, html.Div(' '), {'visibility':'hidden'},
                     '','','',figure1,figure2, default, d_style_g2]
             
@@ -934,37 +941,57 @@ la región de análisis"""
             t2.join()
             rivers = None	
             poly_rivers = None
+            
             #hay información de capas de rios
             if type(osm._rivers) is not int:
                 #Generando imagen satelital de la region de analisis 
                 try:
                     img = np.array(gmd.generateImage(), dtype = np.uint8)
                     img_hsv = cv2.cvtColor(img,cv2.COLOR_RGB2HSV)
-                except:
+                except: 
                     # ##########################  RESULTS  ####################################
                     figure1 = {'data':[go.Pie(visible=False)]}
                     figure2 = {'data':[go.Pie(visible=False)]}
-                    msj = 'No se puede realizar el análisis por imágenes satelitales, por favor revise las coordenadas'
+                    msj = MSJ5
                     return ['', True, msj, html.Div(' '), {'visibility':'hidden'},
                         '','','',figure1,figure2, default, d_style_g2]
                 
                 #generando region de analisis en la imagen
+                #esto para enforcarse solo por donde pasan ríos
                 analysis_region = osm.computeROIsuperpixels(buffer1)
                 
-                # mask image and superpixel computing
-                out, m = imtools.maskRasterIm(img, gmd.GT, analysis_region)
-                segments = imtools.computeSegments(out, compactness=25, mask = m) 
-                
-                # ## aqui modelo de clasificacicón de la imagen  ###
-                # ##################################################
-                Xtest = imtools.Feature_im2hist(img_hsv,segments, nbins=35,clrSpc='hsv')
-                Ytest_pred = pipeline.predict(Xtest)
-                Ytest_prob = pipeline.predict_proba(Xtest)[:,1]
-                Ytest_pred2 = Ytest_prob>0.35
-                mask_est = imtools.draw_GT(labels= Ytest_pred2,segments = segments)
-                segments[mask_est == 0] = 0
-                # ##################################################
-                
+                if (SUPERPIXELS):
+                    ####################################################################
+                    ###                 modelo por superpixeles                      ###
+                    ####################################################################
+                    # mask image and superpixel computing
+                    out, m = imtools.maskRasterIm(img, gmd.GT, analysis_region)
+                    segments = imtools.computeSegments(out, compactness=25, mask = m) 
+                    Xfeat = imtools.Feature_im2hist(img_hsv,segments, nbins=35,clrSpc='hsv')
+                    #Ytest_pred = pipeline.predict(Xfeat)
+                    Ytest_prob = pipeline.predict_proba(Xfeat)[:,1]
+                    Ytest_pred2 = Ytest_prob>0.35
+                    mask_est = imtools.draw_GT(labels= Ytest_pred2,segments = segments)
+                    segments[mask_est == 0] = 0
+                    ####################################################################
+                else:
+                    ####################################################################
+                    ###                     modelo por HOGs                          ###
+                    ####################################################################
+                    n_orientations = 56 # guardar este parámetro en el modelo pickle
+                    img = imtools.rescale_intensity(img)
+                    img = imtools.scale_percentile(img)
+                    #img = imtools.equalize_histogram(img)
+                    #img = (255*img).astype('uint8')
+                    out, m = imtools.maskRasterIm(img, gmd.GT, analysis_region, True)
+                    Xfeat = imtools.compute_hogs(n_orientations, img)
+                    Yest = pipeline2.predict_proba(Xfeat)
+                    Yest_temp = np.zeros((Yest.shape[0],),dtype=int)
+                    Yest_temp[Yest[:,1]>0.60    ] = 1
+                    y_hat  = np.logical_and(Yest_temp, m.flatten())
+                    segments = imtools.labelImageHog(img,y_hat)
+                    ####################################################################
+                    
                 #  mapeando los segmentos al mapa de dash  
                 seg_polygons = imtools.mapSuperPixels(segments=segments, GT=gmd.GT, verbose=False)
                 
@@ -980,6 +1007,7 @@ la región de análisis"""
                     rivers = gpd.GeoDataFrame({'geometry':cascaded_union(rivers.geometry)},
                                                geometry = 'geometry',
                                                crs =rivers.crs, index = [0])
+                
                 #hay informacion de polygonos de rios                               
                 if type(osm._poly_rivers) is not int:
                     poly_rivers = osm._poly_rivers.to_crs({'init':'epsg:32618'})
@@ -992,7 +1020,6 @@ la región de análisis"""
                                                         crs = poly_rivers.crs, index = [0])                    
                     
                     poly_rivers.geometry = poly_rivers.buffer(2*buffer1)
-                                  
                     
                     #### generando ROI (región de análisis)
                     try:      
@@ -1020,7 +1047,6 @@ la región de análisis"""
                         rivers_mag = osm._rivers.to_crs({'init':'epsg:3116'})
                         roi_mag = roi.to_crs({'init':'epsg:3116'})
                         download_component = d_object.download_file(rivers = rivers_mag, roi = roi_mag)
-
                     else:
                         roi_param = roi.to_crs({'init':'epsg:4326'})
                         build_sus_param = builds_sus.to_crs({'init':'epsg:4326'})
@@ -1085,7 +1111,6 @@ la región de análisis"""
                         rivers_mag = osm._rivers.to_crs({'init':'epsg:3116'})
                         roi_mag = roi.to_crs({'init':'epsg:3116'})
                         download_component = d_object.download_file(rivers = rivers_mag, roi = roi_mag)
-
                     else:
                         roi_param = roi.to_crs({'init':'epsg:4326'})
                         build_sus_param = builds_sus.to_crs({'init':'epsg:4326'})
@@ -1128,9 +1153,7 @@ la región de análisis"""
             #No hay informacion de capas de rios, por ende no se genera imagen satelital
             else:
                 Map(location= location, zoom= 15).generateMap()
-                msj = """No hay información disponible de capa de rios
-para esta región. Intente de nuevo o cambie
-la región de análisis"""
+                msj = MSJ6
                 figure1 = {'data':[go.Pie(visible=False)]}
                 figure2 = {'data':[go.Pie(visible=False)]}
                 return ['builds', True, msj, html.Div(' '),{'visibility':'hidden'},'','', '',figure1, figure2, default, d_style_g2]   
