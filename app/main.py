@@ -74,7 +74,7 @@ graph_colors = ['rgb(255,127,14)', 'rgb(31,119,180)']
 #nom = Nominatim(user_agent= 'inundaciones', timeout = 10)
 # crear objeto de clasificación
 pipeline = pickle.load(open('./training/model.p','rb')) #superpixels    
-pipeline2 = pickle.load(open('./training/model_hogs_2.p','rb')) # HOGs 62 orientaciones
+pipeline2 = pickle.load(open('./training/model_equalize_rescale_intensity_w_astype.p','rb')) # HOGs 62 orientaciones
 external_stylesheets = [dbc.themes.BOOTSTRAP]
 
 app = dash.Dash(__name__, server=server   , external_stylesheets=external_stylesheets,
@@ -978,16 +978,16 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
                     ####################################################################
                     ###                     modelo por HOGs                          ###
                     ####################################################################
-                    n_orientations = 56 # guardar este parámetro en el modelo pickle
+                    n_orientations = 62 # guardar este parámetro en el modelo pickle
                     img = imtools.rescale_intensity(img)
-                    img = imtools.scale_percentile(img)
-                    #img = imtools.equalize_histogram(img)
-                    #img = (255*img).astype('uint8')
+                    #img = imtools.scale_percentile(img)
+                    img = imtools.equalize_histogram(img)
+                    img = (255*img).astype('uint8')
                     out, m = imtools.maskRasterIm(img, gmd.GT, analysis_region, True)
                     Xfeat = imtools.compute_hogs(n_orientations, img)
                     Yest = pipeline2.predict_proba(Xfeat)
                     Yest_temp = np.zeros((Yest.shape[0],),dtype=int)
-                    Yest_temp[Yest[:,1]>0.60    ] = 1
+                    Yest_temp[Yest[:,1]>0.60] = 1
                     y_hat  = np.logical_and(Yest_temp, m.flatten())
                     segments = imtools.labelImageHog(img,y_hat)
                     ####################################################################
