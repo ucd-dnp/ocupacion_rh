@@ -73,8 +73,8 @@ graph_colors = ['rgb(255,127,14)', 'rgb(31,119,180)']
 #Crear objeto georreferenciador
 #nom = Nominatim(user_agent= 'inundaciones', timeout = 10)
 # crear objeto de clasificación
-pipeline = pickle.load(open('./training/model.p','rb')) #superpixels    
-pipeline2 = pickle.load(open('./training/model_percentile_scale_astype.p','rb')) # HOGs 62 orientaciones
+pipeline = pickle.load(open('./training/model_sp.p','rb')) #superpixels    
+pipeline2 = pickle.load(open('./training/model_hog.p','rb')) # HOGs 62 orientaciones
 external_stylesheets = [dbc.themes.BOOTSTRAP]
 
 app = dash.Dash(__name__, server=server   , external_stylesheets=external_stylesheets,
@@ -980,7 +980,7 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
                     ####################################################################
                     n_orientations = 62 # guardar este parámetro en el modelo pickle
                     img = imtools.rescale_intensity(img)
-                    #img = imtools.scale_percentile(img)
+                    # img = imtools.scale_percentile(img)
                     img = imtools.equalize_histogram(img)
                     img = (255*img).astype('uint8')
                     out, m = imtools.maskRasterIm(img, gmd.GT, analysis_region, True)
