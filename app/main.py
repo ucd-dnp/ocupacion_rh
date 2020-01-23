@@ -74,7 +74,7 @@ graph_colors = ['rgb(255,127,14)', 'rgb(31,119,180)']
 #nom = Nominatim(user_agent= 'inundaciones', timeout = 10)
 # crear objeto de clasificación
 pipeline = pickle.load(open('./training/model.p','rb')) #superpixels    
-pipeline2 = pickle.load(open('./training/model_equalize_rescale_intensity_w_astype.p','rb')) # HOGs 62 orientaciones
+pipeline2 = pickle.load(open('./training/model_percentile_scale_astype.p','rb')) # HOGs 62 orientaciones
 external_stylesheets = [dbc.themes.BOOTSTRAP]
 
 app = dash.Dash(__name__, server=server   , external_stylesheets=external_stylesheets,

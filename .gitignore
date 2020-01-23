@@ -13,5 +13,6 @@ generated_figures/
 generated_pdf/
 generated_html/
 resources/
+.vscode/
 
 __pycache__/
