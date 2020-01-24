@@ -222,10 +222,10 @@ tab_search = dbc.Card([
 
                         dbc.Row([
                         
-                         dbc.Input(id = 'e_lat1', value='1.1576' , style={"width": "20%"}), 
-                         dbc.Input(id = 'e_lng1', value='-76.6489' , style={"width": "20%"}),
-                         dbc.Input(id = 'e_lat2', value='1.1461' , style={"width": "20%"}),
-                         dbc.Input(id = 'e_lng2', value='-76.6402' , style={"width": "20%"})
+                         dbc.Input(id = 'e_lat1',  style={"width": "20%"}), 
+                         dbc.Input(id = 'e_lng1', style={"width": "20%"}),
+                         dbc.Input(id = 'e_lat2',  style={"width": "20%"}),
+                         dbc.Input(id = 'e_lng2',  style={"width": "20%"})
                         ],
                         justify = "between"),
 
