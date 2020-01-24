@@ -916,7 +916,7 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
         #                analisis de imagnes satelitales                    #
         #####################################################################		            
         else:
-            SUPERPIXELS = False  # si False, por HOGs
+            SUPERPIXELS = True  # si False, por HOGs
             proj = 'epsg:32618'
             box_google = (float(lat1),float(lng1),float(lat2),float(lng2))
             # objeto de google maps para descarga de imagen satelital 
@@ -947,6 +947,8 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
                 #Generando imagen satelital de la region de analisis 
                 try:
                     img = np.array(gmd.generateImage(), dtype = np.uint8)
+                    img = imtools.rescale_intensity(im_test)
+                    img = (imtools.equalize_histogram(im_test)*255).astype('uint8')
                     img_hsv = cv2.cvtColor(img,cv2.COLOR_RGB2HSV)
                 except: 
                     # ##########################  RESULTS  ####################################
