@@ -222,10 +222,10 @@ tab_search = dbc.Card([
 
                         dbc.Row([
                         
-                         dbc.Input(id = 'e_lat1', style={"width": "20%"}), 
-                         dbc.Input(id = 'e_lng1', style={"width": "20%"}),
-                         dbc.Input(id = 'e_lat2', style={"width": "20%"}),
-                         dbc.Input(id = 'e_lng2', style={"width": "20%"})
+                         dbc.Input(id = 'e_lat1', value='1.1576' , style={"width": "20%"}), 
+                         dbc.Input(id = 'e_lng1', value='-76.6489' , style={"width": "20%"}),
+                         dbc.Input(id = 'e_lat2', value='1.1461' , style={"width": "20%"}),
+                         dbc.Input(id = 'e_lng2', value='-76.6402' , style={"width": "20%"})
                         ],
                         justify = "between"),
 
@@ -947,8 +947,8 @@ def detectButton(bnt1, bnt2, str_loc,src_sel, lat1,lat2,lng1,lng2, buffer1, buff
                 #Generando imagen satelital de la region de analisis 
                 try:
                     img = np.array(gmd.generateImage(), dtype = np.uint8)
-                    img = imtools.rescale_intensity(im_test)
-                    img = (imtools.equalize_histogram(im_test)*255).astype('uint8')
+                    img = imtools.rescale_intensity(img)
+                    img = (imtools.equalize_histogram(img)*255).astype('uint8')
                     img_hsv = cv2.cvtColor(img,cv2.COLOR_RGB2HSV)
                 except: 
                     # ##########################  RESULTS  ####################################
@@ -1376,4 +1376,4 @@ def display_loading_pdf(clicks, download_clicks):
 
 # ****************************** MAIN *****************************
 if __name__ == '__main__':
-    server.run(debug=False, host='0.0.0.0', port=80)
+    server.run(debug=True, host='0.0.0.0', port=80)
