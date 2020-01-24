@@ -16,3 +16,4 @@ resources/
 .vscode/
 
 __pycache__/
+.vscode/settings.json
