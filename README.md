@@ -4,7 +4,14 @@
 
 Esta es una aplicación destinada a detectar construcciones que se encuentran en condición de susceptibilidad de ser inundadas, dada su posición con respecto a los cauces de  los ríos.  
 
-La aplicación brinda la posibilidad de analizar distintas regiones de Colombia, incluso cuando los servicios de georeferenciación no tengan datos completos de construcciones en las zonas de interés.
+La aplicación brinda la posibilidad de analizar distintas regiones de Colombia, incluso cuando los servicios de georreferenciación no tengan datos completos de construcciones en las zonas de interés.
+
+## Contenido
+
+	1. [Tecnologías usadas](#Tecnologías usadas)
+ 	2. [Características](#Características)
+ 	3. [Instalación](#Instalación)
+ 	4. [Ejecución](#Ejecucición)
 
 ## Tecnologías usadas
 
