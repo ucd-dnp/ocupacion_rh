@@ -8,10 +8,10 @@ La aplicación brinda la posibilidad de analizar distintas regiones de Colombia,
 
 ## Contenido
 
-	1. [Tecnologías usadas](#Tecnologías usadas)
- 	2. [Características](#Características)
- 	3. [Instalación](#Instalación)
- 	4. [Ejecución](#Ejecucición)
+	1. [Tecnologías usadas](#tecnologías usadas)
+ 	2. [Características](#características )
+ 	3. [Instalación](#instalación)
+ 	4. [Ejecución](#ejecucición)
 
 ## Tecnologías usadas
 
