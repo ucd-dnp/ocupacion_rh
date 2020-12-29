@@ -44,7 +44,7 @@ La especificación de las versiones de las librerías, así como la manera de co
 
 La aplicación consta de un tablero de datos que permite al usuario, con ayuda de mapas de servicios como Open Street Map o también con información obtenida mediante herramientas como Leaflet, delimitar una zona de interés y analizar de allí, las construcciones que se encuentran cerca a los cauces de los ríos.
 
-![general-view](app/assets\img\general-view.PNG) 
+![Vista general de la herramienta](\app\assets\img\general-view.PNG)
 
 Este análisis se puede llevar a cabo de dos maneras:
 
