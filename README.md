@@ -197,7 +197,7 @@ Ingrese a la siguiente dirección web: _localhost:80_ desde un navegador web (**
 
 ## Piloto DataSandbox Colombia
 
-El DataSandbox Colombia es un espacio experimental que busca promover el uso de Big Data en el sector público a nivel nacional. Esta sección presenta un proyecto piloto en el cual se desarrolló un modelo automático de detección de construcciones a partir de imágenes satelitales. El objetivo de este trabajo es explorar posibles mejoras al modelo de clasificación de imágenes actual haciendo uso de metodologías compatibles con el DataSandbox. Además, se busca integrar el uso de información georreferenciada del portal de datos abiertos catastral del  Instituto Geográfico Agustín Codazzi [(IGAC)]( https://geoportal.igac.gov.co/contenido/datos-abiertos-catastro). 
+El [DataSandbox](https://sandbox.datos.gov.co/) Colombia es un espacio experimental que busca promover el uso de Big Data en el sector público a nivel nacional. Esta sección presenta un proyecto piloto en el cual se desarrolló un modelo automático de detección de construcciones a partir de imágenes satelitales. El objetivo de este trabajo es explorar posibles mejoras al modelo de clasificación de imágenes actual haciendo uso de metodologías compatibles con el DataSandbox. Además, se busca integrar el uso de información georreferenciada del portal de datos abiertos catastral del  Instituto Geográfico Agustín Codazzi [(IGAC)]( https://geoportal.igac.gov.co/contenido/datos-abiertos-catastro). 
 
 El piloto se desarrolló en 4 etapas principales; ingesta de datos, procesamiento, modelado y obtención de resultados. 
 
@@ -218,7 +218,7 @@ El piloto se desarrolló en 4 etapas principales; ingesta de datos, procesamient
 
 * Por último, el modelo de predicción *XGboost* es integrado a un proceso de **generación de resultados** en el que, a partir de coordenadas que encierran la región de análisis se obtienen datos estimados de áreas con infraestructura construida.  
 
-Para mayor información, consultar el reporte explicativo de la [metodologia](https://github.com/ucd-dnp/inudaciones_ucd/blob/master/app/Prueba.py).
+Para mayor información, consultar el reporte explicativo de la [metodologia](https://github.com/ucd-dnp/inudaciones_ucd/blob/master/dataSandbox/1_Metodologia/Informe_metodologico.pdf).
 
 ### Resultados estimados con el modelo 
 
