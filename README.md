@@ -12,6 +12,7 @@ La aplicación brinda la posibilidad de analizar distintas regiones de Colombia,
 2. [Características](#características)
 3. [Instalación](#instalación)
 4. [Ejecución](#ejecución)
+5. [Piloto DataSandbox](#piloto)
 
 ## Tecnologías usadas
 
@@ -193,4 +194,44 @@ python app/main.py
 ```
 
 Ingrese a la siguiente dirección web: _localhost:80_ desde un navegador web (**Se recomienda NO usar la aplicación desde los navegadores Mozilla Firefox e Internet Explorer**)
+
+## Piloto DataSandbox Colombia
+
+El DataSandbox Colombia es un espacio experimental que busca promover el uso de Big Data en el sector público a nivel nacional. Esta sección presenta un proyecto piloto en el cual se desarrolló un modelo automático de detección de construcciones a partir de imágenes satelitales. El objetivo de este trabajo es explorar posibles mejoras al modelo de clasificación de imágenes actual haciendo uso de metodologías compatibles con el DataSandbox. Además, se busca integrar el uso de información georreferenciada del portal de datos abiertos catastral del  Instituto Geográfico Agustín Codazzi [(IGAC)]( https://geoportal.igac.gov.co/contenido/datos-abiertos-catastro). 
+
+El piloto se desarrolló en 4 etapas principales; ingesta de datos, procesamiento, modelado y obtención de resultados. 
+
+* La **ingesta de datos** consistió en obtener un conjunto de imágenes satelital (RGB), sin nubosidad, con buena iluminación y  disponibilidad de datos catastrales actualizados. Esta información se obtuvo de GoogleMaps y del portal de datos abiertos del IGAC. 
+
+* Los datos obtenidos fueron **procesados** para realizar la búsqueda y entrenamiento del modelo de predicción. En primer lugar, el procesamiento consiste en aplicar la ecualización de histogramas de color (RGB) a las imágenes. Posteriormente se transforman al formato HSV y se dividen en cuadrillas de 8x8 pixeles, lo que equivale a 69.65 metros cuadrados aproximadamente.  Para cada cuadrante se extrajo 35 atributos por canal y se asignó una etiqueta según la presencia de construcciones en su interior. 
+
+  En suma, se procesaron 4 imágenes Satelitales para la etapa de modelado. De estas imágenes se obtuvieron 65072 cuadrillas, cada una de ellas con 35 características por canal (HSV), y una etiqueta que indica si el área contiene o no infraestructuras construidas.  
+
+* En la etapa de **modelado** se abordó un problema de clasificación supervisado en el que se buscaba predecir si cada cuadrilla de 8x8 pixeles era o no un área con construcciones.  Para ello se evaluaron múltiples algoritmos con diferentes configuraciones de parámetros. Entre estos, los modelos que arrojaron mayor valor-F1 fueron un *XGboost* y un *Support Vector Classifier* (SVC). Sin embargo, el modelo *XGboost* emplea un tiempo de computación menor al empleado por el SVC. Esto, sumado a mejores resultados de desempeño,  hizo que se escogiera el modelo *XGboost* para realizar la predicción de áreas con infraestructura construida. Las métricas de rendimiento de dichos modelos se presentan a continuación:
+
+  | Modelo    | Precisión | Sensibilidad | Exactitud | Puntaje F1 |
+  | --------- | --------- | ------------ | --------- | ---------- |
+  | *XGboost* | 0.830     | 0.907        | 0.862     | 0.867      |
+  | SVC       | 0.816     | 0.913        | 0.855     | 0.862      |
+
+  Estos resultados fueron obtenidos sobre 9761 observaciones que corresponden a cuadrillas de 8x8 pixeles seleccionadas aleatoriamente para evaluar el desempeño de los modelos.
+
+* Por último, el modelo de predicción *XGboost* es integrado a un proceso de **generación de resultados** en el que, a partir de coordenadas que encierran la región de análisis se obtienen datos estimados de áreas con infraestructura construida.  
+
+Para mayor información, consultar el reporte explicativo de la [metodologia](https://github.com/ucd-dnp/inudaciones_ucd/blob/master/app/Prueba.py).
+
+### Resultados estimados con el modelo 
+
+Aplicando la metodología descrita se obtuvieron los siguientes resultados. Estos pueden ser consultados en el portal de [Datos Abiertos Colombia](https://www.datos.gov.co). 
+
+| Nombre del Archivo  | Municipio | Número de registros | Enlace                                                       |
+| ------------------- | --------- | ------------------- | ------------------------------------------------------------ |
+| DNP-XGboostPitalito | Pitalito  | 8732                | [DNP-XGboostPitalito \| Datos Abiertos Colombia](https://www.datos.gov.co/Mapas-Nacionales/DNP-XGboostPitalito/rntx-zf96) |
+| DNP-XGboostPiendamo | Piendamó  | 4058                | [DNP-XGboostPiendamo \| Datos Abiertos Colombia](https://www.datos.gov.co/Mapas-Nacionales/DNP-XGboostPiendamo/wpdi-vtc6) |
+| DNP-XGboostLaPlata  | La Plata  | 16642               | [DNP-XGboostLaPlata \| Datos Abiertos Colombia](https://www.datos.gov.co/Mapas-Nacionales/DNP-XGboostLaPlata/8w42-7pfy) |
+| DNP-XGboostGarzon   | Garzón    | 10348               | [DNP-XGboostGarzon \| Datos Abiertos Colombia](https://www.datos.gov.co/Mapas-Nacionales/DNP-XGboostGarzon/6vk6-j6ze) |
+| DNP-XGboostCerete   | Cereté    | 11233               | [DNP-XGboostCerete \| Datos Abiertos Colombia](https://www.datos.gov.co/Mapas-Nacionales/DNP-XGboostCerete/dbfh-gi8w) |
+| DNP-XGboostCartago  | Cartago   | 13882               | [DNP-XGboostCartago \| Datos Abiertos Colombia](https://www.datos.gov.co/Mapas-Nacionales/DNP-XGboostCartago/jewm-5u37) |
+
+Los datos fueron generados el 28 de diciembre del 2020 y cuentan con un formato de proyección MagnaSirgas(EPSG:3115). Estos pueden ser descargados en diferentes formatos (como Shapefile o GeoJson), que  permiten utilizarlos en programas de análisis GIS como ArcMap o QGIS. 
 
