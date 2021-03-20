@@ -28,7 +28,7 @@ idna==2.8
 imagecodecs==2019.5.22
 imageio==2.5.0
 itsdangerous==1.1.0
-Jinja2==2.10.1
+Jinja2==2.11.3
 joblib==0.13.2
 kiwisolver==1.1.0
 MarkupSafe==1.1.1
